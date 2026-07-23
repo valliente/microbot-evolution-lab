@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Sparkles, Plus, Film } from 'lucide-react';
+import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Sparkles, Plus, Film, ShieldAlert, Trash2 } from 'lucide-react';
 import { SimulationConfig } from '../../simulation/types';
 
 interface HeaderProps {
@@ -12,6 +12,8 @@ interface HeaderProps {
   onOpenGuide: () => void;
   onSpawnFood: () => void;
   onSpawnBots: () => void;
+  onSpawnHazard: () => void;
+  onClearHazards: () => void;
   onToggleAutoDemo: () => void;
 }
 
@@ -25,6 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGuide,
   onSpawnFood,
   onSpawnBots,
+  onSpawnHazard,
+  onClearHazards,
   onToggleAutoDemo
 }) => {
   return (
@@ -33,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="logo-group">
         <div className="logo-icon">
           <div className="logo-inner">
-            <Cpu style={{ width: 22, height: 22 }} />
+            <Cpu style={{ width: 24, height: 24 }} />
           </div>
         </div>
         <div>
@@ -46,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Action Buttons & Spawners */}
+      {/* Interactive Action Controls */}
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
         <button onClick={onOpenGuide} className="btn btn-cyan">
           <HelpCircle style={{ width: 14, height: 14 }} />
@@ -58,14 +62,24 @@ export const Header: React.FC<HeaderProps> = ({
           <span>🎯 SELECT BOT</span>
         </button>
 
-        <button onClick={onSpawnFood} className="btn btn-emerald" title="Drop 10 green food dots!">
+        <button onClick={onSpawnFood} className="btn btn-emerald" title="Drop 20 green food dots!">
           <Plus style={{ width: 14, height: 14 }} />
-          <span>🍏 +10 FOOD</span>
+          <span>🍏 +20 FOOD</span>
         </button>
 
         <button onClick={onSpawnBots} className="btn btn-cyan" title="Spawn 10 new microbots!">
           <Plus style={{ width: 14, height: 14 }} />
           <span>🤖 +10 BOTS</span>
+        </button>
+
+        <button onClick={onSpawnHazard} className="btn btn-rose" title="Spawn a red hazard zone!">
+          <ShieldAlert style={{ width: 14, height: 14 }} />
+          <span>💥 +HAZARD</span>
+        </button>
+
+        <button onClick={onClearHazards} className="btn btn-dark" title="Clear all hazard zones!">
+          <Trash2 style={{ width: 14, height: 14 }} />
+          <span>CLEAR</span>
         </button>
 
         <button onClick={onToggleAutoDemo} className={isAutoDemo ? 'btn btn-cyan' : 'btn btn-dark'}>
@@ -84,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Simulation Playback & Speed Controls */}
+      {/* Simulation Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(3, 7, 18, 0.8)', padding: '6px 10px', borderRadius: 10, border: '1px solid rgba(0, 240, 255, 0.2)' }}>
         <button
           onClick={() => onUpdateConfig({ isPaused: !config.isPaused })}

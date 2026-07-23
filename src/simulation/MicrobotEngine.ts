@@ -183,6 +183,22 @@ export class MicrobotEngine {
     }
   }
 
+  public spawnHazard(): void {
+    this.hazards.push({
+      id: `H-${Math.random().toString(36).substr(2, 6)}`,
+      x: Math.random() * (this.width - 160) + 80,
+      y: Math.random() * (this.height - 160) + 80,
+      radius: 35 + Math.random() * 40,
+      pulsePhase: Math.random() * Math.PI * 2
+    });
+    this.config.hazardCount = this.hazards.length;
+  }
+
+  public clearHazards(): void {
+    this.hazards = [];
+    this.config.hazardCount = 0;
+  }
+
   public updateHazardsCount(): void {
     const targetCount = this.config.hazardCount;
     while (this.hazards.length < targetCount) {

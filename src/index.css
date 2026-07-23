@@ -20,7 +20,7 @@ body {
   user-select: none;
 }
 
-/* Custom Scrollbars */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -36,7 +36,7 @@ body {
   background: #00f0ff;
 }
 
-/* UI Layout Classes */
+/* App Main Container */
 .app-container {
   min-height: 100vh;
   background-color: #030712;
@@ -44,6 +44,7 @@ body {
   flex-direction: column;
 }
 
+/* Header Navbar */
 .header-bar {
   width: 100%;
   background: rgba(15, 23, 42, 0.95);
@@ -68,14 +69,15 @@ body {
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   background: linear-gradient(135deg, #00f0ff, #2563eb);
   padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
 }
 
 .logo-inner {
@@ -91,8 +93,8 @@ body {
 
 .title-text {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.5px;
 }
@@ -111,14 +113,14 @@ body {
   flex: 1;
   padding: 16px;
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: 350px 1fr;
   gap: 16px;
   max-width: 1920px;
   margin: 0 auto;
   width: 100%;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1080px) {
   .main-workspace {
     grid-template-columns: 1fr;
   }
@@ -136,7 +138,7 @@ body {
   gap: 16px;
 }
 
-/* Glass Panels */
+/* Panel Card Container */
 .panel-card {
   background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(10px);
@@ -149,7 +151,7 @@ body {
 .panel-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 8px;
   margin-bottom: 12px;
@@ -160,14 +162,14 @@ body {
   text-transform: uppercase;
 }
 
-/* Canvas Container */
+/* Canvas Viewport */
 .canvas-wrapper {
   position: relative;
   width: 100%;
-  height: 520px;
-  min-height: 450px;
+  height: 560px;
+  min-height: 480px;
   background: #080c14;
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  border: 2px solid rgba(0, 240, 255, 0.3);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
@@ -180,7 +182,7 @@ body {
   cursor: crosshair;
 }
 
-/* Button Component Styles */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -189,18 +191,29 @@ body {
   padding: 8px 14px;
   border-radius: 8px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid transparent;
-  font-family: inherit;
+  font-family: 'JetBrains Mono', monospace;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  transform: translateY(-1px);
 }
 
 .btn-cyan {
   background: #00f0ff;
   color: #030712;
   border-color: #00f0ff;
-  font-weight: 700;
   box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
 }
 .btn-cyan:hover {
@@ -210,32 +223,33 @@ body {
 }
 
 .btn-purple {
-  background: rgba(168, 85, 247, 0.2);
+  background: rgba(168, 85, 247, 0.25);
   color: #c084fc;
-  border-color: rgba(168, 85, 247, 0.4);
+  border-color: rgba(168, 85, 247, 0.5);
 }
 .btn-purple:hover {
-  background: rgba(168, 85, 247, 0.4);
+  background: rgba(168, 85, 247, 0.45);
   color: #ffffff;
 }
 
 .btn-emerald {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.25);
   color: #34d399;
-  border-color: rgba(16, 185, 129, 0.4);
+  border-color: rgba(16, 185, 129, 0.5);
 }
 .btn-emerald:hover {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.45);
   color: #ffffff;
 }
 
 .btn-rose {
-  background: rgba(244, 63, 94, 0.2);
+  background: rgba(244, 63, 94, 0.25);
   color: #fb7185;
-  border-color: rgba(244, 63, 94, 0.4);
+  border-color: rgba(244, 63, 94, 0.5);
 }
 .btn-rose:hover {
-  background: rgba(244, 63, 94, 0.4);
+  background: rgba(244, 63, 94, 0.45);
+  color: #ffffff;
 }
 
 .btn-dark {
@@ -248,10 +262,10 @@ body {
   color: #ffffff;
 }
 
-/* Slider Controls */
+/* Control Item Rows */
 .control-item {
   background: rgba(3, 7, 18, 0.6);
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 8px;
@@ -280,12 +294,11 @@ body {
   accent-color: #00f0ff;
 }
 
-/* Checkbox Toggle */
 .toggle-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
+  padding: 10px 12px;
   background: rgba(3, 7, 18, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
@@ -301,7 +314,7 @@ body {
   cursor: pointer;
 }
 
-/* Metric Badges Grid */
+/* Metric Cards */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -334,6 +347,7 @@ body {
   margin-top: 4px;
 }
 
+/* Color Classes */
 .text-cyan { color: #00f0ff; }
 .text-purple { color: #c084fc; }
 .text-emerald { color: #34d399; }

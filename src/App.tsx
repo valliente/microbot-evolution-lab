@@ -114,7 +114,7 @@ export const App: React.FC = () => {
 
   const handleSpawnFood = () => {
     if (engine) {
-      engine.spawnMultipleFood(10);
+      engine.spawnMultipleFood(20);
     }
   };
 
@@ -124,6 +124,20 @@ export const App: React.FC = () => {
       if (!selectedBotId) {
         handleSelectRandomBot();
       }
+    }
+  };
+
+  const handleSpawnHazard = () => {
+    if (engine) {
+      engine.spawnHazard();
+      setConfig((prev) => ({ ...prev, hazardCount: engine.hazards.length }));
+    }
+  };
+
+  const handleClearHazards = () => {
+    if (engine) {
+      engine.clearHazards();
+      setConfig((prev) => ({ ...prev, hazardCount: 0 }));
     }
   };
 
@@ -152,6 +166,8 @@ export const App: React.FC = () => {
         onOpenGuide={() => setIsGuideOpen(true)}
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
+        onSpawnHazard={handleSpawnHazard}
+        onClearHazards={handleClearHazards}
         onToggleAutoDemo={() => setIsAutoDemo((prev) => !prev)}
       />
 
