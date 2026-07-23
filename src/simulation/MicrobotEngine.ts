@@ -386,7 +386,7 @@ export class MicrobotEngine {
 
   public selectMicrobotAt(x: number, y: number): Microbot | null {
     let closest: Microbot | null = null;
-    let minRangeSq = 18 * 18; // Click tolerance radius
+    let minRangeSq = 28 * 28; // Increased click tolerance radius for fast moving bots
 
     for (let i = 0; i < this.microbots.length; i++) {
       const bot = this.microbots[i];
