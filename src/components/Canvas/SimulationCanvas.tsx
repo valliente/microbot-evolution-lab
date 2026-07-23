@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
-import { Target } from 'lucide-react';
+import { Target, MousePointerPlus } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
@@ -22,11 +22,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
     const handleResize = () => {
       const dpr = window.devicePixelRatio || 1;
       const rect = container.getBoundingClientRect();
-      const w = Math.floor(rect.width);
-      const h = Math.floor(rect.height);
+      const w = Math.max(600, Math.floor(container.clientWidth || rect.width || 1000));
+      const h = Math.max(450, Math.floor(container.clientHeight || rect.height || 600));
 
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
+      canvas.width = Math.floor(w * dpr);
+      canvas.height = Math.floor(h * dpr);
       canvas.style.width = `${w}px`;
       canvas.style.height = `${h}px`;
 
@@ -40,7 +40,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
     handleResize();
 
     const render = () => {
-      // Step simulation update
+      // Execute engine step frame
       engine.update();
 
       const ctx = canvas.getContext('2d');
@@ -52,14 +52,14 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
         const w = engine.width;
         const h = engine.height;
 
-        // 1. Clear background
-        ctx.fillStyle = '#080c14';
+        // 1. Clear background & draw rich grid
+        ctx.fillStyle = '#060913';
         ctx.fillRect(0, 0, w, h);
 
-        // Subtle background sci-fi grid
-        ctx.strokeStyle = 'rgba(0, 240, 255, 0.035)';
+        // Tech grid lines
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
         ctx.lineWidth = 1;
-        const gridSize = 40;
+        const gridSize = 45;
         ctx.beginPath();
         for (let x = 0; x < w; x += gridSize) {
           ctx.moveTo(x, 0);
@@ -71,16 +71,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
         }
         ctx.stroke();
 
-        // 2. Render Hazard Zones
+        // 2. Render Hazard Zones (Pulsing Red Energy Disks)
         for (let i = 0; i < engine.hazards.length; i++) {
           const hz = engine.hazards[i];
           const pulse = Math.sin(hz.pulsePhase) * 0.15 + 1.0;
           const currentRadius = hz.radius * pulse;
 
-          // Outer glowing radial gradient
-          const grad = ctx.createRadialGradient(hz.x, hz.y, hz.radius * 0.2, hz.x, hz.y, currentRadius);
-          grad.addColorStop(0, 'rgba(255, 45, 85, 0.25)');
-          grad.addColorStop(0.7, 'rgba(255, 45, 85, 0.10)');
+          // Glowing radial gradient
+          const grad = ctx.createRadialGradient(hz.x, hz.y, hz.radius * 0.1, hz.x, hz.y, currentRadius);
+          grad.addColorStop(0, 'rgba(255, 45, 85, 0.35)');
+          grad.addColorStop(0.7, 'rgba(255, 45, 85, 0.15)');
           grad.addColorStop(1, 'rgba(255, 45, 85, 0)');
 
           ctx.fillStyle = grad;
@@ -88,39 +88,44 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
           ctx.arc(hz.x, hz.y, currentRadius, 0, Math.PI * 2);
           ctx.fill();
 
-          // Border ring
-          ctx.strokeStyle = 'rgba(255, 45, 85, 0.55)';
+          // Border ring & label
+          ctx.strokeStyle = '#ff2d55';
           ctx.lineWidth = 1.5;
-          ctx.setLineDash([6, 4]);
+          ctx.setLineDash([8, 5]);
           ctx.beginPath();
           ctx.arc(hz.x, hz.y, hz.radius, 0, Math.PI * 2);
           ctx.stroke();
           ctx.setLineDash([]);
+
+          ctx.fillStyle = 'rgba(255, 45, 85, 0.7)';
+          ctx.font = '9px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('HAZARD ZONE', hz.x, hz.y + 3);
         }
 
-        // 3. Render Energy Particles
+        // 3. Render Green Energy Particles (Glowing Food Orbs)
         for (let i = 0; i < engine.energyParticles.length; i++) {
           const ep = engine.energyParticles[i];
 
-          // Particle glow
-          const epGrad = ctx.createRadialGradient(ep.x, ep.y, 0, ep.x, ep.y, ep.radius * 2.8);
-          epGrad.addColorStop(0, 'rgba(57, 255, 20, 0.9)');
+          // Soft green radial aura
+          const epGrad = ctx.createRadialGradient(ep.x, ep.y, 0, ep.x, ep.y, ep.radius * 3.5);
+          epGrad.addColorStop(0, 'rgba(57, 255, 20, 1.0)');
           epGrad.addColorStop(0.5, 'rgba(57, 255, 20, 0.4)');
           epGrad.addColorStop(1, 'rgba(57, 255, 20, 0)');
 
           ctx.fillStyle = epGrad;
           ctx.beginPath();
-          ctx.arc(ep.x, ep.y, ep.radius * 2.8, 0, Math.PI * 2);
+          ctx.arc(ep.x, ep.y, ep.radius * 3.5, 0, Math.PI * 2);
           ctx.fill();
 
-          // Core dot
+          // Bright white center core
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(ep.x, ep.y, ep.radius * 0.7, 0, Math.PI * 2);
+          ctx.arc(ep.x, ep.y, ep.radius * 0.8, 0, Math.PI * 2);
           ctx.fill();
         }
 
-        // 4. Render Movement Trails (if enabled)
+        // 4. Render Movement Trails
         if (engine.config.showTrails) {
           for (let i = 0; i < engine.microbots.length; i++) {
             const bot = engine.microbots[i];
@@ -131,20 +136,20 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
                 ctx.lineTo(bot.trail[t].x, bot.trail[t].y);
               }
               ctx.strokeStyle = bot.color;
-              ctx.globalAlpha = 0.25;
-              ctx.lineWidth = 1.5;
+              ctx.globalAlpha = 0.35;
+              ctx.lineWidth = 2;
               ctx.stroke();
               ctx.globalAlpha = 1.0;
             }
           }
         }
 
-        // 5. Render Vision Circles (if enabled)
+        // 5. Render Vision Circles
         if (engine.config.showVision) {
           for (let i = 0; i < engine.microbots.length; i++) {
             const bot = engine.microbots[i];
             ctx.strokeStyle = bot.color;
-            ctx.globalAlpha = 0.12;
+            ctx.globalAlpha = 0.15;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.arc(bot.x, bot.y, bot.visionRadius, 0, Math.PI * 2);
@@ -163,33 +168,33 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
           ctx.save();
           ctx.translate(bot.x, bot.y);
 
-          // Selection highlight crosshair ring
+          // Selection Reticle & Crosshair
           if (isSelected) {
             ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.arc(0, 0, 24, 0, Math.PI * 2);
             ctx.stroke();
 
             // Corner ticks
-            const tLen = 7;
+            const tLen = 8;
             ctx.beginPath();
-            ctx.moveTo(-24, 0); ctx.lineTo(-24 + tLen, 0);
-            ctx.moveTo(24, 0); ctx.lineTo(24 - tLen, 0);
-            ctx.moveTo(0, -24); ctx.lineTo(0, -24 + tLen);
-            ctx.moveTo(0, 24); ctx.lineTo(0, 24 - tLen);
+            ctx.moveTo(-28, 0); ctx.lineTo(-28 + tLen, 0);
+            ctx.moveTo(28, 0); ctx.lineTo(28 - tLen, 0);
+            ctx.moveTo(0, -28); ctx.lineTo(0, -28 + tLen);
+            ctx.moveTo(0, 28); ctx.lineTo(0, 28 - tLen);
             ctx.stroke();
 
-            // Floating ID Label above bot
+            // Floating Label above microbot
             ctx.fillStyle = '#00f0ff';
             ctx.font = 'bold 11px monospace';
             ctx.textAlign = 'center';
-            ctx.fillText(bot.id, 0, -28);
+            ctx.fillText(`★ ${bot.id} (${bot.behaviorState.replace('_', ' ')})`, 0, -32);
 
             // Vision highlight for selected bot
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.5)';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([6, 4]);
             ctx.beginPath();
             ctx.arc(0, 0, bot.visionRadius, 0, Math.PI * 2);
             ctx.stroke();
@@ -199,40 +204,40 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
           // Orient canvas towards microbot heading
           ctx.rotate(bot.heading);
 
-          // Microbot body (Futuristic triangle/pod shape)
-          const botSize = 9;
+          // Microbot body (Large triangular pod)
+          const botSize = 11;
           ctx.fillStyle = bot.color;
           ctx.beginPath();
-          ctx.moveTo(botSize + 2, 0); // Nose tip
-          ctx.lineTo(-botSize + 1, -botSize + 2); // Rear left
-          ctx.lineTo(-botSize * 0.4, 0); // Rear center notch
-          ctx.lineTo(-botSize + 1, botSize - 2); // Rear right
+          ctx.moveTo(botSize + 3, 0); // Nose tip
+          ctx.lineTo(-botSize, -botSize + 2); // Rear left
+          ctx.lineTo(-botSize * 0.4, 0); // Notch
+          ctx.lineTo(-botSize, botSize - 2); // Rear right
           ctx.closePath();
           ctx.fill();
 
-          // Outer outline
-          ctx.strokeStyle = isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.6)';
-          ctx.lineWidth = 1.2;
+          // Outer glowing outline
+          ctx.strokeStyle = isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.7)';
+          ctx.lineWidth = 1.8;
           ctx.stroke();
 
-          // Nose sensor light
+          // Sensor headlight
           ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(botSize, 0, 1.8, 0, Math.PI * 2);
+          ctx.arc(botSize + 1, 0, 2.2, 0, Math.PI * 2);
           ctx.fill();
 
           ctx.restore();
 
-          // Battery indicator bar above microbot
-          const barW = 16;
-          const barH = 3;
+          // Battery gauge bar above microbot
+          const barW = 20;
+          const barH = 4;
           const pct = Math.max(0, Math.min(1, bot.battery / bot.maxBattery));
 
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-          ctx.fillRect(bot.x - barW / 2, bot.y - 14, barW, barH);
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(bot.x - barW / 2, bot.y - 16, barW, barH);
 
           ctx.fillStyle = pct > 0.4 ? '#00f0ff' : pct > 0.2 ? '#ffb000' : '#ff2d55';
-          ctx.fillRect(bot.x - barW / 2, bot.y - 14, barW * pct, barH);
+          ctx.fillRect(bot.x - barW / 2, bot.y - 16, barW * pct, barH);
         }
 
         ctx.restore();
@@ -257,14 +262,28 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    // Check microbot selection click
     const bot = engine.selectMicrobotAt(x, y);
-    onSelectBot(bot ? bot.id : null);
+    if (bot) {
+      onSelectBot(bot.id);
+    } else {
+      // Spawn 5 food particles at click location!
+      for (let i = 0; i < 5; i++) {
+        engine.energyParticles.push({
+          id: `E-${Math.random().toString(36).substr(2, 6)}`,
+          x: x + (Math.random() - 0.5) * 30,
+          y: y + (Math.random() - 0.5) * 30,
+          value: 40,
+          radius: 5
+        });
+      }
+    }
   };
 
   const selectedBot = engine.getSelectedMicrobot();
 
   return (
-    <div ref={containerRef} className="canvas-wrapper">
+    <div ref={containerRef} className="canvas-wrapper" style={{ height: '560px', minHeight: '480px' }}>
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
@@ -274,34 +293,55 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
       {/* Floating Auto-Tracking Banner at Top Center */}
       <div style={{
         position: 'absolute',
-        top: 12,
+        top: 14,
         left: '50%',
         transform: 'translateX(-50%)',
-        background: 'rgba(15, 23, 42, 0.9)',
-        backdropFilter: 'blur(8px)',
-        border: '1px solid rgba(0, 240, 255, 0.3)',
-        borderRadius: 20,
-        padding: '6px 16px',
+        background: 'rgba(15, 23, 42, 0.92)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(0, 240, 255, 0.4)',
+        borderRadius: 24,
+        padding: '6px 18px',
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
-        fontSize: '0.75rem',
+        gap: 12,
+        fontSize: '0.8rem',
         fontFamily: "'JetBrains Mono', monospace",
         color: '#ffffff',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
         pointerEvents: 'auto'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#00f0ff' }}>
-          <Target style={{ width: 14, height: 14 }} />
-          <span>TRACKING: <strong style={{ color: '#ffffff' }}>{selectedBot ? selectedBot.id : 'SEARCHING...'}</strong></span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#00f0ff', fontWeight: 700 }}>
+          <Target style={{ width: 16, height: 16 }} />
+          <span>TRACKING: <strong style={{ color: '#ffffff' }}>{selectedBot ? `${selectedBot.id}` : 'ACTIVE'}</strong></span>
         </div>
         <button
           onClick={onSelectRandomBot}
           className="btn btn-purple"
-          style={{ padding: '2px 8px', fontSize: '0.65rem' }}
+          style={{ padding: '3px 10px', fontSize: '0.7rem' }}
         >
           SWITCH BOT
         </button>
+      </div>
+
+      {/* Click Canvas Helper Hint */}
+      <div style={{
+        position: 'absolute',
+        bottom: 12,
+        left: 14,
+        background: 'rgba(3, 7, 18, 0.8)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: 8,
+        padding: '4px 10px',
+        fontSize: '0.7rem',
+        fontFamily: "'JetBrains Mono', monospace",
+        color: '#94a3b8',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        pointerEvents: 'none'
+      }}>
+        <MousePointerPlus style={{ width: 14, height: 14, color: '#34d399' }} />
+        <span>Click anywhere on canvas to drop food!</span>
       </div>
     </div>
   );

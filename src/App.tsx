@@ -8,15 +8,14 @@ import { InspectorPanel } from './components/UI/InspectorPanel';
 import { StatsDashboard } from './components/UI/StatsDashboard';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
 import { GuideModal } from './components/UI/GuideModal';
-import { StartOverlay } from './components/UI/StartOverlay';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
   const engineRef = useRef<MicrobotEngine | null>(null);
 
-  // Initialize engine on mount
+  // Initialize engine on mount with active viewport dimensions
   if (!engineRef.current) {
-    engineRef.current = new MicrobotEngine(1200, 800, config);
+    engineRef.current = new MicrobotEngine(1200, 800, { ...config, isPaused: false });
   }
 
   const engine = engineRef.current;
@@ -29,9 +28,8 @@ export const App: React.FC = () => {
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
-  const [isStarted, setIsStarted] = useState<boolean>(false);
 
-  // Auto-select a microbot whenever current selected microbot dies or becomes null
+  // Auto-select microbot continuously whenever current selected microbot dies or becomes null
   useEffect(() => {
     if (engine) {
       if (!selectedBotId || !engine.getSelectedMicrobot()) {
@@ -65,15 +63,6 @@ export const App: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [engine]);
-
-  const handleStartGame = () => {
-    setIsStarted(true);
-    if (engine) {
-      engine.config.isPaused = false;
-      const bot = engine.selectRandomMicrobot();
-      if (bot) setSelectedBotId(bot.id);
-    }
-  };
 
   const handleUpdateConfig = (newConfig: Partial<SimulationConfig>) => {
     setConfig((prev) => {
@@ -145,13 +134,6 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Start Game Giant Splash Overlay */}
-      <StartOverlay
-        isStarted={isStarted}
-        onStartGame={handleStartGame}
-        onOpenGuide={() => setIsGuideOpen(true)}
-      />
-
       {/* Beginner Guide Modal */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
@@ -181,13 +163,11 @@ export const App: React.FC = () => {
 
         {/* Right Column: Canvas Viewport & Statistics */}
         <div className="right-viewport">
-          <div className="canvas-wrapper">
-            <SimulationCanvas
-              engine={engine}
-              onSelectBot={(id) => setSelectedBotId(id)}
-              onSelectRandomBot={handleSelectRandomBot}
-            />
-          </div>
+          <SimulationCanvas
+            engine={engine}
+            onSelectBot={(id) => setSelectedBotId(id)}
+            onSelectRandomBot={handleSelectRandomBot}
+          />
 
           <StatsDashboard stats={stats} maxPopulation={config.maxPopulation} />
         </div>
