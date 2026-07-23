@@ -7,6 +7,7 @@ import { ControlPanel } from './components/UI/ControlPanel';
 import { InspectorPanel } from './components/UI/InspectorPanel';
 import { StatsDashboard } from './components/UI/StatsDashboard';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
+import { GuideModal } from './components/UI/GuideModal';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -21,10 +22,11 @@ export const App: React.FC = () => {
 
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
+  const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
 
-  // Log selectedBotId to ensure it is consumed or keep reference
+  // Sync selectedBotId to engine
   useEffect(() => {
-    if (selectedBotId && engine) {
+    if (engine) {
       engine.selectedMicrobotId = selectedBotId;
     }
   }, [selectedBotId, engine]);
@@ -67,16 +69,28 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSelectRandomBot = () => {
+    if (engine) {
+      const bot = engine.selectRandomMicrobot();
+      setSelectedBotId(bot ? bot.id : null);
+    }
+  };
+
   const selectedBot = engine.getSelectedMicrobot();
 
   return (
     <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
+      {/* Beginner Guide Modal */}
+      <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
+
       {/* Header Bar */}
       <Header
         config={config}
         onUpdateConfig={handleUpdateConfig}
         onReset={handleReset}
         onStep={handleStep}
+        onSelectRandomBot={handleSelectRandomBot}
+        onOpenGuide={() => setIsGuideOpen(true)}
       />
 
       {/* Main Workspace Layout */}

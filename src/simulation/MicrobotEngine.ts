@@ -403,6 +403,17 @@ export class MicrobotEngine {
     return closest;
   }
 
+  public selectRandomMicrobot(): Microbot | null {
+    if (this.microbots.length === 0) {
+      this.selectedMicrobotId = null;
+      return null;
+    }
+    const idx = Math.floor(Math.random() * this.microbots.length);
+    const bot = this.microbots[idx];
+    this.selectedMicrobotId = bot.id;
+    return bot;
+  }
+
   public getSelectedMicrobot(): Microbot | null {
     if (!this.selectedMicrobotId) return null;
     return this.microbots.find((b) => b.id === this.selectedMicrobotId) || null;
