@@ -1,5 +1,5 @@
 import React from 'react';
-import { Crosshair, BatteryCharging, Zap, Gauge, Eye, Award, X, RefreshCw } from 'lucide-react';
+import { Crosshair, BatteryCharging, Zap, Gauge, Eye, Award, X } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface InspectorPanelProps {
@@ -87,7 +87,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({ bot, onClose }) 
 
       {/* Battery Gauge Bar */}
       <div style={{ background: 'rgba(3, 7, 18, 0.7)', padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', marginBottom: 12 }}>
-        <div style={{ display: 'flex', justify: 'space-between', fontSize: '0.72rem', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontFamily: "'JetBrains Mono', monospace", marginBottom: 6 }}>
           <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4 }}>
             <BatteryCharging style={{ width: 14, height: 14, color: '#00f0ff' }} /> Battery Charge
           </span>
