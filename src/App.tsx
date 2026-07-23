@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MicrobotEngine } from './simulation/MicrobotEngine';
-import { SimulationConfig, SimulationStats } from './simulation/types';
+import { SimulationConfig, SimulationStats, Microbot } from './simulation/types';
 import { loadConfigFromStorage, saveConfigToStorage } from './utils/storage';
 import { Header } from './components/UI/Header';
 import { ControlPanel } from './components/UI/ControlPanel';
@@ -13,56 +13,45 @@ export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
   const engineRef = useRef<MicrobotEngine | null>(null);
 
-  // Initialize engine on mount with active viewport dimensions
+  // Initialize engine on mount
   if (!engineRef.current) {
     engineRef.current = new MicrobotEngine(1200, 800, { ...config, isPaused: false });
   }
 
   const engine = engineRef.current;
 
-  const [selectedBotId, setSelectedBotId] = useState<string | null>(() => {
-    const firstBot = engine.selectRandomMicrobot();
-    return firstBot ? firstBot.id : null;
-  });
-
+  const [selectedBot, setSelectedBot] = useState<Microbot | null>(() => engine.selectRandomMicrobot());
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
 
-  // Auto-select microbot continuously whenever current selected microbot dies or becomes null
+  // Sync selected bot object on every tick for real-time telemetry updates
   useEffect(() => {
-    if (engine) {
-      if (!selectedBotId || !engine.getSelectedMicrobot()) {
-        const bot = engine.selectRandomMicrobot();
-        if (bot) {
-          setSelectedBotId(bot.id);
-        }
-      } else {
-        engine.selectedMicrobotId = selectedBotId;
+    const interval = setInterval(() => {
+      setStats(engine.getStats());
+      const current = engine.getSelectedMicrobot();
+      if (!current && engine.microbots.length > 0) {
+        const nextBot = engine.selectRandomMicrobot();
+        setSelectedBot(nextBot);
+      } else if (current) {
+        setSelectedBot({ ...current });
       }
-    }
-  }, [selectedBotId, engine, stats.currentPopulation]);
+    }, 80);
 
-  // Auto Demo Mode loop: automatically cycles bot selections every 6 seconds
+    return () => clearInterval(interval);
+  }, [engine]);
+
+  // Auto Demo Mode loop: automatically switches bot selection every 5 seconds
   useEffect(() => {
     if (!isAutoDemo || !engine) return;
 
     const demoInterval = setInterval(() => {
       const bot = engine.selectRandomMicrobot();
-      setSelectedBotId(bot ? bot.id : null);
-    }, 6000);
+      setSelectedBot(bot ? { ...bot } : null);
+    }, 5000);
 
     return () => clearInterval(demoInterval);
   }, [isAutoDemo, engine]);
-
-  // Periodically refresh stats for React UI (10 FPS for optimal performance)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(engine.getStats());
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, [engine]);
 
   const handleUpdateConfig = (newConfig: Partial<SimulationConfig>) => {
     setConfig((prev) => {
@@ -82,7 +71,7 @@ export const App: React.FC = () => {
     if (engine) {
       engine.resetSimulation();
       const bot = engine.selectRandomMicrobot();
-      setSelectedBotId(bot ? bot.id : null);
+      setSelectedBot(bot ? { ...bot } : null);
       setStats(engine.getStats());
     }
   };
@@ -97,7 +86,19 @@ export const App: React.FC = () => {
   const handleSelectRandomBot = () => {
     if (engine) {
       const bot = engine.selectRandomMicrobot();
-      setSelectedBotId(bot ? bot.id : null);
+      setSelectedBot(bot ? { ...bot } : null);
+    }
+  };
+
+  const handleSelectBotById = (id: string | null) => {
+    if (!engine) return;
+    if (id) {
+      engine.selectedMicrobotId = id;
+      const bot = engine.getSelectedMicrobot();
+      setSelectedBot(bot ? { ...bot } : null);
+    } else {
+      engine.selectedMicrobotId = null;
+      setSelectedBot(null);
     }
   };
 
@@ -110,7 +111,7 @@ export const App: React.FC = () => {
   const handleSpawnBots = () => {
     if (engine) {
       engine.spawnMultipleBots(10);
-      if (!selectedBotId) {
+      if (!selectedBot) {
         handleSelectRandomBot();
       }
     }
@@ -129,8 +130,6 @@ export const App: React.FC = () => {
       setConfig((prev) => ({ ...prev, hazardCount: 0 }));
     }
   };
-
-  const selectedBot = engine.getSelectedMicrobot();
 
   return (
     <div className="app-container">
@@ -157,7 +156,7 @@ export const App: React.FC = () => {
       <main className="main-workspace">
         {/* Left Column: Controls & Inspector */}
         <div className="left-sidebar">
-          <InspectorPanel bot={selectedBot} onClose={() => setSelectedBotId(null)} />
+          <InspectorPanel bot={selectedBot} onClose={() => handleSelectBotById(null)} />
           <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
         </div>
 
@@ -165,7 +164,7 @@ export const App: React.FC = () => {
         <div className="right-viewport">
           <SimulationCanvas
             engine={engine}
-            onSelectBot={(id) => setSelectedBotId(id)}
+            onSelectBot={handleSelectBotById}
             onSelectRandomBot={handleSelectRandomBot}
           />
 
