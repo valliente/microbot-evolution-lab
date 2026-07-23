@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
 
   // Sync selectedBotId to engine
   useEffect(() => {
@@ -30,6 +31,18 @@ export const App: React.FC = () => {
       engine.selectedMicrobotId = selectedBotId;
     }
   }, [selectedBotId, engine]);
+
+  // Auto Demo Mode loop: automatically cycles bot selections every 6 seconds
+  useEffect(() => {
+    if (!isAutoDemo || !engine) return;
+
+    const demoInterval = setInterval(() => {
+      const bot = engine.selectRandomMicrobot();
+      setSelectedBotId(bot ? bot.id : null);
+    }, 6000);
+
+    return () => clearInterval(demoInterval);
+  }, [isAutoDemo, engine]);
 
   // Periodically refresh stats for React UI (10 FPS for optimal performance)
   useEffect(() => {
@@ -76,6 +89,18 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSpawnFood = () => {
+    if (engine) {
+      engine.spawnMultipleFood(10);
+    }
+  };
+
+  const handleSpawnBots = () => {
+    if (engine) {
+      engine.spawnMultipleBots(10);
+    }
+  };
+
   const selectedBot = engine.getSelectedMicrobot();
 
   return (
@@ -86,11 +111,15 @@ export const App: React.FC = () => {
       {/* Header Bar */}
       <Header
         config={config}
+        isAutoDemo={isAutoDemo}
         onUpdateConfig={handleUpdateConfig}
         onReset={handleReset}
         onStep={handleStep}
         onSelectRandomBot={handleSelectRandomBot}
         onOpenGuide={() => setIsGuideOpen(true)}
+        onSpawnFood={handleSpawnFood}
+        onSpawnBots={handleSpawnBots}
+        onToggleAutoDemo={() => setIsAutoDemo((prev) => !prev)}
       />
 
       {/* Main Workspace Layout */}

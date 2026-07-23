@@ -1,23 +1,31 @@
 import React from 'react';
-import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Sparkles } from 'lucide-react';
+import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Sparkles, Plus, Film } from 'lucide-react';
 import { SimulationConfig } from '../../simulation/types';
 
 interface HeaderProps {
   config: SimulationConfig;
+  isAutoDemo: boolean;
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
   onReset: () => void;
   onStep: () => void;
   onSelectRandomBot: () => void;
   onOpenGuide: () => void;
+  onSpawnFood: () => void;
+  onSpawnBots: () => void;
+  onToggleAutoDemo: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   config,
+  isAutoDemo,
   onUpdateConfig,
   onReset,
   onStep,
   onSelectRandomBot,
-  onOpenGuide
+  onOpenGuide,
+  onSpawnFood,
+  onSpawnBots,
+  onToggleAutoDemo
 }) => {
   return (
     <header className="w-full bg-slate-900/90 backdrop-blur-lg border-b border-cyan-500/20 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-30">
@@ -38,23 +46,56 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Preset Buttons & Quick Select */}
+      {/* Preset Buttons & Quick Spawners */}
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={onOpenGuide}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 hover:bg-cyan-900/80 transition"
+          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 hover:bg-cyan-900/80 transition"
         >
           <HelpCircle className="w-4 h-4 text-cyan-400" />
-          <span>HOW TO PLAY</span>
+          <span>GUIDE</span>
         </button>
 
         <button
           onClick={onSelectRandomBot}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-purple-300 bg-purple-950/70 border border-purple-500/40 hover:bg-purple-900/80 transition"
+          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-purple-300 bg-purple-950/70 border border-purple-500/40 hover:bg-purple-900/80 transition"
           title="Click to auto-select a microbot on canvas!"
         >
           <Target className="w-4 h-4 text-purple-400" />
-          <span>🎯 SELECT BOT</span>
+          <span>SELECT BOT</span>
+        </button>
+
+        {/* Instant Spawn Actions */}
+        <button
+          onClick={onSpawnFood}
+          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 hover:bg-emerald-900/80 transition"
+          title="Drop 10 green food particles instantly!"
+        >
+          <Plus className="w-3.5 h-3.5 text-emerald-400" />
+          <span>+10 FOOD</span>
+        </button>
+
+        <button
+          onClick={onSpawnBots}
+          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-300 bg-blue-950/70 border border-blue-500/40 hover:bg-blue-900/80 transition"
+          title="Spawn 10 microbots instantly!"
+        >
+          <Plus className="w-3.5 h-3.5 text-blue-400" />
+          <span>+10 BOTS</span>
+        </button>
+
+        {/* Auto Demo Mode */}
+        <button
+          onClick={onToggleAutoDemo}
+          className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${
+            isAutoDemo
+              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+              : 'text-amber-300 bg-amber-950/70 border border-amber-500/40 hover:bg-amber-900/80'
+          }`}
+          title="Toggle Auto Demo Mode: Automatically cycles bot selection and presets!"
+        >
+          <Film className="w-3.5 h-3.5" />
+          <span>{isAutoDemo ? 'AUTO DEMO: ON' : 'AUTO DEMO'}</span>
         </button>
 
         {/* Easy Presets */}

@@ -169,6 +169,20 @@ export class MicrobotEngine {
     });
   }
 
+  public spawnMultipleFood(count: number = 10): void {
+    for (let i = 0; i < count; i++) {
+      this.spawnEnergyParticle();
+    }
+  }
+
+  public spawnMultipleBots(count: number = 10): void {
+    for (let i = 0; i < count; i++) {
+      if (this.microbots.length < this.config.maxPopulation) {
+        this.spawnMicrobot();
+      }
+    }
+  }
+
   public updateHazardsCount(): void {
     const targetCount = this.config.hazardCount;
     while (this.hazards.length < targetCount) {
