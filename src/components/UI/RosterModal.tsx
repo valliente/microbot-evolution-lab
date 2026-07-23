@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Microbot } from '../../simulation/types';
-import { X, Search, Target, BatteryCharging, Dna, Gauge, Award } from 'lucide-react';
+import { X, Search, Target, Gauge, Award } from 'lucide-react';
 
 interface RosterModalProps {
   isOpen: boolean;
@@ -192,7 +192,7 @@ export const RosterModal: React.FC<RosterModalProps> = ({
                   {/* Battery Bar & Select Button */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                     <div style={{ width: 90 }}>
-                      <div style={{ display: 'flex', justify: 'space-between', fontSize: '0.65rem', color: '#00f0ff', marginBottom: 3, fontFamily: "'JetBrains Mono', monospace" }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#00f0ff', marginBottom: 3, fontFamily: "'JetBrains Mono', monospace" }}>
                         <span>Charge</span>
                         <span>{batteryPct.toFixed(0)}%</span>
                       </div>
