@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
-import { Target, MousePointerPlus } from 'lucide-react';
+import { Target, MousePointerClick } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
@@ -340,7 +340,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
         gap: 6,
         pointerEvents: 'none'
       }}>
-        <MousePointerPlus style={{ width: 14, height: 14, color: '#34d399' }} />
+        <MousePointerClick style={{ width: 14, height: 14, color: '#34d399' }} />
         <span>Click anywhere on canvas to drop food!</span>
       </div>
     </div>
