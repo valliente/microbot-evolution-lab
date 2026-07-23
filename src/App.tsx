@@ -8,6 +8,7 @@ import { InspectorPanel } from './components/UI/InspectorPanel';
 import { StatsDashboard } from './components/UI/StatsDashboard';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
 import { GuideModal } from './components/UI/GuideModal';
+import { StartOverlay } from './components/UI/StartOverlay';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
+  const [isStarted, setIsStarted] = useState<boolean>(false);
 
   // Auto-select a microbot whenever current selected microbot dies or becomes null
   useEffect(() => {
@@ -63,6 +65,15 @@ export const App: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [engine]);
+
+  const handleStartGame = () => {
+    setIsStarted(true);
+    if (engine) {
+      engine.config.isPaused = false;
+      const bot = engine.selectRandomMicrobot();
+      if (bot) setSelectedBotId(bot.id);
+    }
+  };
 
   const handleUpdateConfig = (newConfig: Partial<SimulationConfig>) => {
     setConfig((prev) => {
@@ -120,6 +131,13 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
+      {/* Start Game Giant Splash Overlay */}
+      <StartOverlay
+        isStarted={isStarted}
+        onStartGame={handleStartGame}
+        onOpenGuide={() => setIsGuideOpen(true)}
+      />
+
       {/* Beginner Guide Modal */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
@@ -151,6 +169,7 @@ export const App: React.FC = () => {
             <SimulationCanvas
               engine={engine}
               onSelectBot={(id) => setSelectedBotId(id)}
+              onSelectRandomBot={handleSelectRandomBot}
             />
           </div>
 

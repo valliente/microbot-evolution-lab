@@ -1,12 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
+import { Target } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
   onSelectBot: (botId: string | null) => void;
+  onSelectRandomBot: () => void;
 }
 
-export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSelectBot }) => {
+export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSelectBot, onSelectRandomBot }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -164,19 +166,25 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
           // Selection highlight crosshair ring
           if (isSelected) {
             ctx.strokeStyle = '#00f0ff';
-            ctx.lineWidth = 1.5;
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
             ctx.stroke();
 
             // Corner ticks
-            const tLen = 6;
+            const tLen = 7;
             ctx.beginPath();
-            ctx.moveTo(-22, 0); ctx.lineTo(-22 + tLen, 0);
-            ctx.moveTo(22, 0); ctx.lineTo(22 - tLen, 0);
-            ctx.moveTo(0, -22); ctx.lineTo(0, -22 + tLen);
-            ctx.moveTo(0, 22); ctx.lineTo(0, 22 - tLen);
+            ctx.moveTo(-24, 0); ctx.lineTo(-24 + tLen, 0);
+            ctx.moveTo(24, 0); ctx.lineTo(24 - tLen, 0);
+            ctx.moveTo(0, -24); ctx.lineTo(0, -24 + tLen);
+            ctx.moveTo(0, 24); ctx.lineTo(0, 24 - tLen);
             ctx.stroke();
+
+            // Floating ID Label above bot
+            ctx.fillStyle = '#00f0ff';
+            ctx.font = 'bold 11px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(bot.id, 0, -28);
 
             // Vision highlight for selected bot
             ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
@@ -253,15 +261,47 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({ engine, onSe
     onSelectBot(bot ? bot.id : null);
   };
 
+  const selectedBot = engine.getSelectedMicrobot();
+
   return (
-    <div ref={containerRef} className="canvas-container relative w-full h-full min-h-[450px] overflow-hidden rounded-xl border border-cyan-900/30 bg-[#080c14] shadow-2xl">
+    <div ref={containerRef} className="canvas-wrapper">
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
-        className="w-full h-full cursor-crosshair block"
+        className="canvas-element"
       />
-      <div className="absolute top-3 left-3 pointer-events-none text-xs font-mono text-cyan-400/70 bg-slate-900/70 backdrop-blur-md px-2.5 py-1 rounded border border-cyan-500/20">
-        CANVAS VIEWPORT: {engine.width}x{engine.height}
+
+      {/* Floating Auto-Tracking Banner at Top Center */}
+      <div style={{
+        position: 'absolute',
+        top: 12,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(15, 23, 42, 0.9)',
+        backdropFilter: 'blur(8px)',
+        border: '1px solid rgba(0, 240, 255, 0.3)',
+        borderRadius: 20,
+        padding: '6px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        fontSize: '0.75rem',
+        fontFamily: "'JetBrains Mono', monospace",
+        color: '#ffffff',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
+        pointerEvents: 'auto'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#00f0ff' }}>
+          <Target style={{ width: 14, height: 14 }} />
+          <span>TRACKING: <strong style={{ color: '#ffffff' }}>{selectedBot ? selectedBot.id : 'SEARCHING...'}</strong></span>
+        </div>
+        <button
+          onClick={onSelectRandomBot}
+          className="btn btn-purple"
+          style={{ padding: '2px 8px', fontSize: '0.65rem' }}
+        >
+          SWITCH BOT
+        </button>
       </div>
     </div>
   );
