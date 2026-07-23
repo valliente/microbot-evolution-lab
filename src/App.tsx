@@ -8,6 +8,7 @@ import { InspectorPanel } from './components/UI/InspectorPanel';
 import { StatsDashboard } from './components/UI/StatsDashboard';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
 import { GuideModal } from './components/UI/GuideModal';
+import { RosterModal } from './components/UI/RosterModal';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -23,6 +24,7 @@ export const App: React.FC = () => {
   const [selectedBot, setSelectedBot] = useState<Microbot | null>(() => engine.selectRandomMicrobot());
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
+  const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
   const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
 
   // Sync selected bot object on every tick for real-time telemetry updates
@@ -83,13 +85,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSelectRandomBot = () => {
-    if (engine) {
-      const bot = engine.selectRandomMicrobot();
-      setSelectedBot(bot ? { ...bot } : null);
-    }
-  };
-
   const handleSelectBotById = (id: string | null) => {
     if (!engine) return;
     if (id) {
@@ -112,7 +107,8 @@ export const App: React.FC = () => {
     if (engine) {
       engine.spawnMultipleBots(10);
       if (!selectedBot) {
-        handleSelectRandomBot();
+        const bot = engine.selectRandomMicrobot();
+        setSelectedBot(bot ? { ...bot } : null);
       }
     }
   };
@@ -133,6 +129,15 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
+      {/* Microbot Roster Selection Modal */}
+      <RosterModal
+        isOpen={isRosterOpen}
+        microbots={engine.microbots}
+        selectedBotId={selectedBot ? selectedBot.id : null}
+        onSelectBot={(id) => handleSelectBotById(id)}
+        onClose={() => setIsRosterOpen(false)}
+      />
+
       {/* Beginner Guide Modal */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
@@ -143,7 +148,7 @@ export const App: React.FC = () => {
         onUpdateConfig={handleUpdateConfig}
         onReset={handleReset}
         onStep={handleStep}
-        onSelectRandomBot={handleSelectRandomBot}
+        onOpenRosterMenu={() => setIsRosterOpen(true)}
         onOpenGuide={() => setIsGuideOpen(true)}
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
@@ -165,7 +170,7 @@ export const App: React.FC = () => {
           <SimulationCanvas
             engine={engine}
             onSelectBot={handleSelectBotById}
-            onSelectRandomBot={handleSelectRandomBot}
+            onSelectRandomBot={() => setIsRosterOpen(true)}
           />
 
           <StatsDashboard stats={stats} maxPopulation={config.maxPopulation} />

@@ -340,7 +340,7 @@ export class MicrobotEngine {
       }
 
       // Calculate battery drain: speed squared / efficiency
-      const baseDrain = 0.05 + 0.03 * (bot.speed * bot.speed);
+      const baseDrain = 0.015 + 0.012 * (bot.speed * bot.speed);
       const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * speedMult;
       bot.battery -= netDrain;
 
@@ -385,10 +385,12 @@ export class MicrobotEngine {
 
     // Filter out dead bots
     if (deadBotIds.size > 0) {
-      if (this.selectedMicrobotId && deadBotIds.has(this.selectedMicrobotId)) {
-        // Keep selected bot or reset if dead
-      }
       this.microbots = this.microbots.filter((b) => !deadBotIds.has(b.id));
+    }
+
+    // Safety Net: Keep population alive infinitely so simulation never ends!
+    while (this.microbots.length < 12) {
+      this.spawnMicrobot();
     }
 
     // Record stats timeline snapshot every 60 frames (~1 sec)
