@@ -20,17 +20,28 @@ export const App: React.FC = () => {
 
   const engine = engineRef.current;
 
-  const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
+  const [selectedBotId, setSelectedBotId] = useState<string | null>(() => {
+    const firstBot = engine.selectRandomMicrobot();
+    return firstBot ? firstBot.id : null;
+  });
+
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
 
-  // Sync selectedBotId to engine
+  // Auto-select a microbot whenever current selected microbot dies or becomes null
   useEffect(() => {
     if (engine) {
-      engine.selectedMicrobotId = selectedBotId;
+      if (!selectedBotId || !engine.getSelectedMicrobot()) {
+        const bot = engine.selectRandomMicrobot();
+        if (bot) {
+          setSelectedBotId(bot.id);
+        }
+      } else {
+        engine.selectedMicrobotId = selectedBotId;
+      }
     }
-  }, [selectedBotId, engine]);
+  }, [selectedBotId, engine, stats.currentPopulation]);
 
   // Auto Demo Mode loop: automatically cycles bot selections every 6 seconds
   useEffect(() => {
@@ -70,7 +81,8 @@ export const App: React.FC = () => {
   const handleReset = () => {
     if (engine) {
       engine.resetSimulation();
-      setSelectedBotId(null);
+      const bot = engine.selectRandomMicrobot();
+      setSelectedBotId(bot ? bot.id : null);
       setStats(engine.getStats());
     }
   };
@@ -98,13 +110,16 @@ export const App: React.FC = () => {
   const handleSpawnBots = () => {
     if (engine) {
       engine.spawnMultipleBots(10);
+      if (!selectedBotId) {
+        handleSelectRandomBot();
+      }
     }
   };
 
   const selectedBot = engine.getSelectedMicrobot();
 
   return (
-    <div className="min-h-screen bg-[#030712] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
+    <div className="app-container">
       {/* Beginner Guide Modal */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
@@ -123,16 +138,16 @@ export const App: React.FC = () => {
       />
 
       {/* Main Workspace Layout */}
-      <main className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-[1920px] mx-auto w-full">
+      <main className="main-workspace">
         {/* Left Column: Controls & Inspector */}
-        <div className="lg:col-span-3 flex flex-col space-y-4 order-2 lg:order-1">
-          <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
+        <div className="left-sidebar">
           <InspectorPanel bot={selectedBot} onClose={() => setSelectedBotId(null)} />
+          <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
         </div>
 
         {/* Right Column: Canvas Viewport & Statistics */}
-        <div className="lg:col-span-9 flex flex-col space-y-4 order-1 lg:order-2">
-          <div className="flex-1 min-h-[480px]">
+        <div className="right-viewport">
+          <div className="canvas-wrapper">
             <SimulationCanvas
               engine={engine}
               onSelectBot={(id) => setSelectedBotId(id)}

@@ -28,144 +28,96 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleAutoDemo
 }) => {
   return (
-    <header className="w-full bg-slate-900/90 backdrop-blur-lg border-b border-cyan-500/20 px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-lg sticky top-0 z-30">
+    <header className="header-bar">
       {/* Title & Logo */}
-      <div className="flex items-center space-x-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 p-0.5 shadow-lg shadow-cyan-500/20 flex items-center justify-center">
-          <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-            <Cpu className="w-5 h-5 text-cyan-400 animate-pulse" />
+      <div className="logo-group">
+        <div className="logo-icon">
+          <div className="logo-inner">
+            <Cpu style={{ width: 22, height: 22 }} />
           </div>
         </div>
         <div>
-          <h1 className="text-lg font-bold tracking-tight text-white flex items-center gap-2 font-mono">
-            MICROBOT <span className="text-cyan-400">EVOLUTION LAB</span>
+          <h1 className="title-text">
+            MICROBOT <span className="title-highlight">EVOLUTION LAB</span>
           </h1>
-          <p className="text-xs text-slate-400 hidden sm:block">
-            2D Autonomous Artificial Life Simulation & Genetic Trait Inheritance
+          <p className="subtitle-text">
+            2D Autonomous Artificial Life & Genetic Evolution Engine
           </p>
         </div>
       </div>
 
-      {/* Preset Buttons & Quick Spawners */}
-      <div className="flex flex-wrap items-center gap-2">
-        <button
-          onClick={onOpenGuide}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 hover:bg-cyan-900/80 transition"
-        >
-          <HelpCircle className="w-4 h-4 text-cyan-400" />
+      {/* Action Buttons & Spawners */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }}>
+        <button onClick={onOpenGuide} className="btn btn-cyan">
+          <HelpCircle style={{ width: 14, height: 14 }} />
           <span>GUIDE</span>
         </button>
 
-        <button
-          onClick={onSelectRandomBot}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-purple-300 bg-purple-950/70 border border-purple-500/40 hover:bg-purple-900/80 transition"
-          title="Click to auto-select a microbot on canvas!"
-        >
-          <Target className="w-4 h-4 text-purple-400" />
-          <span>SELECT BOT</span>
+        <button onClick={onSelectRandomBot} className="btn btn-purple" title="Auto-select an active microbot!">
+          <Target style={{ width: 14, height: 14 }} />
+          <span>🎯 SELECT BOT</span>
         </button>
 
-        {/* Instant Spawn Actions */}
-        <button
-          onClick={onSpawnFood}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 hover:bg-emerald-900/80 transition"
-          title="Drop 10 green food particles instantly!"
-        >
-          <Plus className="w-3.5 h-3.5 text-emerald-400" />
-          <span>+10 FOOD</span>
+        <button onClick={onSpawnFood} className="btn btn-emerald" title="Drop 10 green food dots!">
+          <Plus style={{ width: 14, height: 14 }} />
+          <span>🍏 +10 FOOD</span>
         </button>
 
-        <button
-          onClick={onSpawnBots}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold text-blue-300 bg-blue-950/70 border border-blue-500/40 hover:bg-blue-900/80 transition"
-          title="Spawn 10 microbots instantly!"
-        >
-          <Plus className="w-3.5 h-3.5 text-blue-400" />
-          <span>+10 BOTS</span>
+        <button onClick={onSpawnBots} className="btn btn-cyan" title="Spawn 10 new microbots!">
+          <Plus style={{ width: 14, height: 14 }} />
+          <span>🤖 +10 BOTS</span>
         </button>
 
-        {/* Auto Demo Mode */}
-        <button
-          onClick={onToggleAutoDemo}
-          className={`flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${
-            isAutoDemo
-              ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-              : 'text-amber-300 bg-amber-950/70 border border-amber-500/40 hover:bg-amber-900/80'
-          }`}
-          title="Toggle Auto Demo Mode: Automatically cycles bot selection and presets!"
-        >
-          <Film className="w-3.5 h-3.5" />
-          <span>{isAutoDemo ? 'AUTO DEMO: ON' : 'AUTO DEMO'}</span>
+        <button onClick={onToggleAutoDemo} className={isAutoDemo ? 'btn btn-cyan' : 'btn btn-dark'}>
+          <Film style={{ width: 14, height: 14 }} />
+          <span>{isAutoDemo ? '🎬 DEMO: ON' : '🎬 AUTO DEMO'}</span>
         </button>
 
-        {/* Easy Presets */}
-        <div className="hidden lg:flex items-center space-x-1 bg-slate-950/60 p-1 rounded-lg border border-slate-800 text-[11px] font-mono">
-          <span className="text-slate-500 px-1 flex items-center gap-1"><Sparkles className="w-3 h-3 text-amber-400"/> PRESETS:</span>
-          <button
-            onClick={() => onUpdateConfig({ mutationRate: 0.25, energySpawnRate: 10.0, simSpeed: 2.0 })}
-            className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-amber-300 transition"
-          >
-            ⚡ Fast Evolution
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#030712', padding: '4px 8px', borderRadius: 8, fontSize: '0.7rem' }}>
+          <Sparkles style={{ width: 12, height: 12, color: '#fbbf24' }} />
+          <button onClick={() => onUpdateConfig({ mutationRate: 0.25, energySpawnRate: 10.0, simSpeed: 2.0 })} className="btn btn-dark" style={{ padding: '4px 8px' }}>
+            ⚡ Fast
           </button>
-          <button
-            onClick={() => onUpdateConfig({ hazardCount: 8, batteryDrainMultiplier: 1.5, mutationRate: 0.20 })}
-            className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-rose-300 transition"
-          >
-            🛡️ Survival Mode
+          <button onClick={() => onUpdateConfig({ hazardCount: 8, batteryDrainMultiplier: 1.5, mutationRate: 0.20 })} className="btn btn-dark" style={{ padding: '4px 8px' }}>
+            🛡️ Survival
           </button>
         </div>
       </div>
 
-      {/* Primary Control Action Buttons */}
-      <div className="flex items-center space-x-2 bg-slate-950/80 p-1.5 rounded-xl border border-cyan-500/20">
+      {/* Simulation Playback & Speed Controls */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(3, 7, 18, 0.8)', padding: '6px 10px', borderRadius: 10, border: '1px solid rgba(0, 240, 255, 0.2)' }}>
         <button
           onClick={() => onUpdateConfig({ isPaused: !config.isPaused })}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-            config.isPaused
-              ? 'bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-md shadow-emerald-500/20'
-              : 'bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30'
-          }`}
+          className={config.isPaused ? 'btn btn-emerald' : 'btn btn-rose'}
         >
           {config.isPaused ? (
             <>
-              <Play className="w-4 h-4 fill-current" />
+              <Play style={{ width: 14, height: 14, fill: 'currentColor' }} />
               <span>RESUME</span>
             </>
           ) : (
             <>
-              <Pause className="w-4 h-4 fill-current" />
+              <Pause style={{ width: 14, height: 14, fill: 'currentColor' }} />
               <span>PAUSE</span>
             </>
           )}
         </button>
 
-        <button
-          onClick={onStep}
-          disabled={!config.isPaused}
-          className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition"
-          title="Advance simulation by 1 frame"
-        >
+        <button onClick={onStep} disabled={!config.isPaused} className="btn btn-dark" style={{ opacity: config.isPaused ? 1 : 0.4 }}>
           STEP
         </button>
 
-        <button
-          onClick={onReset}
-          className="flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition"
-          title="Reset Simulation"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
+        <button onClick={onReset} className="btn btn-dark">
+          <RotateCcw style={{ width: 12, height: 12 }} />
           <span>RESET</span>
         </button>
 
-        <div className="h-5 w-[1px] bg-slate-800 mx-1" />
-
-        {/* Sim Speed Select */}
-        <div className="flex items-center space-x-1.5 text-xs">
-          <span className="text-slate-400 font-mono text-[11px]">SPEED:</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 6, fontSize: '0.7rem', color: '#94a3b8' }}>
+          <span>SPEED:</span>
           <select
             value={config.simSpeed}
             onChange={(e) => onUpdateConfig({ simSpeed: parseFloat(e.target.value) })}
-            className="bg-slate-900 text-cyan-400 font-mono font-bold text-xs rounded-lg border border-cyan-500/30 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer"
+            style={{ background: '#090d16', color: '#00f0ff', fontWeight: 700, borderRadius: 6, border: '1px solid rgba(0, 240, 255, 0.3)', padding: '4px 6px', cursor: 'pointer' }}
           >
             <option value="0.5">0.5x</option>
             <option value="1.0">1.0x</option>
