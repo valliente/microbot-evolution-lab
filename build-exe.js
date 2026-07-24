@@ -73,7 +73,8 @@ const cscCompiler = 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.ex
 
 try {
   console.log('Compiling MicrobotEvolutionLab.exe using csc.exe...');
-  execSync(\`"\${cscCompiler}" /target:winexe /out:"\${exePath}" /r:System.dll,System.Windows.Forms.dll,System.Drawing.dll "\${csPath}"\`, { stdio: 'inherit' });
+  const cmd = '"' + cscCompiler + '" /target:winexe /out:"' + exePath + '" /r:System.dll,System.Windows.Forms.dll,System.Drawing.dll "' + csPath + '"';
+  execSync(cmd, { stdio: 'inherit' });
   console.log('Successfully created standalone executable: MicrobotEvolutionLab.exe');
 } catch (err) {
   console.error('Failed to compile C# executable:', err);
