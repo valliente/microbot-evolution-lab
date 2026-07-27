@@ -19,6 +19,7 @@ export const defaultConfig: SimulationConfig = {
   showEnergyForceLines: true,
   showSensoryRaycasts: true,
   showPheromoneTrails: true,
+  isSplitView: false,
   weatherEvent: 'CLEAR',
   brushMode: 'NONE',
   heatmapMode: 'OFF',

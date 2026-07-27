@@ -229,6 +229,17 @@ export class MicrobotEngine {
     });
   }
 
+  public spawnSpeedField(x: number, y: number): void {
+    const id = `SF-${this.nextFieldIdNum++}`;
+    this.speedFields.push({
+      id,
+      x,
+      y,
+      radius: 50,
+      multiplier: 1.8
+    });
+  }
+
   public triggerMeteorStrike(x?: number, y?: number): void {
     const mx = x ?? Math.random() * (this.width - 200) + 100;
     const my = y ?? Math.random() * (this.height - 200) + 100;

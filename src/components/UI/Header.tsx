@@ -35,6 +35,9 @@ export const Header: React.FC<HeaderProps> = ({
   onSpawnFood,
   onSpawnBots,
   onSpawnHazard,
+  onTriggerMeteor,
+  onTriggerVoidRift,
+  onTriggerOutbreak,
   onExportTelemetryCSV,
   onExportConfigJSON,
   onImportConfigJSON
