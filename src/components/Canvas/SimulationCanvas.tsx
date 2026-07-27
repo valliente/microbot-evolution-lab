@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
-import { BrushMode } from '../../simulation/types';
-import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna } from 'lucide-react';
+import { BrushMode, HeatmapOverlayMode } from '../../simulation/types';
+import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna, AlertTriangle, Layers } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
@@ -78,16 +78,48 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
           }
 
-          // 0. Draw Decaying Pheromone Trails
-          if (engine.config.showPheromoneTrails) {
-            for (const p of engine.pheromones) {
-              ctx.fillStyle = p.color;
-              ctx.globalAlpha = p.intensity * 0.3;
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-              ctx.fill();
+          // 0. Render Spatial Heatmaps Overlay (Mortality, Food Density, Traffic)
+          const heatmapMode: HeatmapOverlayMode = engine.config.heatmapMode || 'OFF';
+          if (heatmapMode !== 'OFF') {
+            const cols = 20;
+            const rows = 15;
+            const cellW = canvas.width / cols;
+            const cellH = canvas.height / rows;
+
+            for (let c = 0; c < cols; c++) {
+              for (let r = 0; r < rows; r++) {
+                const cx = c * cellW + cellW / 2;
+                const cy = r * cellH + cellH / 2;
+                let intensity = 0;
+                let color = '255, 107, 0'; // Default orange
+
+                if (heatmapMode === 'MORTALITY') {
+                  color = '244, 63, 94'; // Red mortality
+                  for (const h of engine.hazards) {
+                    const dist = Math.hypot(cx - h.x, cy - h.y);
+                    if (dist < h.radius * 1.5) intensity += 0.35;
+                  }
+                } else if (heatmapMode === 'FOOD_DENSITY') {
+                  color = '0, 230, 118'; // Green food density
+                  for (const f of engine.energyParticles) {
+                    const dist = Math.hypot(cx - f.x, cy - f.y);
+                    if (dist < 100) intensity += 0.25;
+                  }
+                } else if (heatmapMode === 'TRAFFIC') {
+                  color = '0, 229, 255'; // Blue traffic pathing
+                  for (const b of engine.microbots) {
+                    const dist = Math.hypot(cx - b.x, cy - b.y);
+                    if (dist < 120) intensity += 0.2;
+                  }
+                }
+
+                intensity = Math.min(0.65, intensity);
+                if (intensity > 0.05) {
+                  ctx.fillStyle = `rgba(${color}, ${intensity})`;
+                  ctx.fillRect(c * cellW, r * cellH, cellW, cellH);
+                }
+              }
             }
-            ctx.globalAlpha = 1.0;
           }
 
           // 1. Draw Speed Fields
@@ -380,9 +412,38 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
   const selectedBot = engine.getSelectedMicrobot();
   const currentBrush = engine.config.brushMode || 'NONE';
+  const currentHeatmap = engine.config.heatmapMode || 'OFF';
+  const isExtinctionRisk = engine.microbots.length < 15;
 
   return (
     <div ref={containerRef} className="canvas-viewport-card" style={{ width: '100%', height: '100%' }}>
+      {/* Extinction Crisis Alert Banner */}
+      {isExtinctionRisk && (
+        <div style={{
+          position: 'absolute',
+          top: 60,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 22,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 18px',
+          background: 'rgba(244, 63, 94, 0.85)',
+          border: '1px solid #f43f5e',
+          borderRadius: 12,
+          color: '#ffffff',
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: '0.75rem',
+          fontWeight: 800,
+          boxShadow: '0 0 25px rgba(244, 63, 94, 0.5)',
+          pointerEvents: 'none'
+        }}>
+          <AlertTriangle style={{ width: 14, height: 14 }} />
+          <span>⚠️ EXTINCTION CRISIS ALERT: POPULATION BELOW 15 BOTS! RECOVERY INITIATED</span>
+        </div>
+      )}
+
       {/* Floating Center Top Tracking Banner Pill */}
       <div style={{
         position: 'absolute',
@@ -418,6 +479,36 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           <Target style={{ width: 12, height: 12 }} />
           <span>SWITCH BOT</span>
         </button>
+      </div>
+
+      {/* Heatmap Layer Picker Bar */}
+      <div style={{
+        position: 'absolute',
+        top: 14,
+        right: 14,
+        zIndex: 20,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '4px 8px',
+        background: 'rgba(15, 26, 36, 0.85)',
+        border: '1px solid rgba(0, 229, 255, 0.3)',
+        borderRadius: 10,
+        backdropFilter: 'blur(12px)'
+      }}>
+        <span style={{ fontSize: '0.65rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Layers style={{ width: 12, height: 12 }} /> HEATMAP:
+        </span>
+        <select
+          value={currentHeatmap}
+          onChange={(e) => onUpdateConfig({ heatmapMode: e.target.value as HeatmapOverlayMode })}
+          style={{ background: '#080E14', color: '#00E5FF', fontWeight: 800, border: '1px solid rgba(0, 229, 255, 0.4)', borderRadius: 6, padding: '2px 6px', fontSize: '0.65rem', cursor: 'pointer' }}
+        >
+          <option value="OFF">Off</option>
+          <option value="MORTALITY">🔴 Mortality</option>
+          <option value="FOOD_DENSITY">🟢 Food Density</option>
+          <option value="TRAFFIC">🔵 Traffic Pathing</option>
+        </select>
       </div>
 
       {/* Canvas Brush Tool Picker Bar */}
