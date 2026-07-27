@@ -11,6 +11,7 @@ export const defaultConfig: SimulationConfig = {
   hazardCount: 3,
   batteryDrainMultiplier: 1.0,
   simSpeed: 1.0,
+  targetFPS: 60,
   isPaused: false,
   showSensoryRings: true,
   showMovementTrails: true,
@@ -20,6 +21,7 @@ export const defaultConfig: SimulationConfig = {
   showPheromoneTrails: true,
   weatherEvent: 'CLEAR',
   brushMode: 'NONE',
+  heatmapMode: 'OFF',
   currentSeason: 'SPRING',
   autoSeasonCycle: true
 };

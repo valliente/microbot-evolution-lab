@@ -3,6 +3,7 @@ export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_B
 export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
 export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER';
 export type ResourceType = 'NUTRIENT_DOT' | 'SUPER_CHARGER' | 'MUTAGEN_ORB';
+export type HeatmapOverlayMode = 'OFF' | 'MORTALITY' | 'FOOD_DENSITY' | 'TRAFFIC';
 
 export interface Vector2D {
   x: number;
@@ -80,6 +81,7 @@ export interface SimulationConfig {
   hazardCount: number;
   batteryDrainMultiplier: number;
   simSpeed: number;
+  targetFPS: number;
   isPaused: boolean;
   showSensoryRings: boolean;
   showMovementTrails: boolean;
@@ -89,6 +91,7 @@ export interface SimulationConfig {
   showPheromoneTrails: boolean;
   weatherEvent: WeatherEvent;
   brushMode: BrushMode;
+  heatmapMode: HeatmapOverlayMode;
   currentSeason: Season;
   autoSeasonCycle: boolean;
 }

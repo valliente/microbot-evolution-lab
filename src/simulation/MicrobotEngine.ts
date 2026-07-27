@@ -1,5 +1,6 @@
 import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
 import { SpatialGrid } from './SpatialGrid';
+import { Quadtree } from './Quadtree';
 import { calculateSteering } from './steering';
 
 export class MicrobotEngine {

@@ -126,9 +126,23 @@ export const Header: React.FC<HeaderProps> = ({
             step="0.05"
             value={config.simSpeed}
             onChange={(e) => onUpdateConfig({ simSpeed: parseFloat(e.target.value) })}
-            style={{ width: 85, height: 4 }}
+            style={{ width: 70, height: 4 }}
           />
-          <span style={{ fontWeight: 800, width: 34 }}>{config.simSpeed.toFixed(2)}x</span>
+          <span style={{ fontWeight: 800, width: 32 }}>{config.simSpeed.toFixed(2)}x</span>
+        </div>
+
+        {/* FPS Target Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+          <select
+            value={config.targetFPS || 60}
+            onChange={(e) => onUpdateConfig({ targetFPS: parseInt(e.target.value, 10) })}
+            style={{ background: '#080E14', color: '#00E5FF', fontWeight: 800, border: '1px solid rgba(0, 229, 255, 0.4)', borderRadius: 6, padding: '2px 4px', fontSize: '0.65rem', cursor: 'pointer' }}
+          >
+            <option value="30">30 FPS</option>
+            <option value="60">60 FPS</option>
+            <option value="120">120 FPS</option>
+            <option value="240">MAX FPS</option>
+          </select>
         </div>
       </div>
 
