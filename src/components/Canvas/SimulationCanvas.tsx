@@ -131,7 +131,15 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             }
           }
 
-          // 1. Draw Speed Fields
+          // Render Fluid Resistance Water Currents & Viscous Hazard Fields
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
+          ctx.lineWidth = 1.5;
+          for (let y = 50; y < canvas.height; y += 120) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y + Math.sin(y + Date.now() * 0.002) * 15);
+            ctx.stroke();
+          }
           for (const field of engine.speedFields) {
             const grad = ctx.createRadialGradient(field.x, field.y, 5, field.x, field.y, field.radius);
             grad.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
