@@ -3,8 +3,13 @@ import { MicrobotEngine } from '../../simulation/MicrobotEngine';
 import { BrushMode, HeatmapOverlayMode } from '../../simulation/types';
 import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna, AlertTriangle, Layers } from 'lucide-react';
 
+// Pre-allocated static render buffers to eliminate GC pressure
+const STATIC_RENDER_BUFFERS = {
+  rayIndices: new Int32Array(512),
+  tempCoords: new Float32Array(1024)
+};
+
 interface SimulationCanvasProps {
-  engine: MicrobotEngine;
   onSelectBot: (botId: string | null) => void;
   onSelectRandomBot: () => void;
   onUpdateConfig: (newConfig: any) => void;
