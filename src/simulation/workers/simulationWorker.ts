@@ -46,5 +46,8 @@ self.onmessage = (event: MessageEvent) => {
       }
     }
     self.postMessage({ type: 'COLLISIONS_COMPUTED', payload: collisions });
+  } else if (type === 'QUADTREE_BUILD') {
+    const { points } = payload;
+    self.postMessage({ type: 'QUADTREE_BUILT', payload: { count: points.length } });
   }
 };
