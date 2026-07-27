@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
     <script>
-      window.onerror = function(msg, url, lineNo, columnNo, error) {
-        var container = document.getElementById('root');
+      window.onerror = function(msg, url, line) {
+      console.error("Diagnostic error listener caught:", msg, url, line);
+    }; var container = document.getElementById('root');
         if (container) {
           container.innerHTML = '<div style="background:#080E14;color:#FF6B00;padding:30px;font-family:monospace;min-height:100vh;">' +
             '<h2 style="color:#00E5FF">⚠️ MICROBOT EVOLUTION LAB RUNTIME LOG</h2>' +
@@ -23,8 +24,8 @@
         return false;
       };
     </script>
-    <script type="module" crossorigin src="./assets/index-BbOXq9oO.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Crx2NAgY.css">
+    <script type="module" crossorigin src="./assets/index-BvfE1Zxo.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C5b7eJrB.css">
   </head>
   <body>
     <div id="root"></div>
