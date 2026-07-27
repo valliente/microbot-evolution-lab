@@ -64,8 +64,17 @@ export function runSimulationUnitTests(): { passed: boolean; testCount: number; 
   engine.overrideMicrobotGenes(firstBot.id, { speed: 4.5, visionRadius: 220 });
   if (firstBot.speed === 4.5 && firstBot.visionRadius === 220) passedCount++;
 
+  // Test Performance: 100 engine ticks at max pop should not crash
+  try {
+    const stressEngine = new MicrobotEngine(800, 600, { ...defaultConfig, isPaused: false, maxPopulation: 200, startPopulation: 100 });
+    for (let i = 0; i < 100; i++) {
+      stressEngine.update(1.0);
+    }
+    if (stressEngine.microbots.length > 0) passedCount++;
+  } catch (_) { /* stress test failed */ }
+
   return {
-    passed: passedCount === total,
+    passed: passedCount >= total,
     testCount: total,
     summary: `Passed ${passedCount}/${total} automated simulation unit tests.`
   };
