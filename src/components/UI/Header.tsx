@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun, Sparkles, Wind, Dna } from 'lucide-react';
 import { SimulationConfig, SimulationStats, WeatherEvent, Season } from '../../simulation/types';
 import { GeneticDiversityChart } from './GeneticDiversityChart';
+import { spatialAudio } from '../../audio/SpatialAudioSynth';
 
 interface HeaderProps {
   config: SimulationConfig;
@@ -183,12 +184,12 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         <button
-          onClick={() => onUpdateConfig({ isSplitView: !config.isSplitView })}
-          className={config.isSplitView ? 'btn-holo btn-holo-cyan' : 'btn-holo btn-holo-dark'}
+          onClick={() => spatialAudio.toggleMute()}
+          className="btn-holo btn-holo-cyan"
           style={{ fontSize: '0.68rem', padding: '4px 8px' }}
-          title="Toggle Dual-Canvas Parallel Split View"
+          title="Toggle Procedural Spatial Audio"
         >
-          <span>SPLIT VIEW 🔲</span>
+          <span>AUDIO 🔊</span>
         </button>
 
         {/* Weather Selector */}
