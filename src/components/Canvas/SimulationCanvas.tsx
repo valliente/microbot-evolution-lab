@@ -303,19 +303,32 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               }
             }
 
-            // Movement Trail
+            // Bioluminescent Movement Trail with fading alpha
             if (engine.config.showMovementTrails && bot.trail.length > 1) {
-              ctx.strokeStyle = bot.color;
-              ctx.lineWidth = 1.5;
-              ctx.globalAlpha = 0.25;
-              ctx.beginPath();
-              ctx.moveTo(bot.trail[0].x, bot.trail[0].y);
-              for (let i = 1; i < bot.trail.length; i++) {
+              const trailLen = bot.trail.length;
+              for (let i = 1; i < trailLen; i++) {
+                const alpha = (i / trailLen) * 0.35;
+                ctx.strokeStyle = bot.color;
+                ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                ctx.globalAlpha = alpha;
+                ctx.beginPath();
+                ctx.moveTo(bot.trail[i - 1].x, bot.trail[i - 1].y);
                 ctx.lineTo(bot.trail[i].x, bot.trail[i].y);
+                ctx.stroke();
               }
-              ctx.stroke();
               ctx.globalAlpha = 1.0;
             }
+
+            // Directional heading vector line
+            const headLen = 14;
+            ctx.strokeStyle = bot.color;
+            ctx.lineWidth = 1.2;
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(bot.x, bot.y);
+            ctx.lineTo(bot.x + Math.cos(bot.heading) * headLen, bot.y + Math.sin(bot.heading) * headLen);
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
 
             // Sensory Vision Ring
             if (isSelected || engine.config.showSensoryRings) {
