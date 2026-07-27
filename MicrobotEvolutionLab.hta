@@ -21,13 +21,28 @@
 
 <html lang="en">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Microbot Evolution Lab - 2D Artificial Life Simulation</title>
+    <title>Microbot Evolution Lab - Beta 0.1.2</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+      window.onerror = function(msg, url, lineNo, columnNo, error) {
+        var container = document.getElementById('root');
+        if (container) {
+          container.innerHTML = '<div style="background:#080E14;color:#FF6B00;padding:30px;font-family:monospace;min-height:100vh;">' +
+            '<h2 style="color:#00E5FF">⚠️ MICROBOT EVOLUTION LAB RUNTIME LOG</h2>' +
+            '<p style="margin-top:10px;"><strong>Error:</strong> ' + msg + '</p>' +
+            '<p><strong>Location:</strong> Line ' + lineNo + ':' + columnNo + '</p>' +
+            '<pre style="background:#0f1a24;padding:15px;border:1px solid #00E5FF;margin-top:15px;color:#fff;overflow:auto;">' + (error && error.stack ? error.stack : msg) + '</pre>' +
+            '</div>';
+        }
+        return false;
+      };
+    </script>
     <script type="module" crossorigin>var vc=Object.defineProperty;var xc=(e,t,n)=>t in e?vc(e,t,{enumerable:!0,configurable:!0,writable:!0,value:n}):e[t]=n;var O=(e,t,n)=>xc(e,typeof t!="symbol"?t+"":t,n);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const l of document.querySelectorAll('link[rel="modulepreload"]'))r(l);new MutationObserver(l=>{for(const i of l)if(i.type==="childList")for(const o of i.addedNodes)o.tagName==="LINK"&&o.rel==="modulepreload"&&r(o)}).observe(document,{childList:!0,subtree:!0});function n(l){const i={};return l.integrity&&(i.integrity=l.integrity),l.referrerPolicy&&(i.referrerPolicy=l.referrerPolicy),l.crossOrigin==="use-credentials"?i.credentials="include":l.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function r(l){if(l.ep)return;l.ep=!0;const i=n(l);fetch(l.href,i)}})();function wc(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}var na={exports:{}},ol={},ra={exports:{}},I={};/**
  * @license React
  * react.production.min.js

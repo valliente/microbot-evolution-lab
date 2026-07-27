@@ -14,9 +14,11 @@ const htmlBase64 = fs.readFileSync(htmlPath).toString('base64');
 
 const csharpCode = `
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace MicrobotEvolutionLab
 {
@@ -30,36 +32,88 @@ namespace MicrobotEvolutionLab
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                string tempHtml = Path.Combine(Path.GetTempPath(), "microbot_lab_" + Guid.NewGuid().ToString("N") + ".html");
+                // Set IE Browser Emulation Registry Key for Fallback
+                try
+                {
+                    string exeName = Path.GetFileName(Process.GetCurrentProcess().MainModule.FileName);
+                    using (RegistryKey key = Registry.CurrentUser.CreateSubKey(@"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION"))
+                    {
+                        if (key != null) key.SetValue(exeName, 11001, RegistryValueKind.DWord);
+                    }
+                }
+                catch {}
+
+                // Extract HTML to LocalAppData Workspace
+                string appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicrobotEvolutionLab");
+                if (!Directory.Exists(appDir)) Directory.CreateDirectory(appDir);
+
+                string tempHtml = Path.Combine(appDir, "index.html");
                 byte[] bytes = Convert.FromBase64String("${htmlBase64}");
                 File.WriteAllBytes(tempHtml, bytes);
 
-                Form form = new Form
+                string fileUri = "file:///" + tempHtml.Replace("\\\\", "/");
+
+                // Attempt to launch using Edge App Mode (Chromium Native Desktop Window)
+                string edgePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft\\Edge\\Application\\msedge.exe");
+                if (!File.Exists(edgePath))
                 {
-                    Text = "Microbot Evolution Lab - Beta 0.1.2",
-                    Width = 1280,
-                    Height = 850,
-                    StartPosition = FormStartPosition.CenterScreen,
-                    WindowState = FormWindowState.Maximized
-                };
+                    edgePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), @"Microsoft\\Edge\\Application\\msedge.exe");
+                }
 
-                WebBrowser browser = new WebBrowser
+                bool launched = false;
+                if (File.Exists(edgePath))
                 {
-                    Dock = DockStyle.Fill,
-                    ScriptErrorsSuppressed = true
-                };
+                    try
+                    {
+                        ProcessStartInfo psi = new ProcessStartInfo
+                        {
+                            FileName = edgePath,
+                            Arguments = "--app=\\"" + fileUri + "\\" --window-size=1280,850",
+                            UseShellExecute = true
+                        };
+                        Process.Start(psi);
+                        launched = true;
+                    }
+                    catch {}
+                }
 
-                form.Controls.Add(browser);
-                form.FormClosed += (s, e) => {
-                    try { if (File.Exists(tempHtml)) File.Delete(tempHtml); } catch {}
-                };
+                // Fallback to Default Web Browser
+                if (!launched)
+                {
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo { FileName = fileUri, UseShellExecute = true });
+                        launched = true;
+                    }
+                    catch {}
+                }
 
-                browser.Navigate(tempHtml);
-                Application.Run(form);
+                // WinForms Fallback Window if process launch fails
+                if (!launched)
+                {
+                    Form form = new Form
+                    {
+                        Text = "Microbot Evolution Lab - Beta 0.1.2",
+                        Width = 1280,
+                        Height = 850,
+                        StartPosition = FormStartPosition.CenterScreen,
+                        WindowState = FormWindowState.Maximized
+                    };
+
+                    WebBrowser browser = new WebBrowser
+                    {
+                        Dock = DockStyle.Fill,
+                        ScriptErrorsSuppressed = false
+                    };
+
+                    form.Controls.Add(browser);
+                    browser.Navigate(tempHtml);
+                    Application.Run(form);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to launch Microbot Evolution Lab: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Microbot Evolution Lab Launcher Error:\\n\\n" + ex.ToString(), "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
@@ -75,7 +129,7 @@ try {
   console.log('Compiling MicrobotEvolutionLab.exe using csc.exe...');
   const cmd = '"' + cscCompiler + '" /target:winexe /out:"' + exePath + '" /r:System.dll,System.Windows.Forms.dll,System.Drawing.dll "' + csPath + '"';
   execSync(cmd, { stdio: 'inherit' });
-  console.log('Successfully created standalone executable: MicrobotEvolutionLab.exe');
+  console.log('Successfully created robust standalone executable: MicrobotEvolutionLab.exe');
 } catch (err) {
   console.error('Failed to compile C# executable:', err);
 } finally {
