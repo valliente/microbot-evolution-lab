@@ -3,13 +3,8 @@ import { MicrobotEngine } from '../../simulation/MicrobotEngine';
 import { BrushMode, HeatmapOverlayMode } from '../../simulation/types';
 import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna, AlertTriangle, Layers } from 'lucide-react';
 
-// Pre-allocated static render buffers to eliminate GC pressure
-const STATIC_RENDER_BUFFERS = {
-  rayIndices: new Int32Array(512),
-  tempCoords: new Float32Array(1024)
-};
-
 interface SimulationCanvasProps {
+  engine: MicrobotEngine;
   onSelectBot: (botId: string | null) => void;
   onSelectRandomBot: () => void;
   onUpdateConfig: (newConfig: any) => void;
@@ -61,10 +56,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         if (ctx) {
           // Skip heavy rendering if document tab is hidden in background
           if (document.hidden) {
-            animFrameId = requestAnimationFrame(render);
+            animationFrameId = requestAnimationFrame(render);
             return;
           }
-          const MAX_FRAME_BUDGET_MS = 14;
 
           // Update physics
           engine.update(1.0);
@@ -74,6 +68,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
           ctx.lineWidth = 1;
+          const gridSize = 40;
           for (let x = 0; x < canvas.width; x += gridSize) {
             ctx.beginPath();
             ctx.moveTo(x, 0);

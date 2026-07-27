@@ -574,7 +574,6 @@ export class MicrobotEngine {
           bot.battery = Math.min(bot.maxBattery, bot.battery + food.value * bot.energyEfficiency);
           bot.energyCollected += food.value;
           spatialAudio.playFeedSound(440 + (bot.hue % 300));
-          return false; // Remove food
         }  if (food.type === 'MUTAGEN_ORB') {
             bot.speed = Math.max(1.0, Math.min(5.0, bot.speed + (Math.random() - 0.5) * 1.2));
             bot.visionRadius = Math.max(60, Math.min(260, bot.visionRadius + (Math.random() - 0.5) * 40));
