@@ -34,7 +34,11 @@ export function runSimulationUnitTests(): { passed: boolean; testCount: number; 
   const engine = new MicrobotEngine(1000, 800, { ...defaultConfig, isPaused: true });
   if (engine.microbots.length === defaultConfig.startPopulation) passedCount++;
 
-  // Test 3: Viral Outbreak Trigger
+  // Test Symbiosis Pairing State
+  const botA = engine.microbots[0];
+  const botB = engine.microbots[1];
+  botA.symbiontPartnerId = botB.id;
+  if (botA.symbiontPartnerId === botB.id) passedCount++;
   engine.triggerOutbreak();
   const infectedCount = engine.microbots.filter(b => b.isInfected).length;
   if (infectedCount >= 1) passedCount++;
