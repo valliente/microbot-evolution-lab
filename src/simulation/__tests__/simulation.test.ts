@@ -1,10 +1,18 @@
 import { MicrobotEngine } from '../MicrobotEngine';
 import { defaultConfig } from '../../utils/storage';
 import { Quadtree } from '../Quadtree';
+import { SpatialHashGrid } from '../SpatialHashGrid';
 
 export function runSimulationUnitTests(): { passed: boolean; testCount: number; summary: string } {
   let passedCount = 0;
-  const total = 4;
+  const total = 5;
+
+  // Test 0: Spatial Hash Grid Query
+  const hashGrid = new SpatialHashGrid<{ x: number; y: number }>(60);
+  hashGrid.insert({ x: 120, y: 120 });
+  hashGrid.insert({ x: 400, y: 400 });
+  const hashResults = hashGrid.query(120, 120, 30);
+  if (hashResults.length === 1) passedCount++;
 
   // Test 1: Quadtree Insertion and Spatial Query
   const quadtree = new Quadtree<{ x: number; y: number }>({ x: 0, y: 0, width: 1000, height: 1000 }, 4);
