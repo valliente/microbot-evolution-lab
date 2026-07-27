@@ -103,26 +103,29 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
 
           {(openSection === 'gen' || openSection === 'all') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {/* Mutation Rate Slider + Sparkline */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 50px', gap: 8, alignItems: 'center' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
-                    <span>Mutation Rate</span>
-                    <span style={{ color: '#E040FB', fontWeight: 700 }}>{(config.mutationRate * 100).toFixed(0)}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.01"
-                    max="0.50"
-                    step="0.01"
-                    value={config.mutationRate}
-                    onChange={(e) => onUpdateConfig({ mutationRate: parseFloat(e.target.value) })}
-                    style={{ width: '100%', height: 4 }}
-                  />
+              {/* Mutation Rate Slider */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
+                  <span>Mutation Tendency</span>
+                  <span style={{ color: '#E040FB', fontWeight: 800 }}>{(config.mutationRate * 100).toFixed(0)}%</span>
                 </div>
-                <svg viewBox="0 0 50 16" style={{ width: 50, height: 16 }}>
-                  <path d="M 0 10 L 10 4 L 20 14 L 30 6 L 40 8 L 50 2" fill="none" stroke="#E040FB" strokeWidth="1.5" />
-                </svg>
+                <input
+                  type="range"
+                  min="0.01"
+                  max="0.50"
+                  step="0.01"
+                  value={config.mutationRate}
+                  onChange={(e) => onUpdateConfig({ mutationRate: parseFloat(e.target.value) })}
+                  style={{ width: '100%', height: 4, marginTop: 4 }}
+                />
+              </div>
+
+              {/* Epigenetic Stress Induction */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
+                  <span>Epigenetic Stress Induction</span>
+                  <span style={{ color: '#00E676', fontWeight: 800 }}>ACTIVE</span>
+                </div>
               </div>
 
               {/* Battery Drain Rate Slider + Sparkline */}
