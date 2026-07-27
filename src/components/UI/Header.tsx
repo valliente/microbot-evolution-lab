@@ -183,14 +183,26 @@ export const Header: React.FC<HeaderProps> = ({
           <span>PHEROMONES</span>
         </button>
 
-        <button
-          onClick={() => spatialAudio.toggleMute()}
-          className="btn-holo btn-holo-cyan"
-          style={{ fontSize: '0.68rem', padding: '4px 8px' }}
-          title="Toggle Procedural Spatial Audio"
-        >
-          <span>AUDIO 🔊</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button
+            onClick={() => spatialAudio.toggleMute()}
+            className={spatialAudio.getMuted() ? 'btn-holo btn-holo-dark' : 'btn-holo btn-holo-cyan'}
+            style={{ fontSize: '0.68rem', padding: '4px 8px' }}
+            title="Toggle Procedural Spatial Audio"
+          >
+            <span>{spatialAudio.getMuted() ? '🔇 MUTED' : '🔊 AUDIO'}</span>
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            defaultValue={0.3}
+            onChange={(e) => spatialAudio.setVolume(parseFloat(e.target.value))}
+            style={{ width: 50, height: 3, accentColor: '#00E5FF' }}
+            title="Master Volume"
+          />
+        </div>
 
         {/* Weather Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#FF6B00' }}>
