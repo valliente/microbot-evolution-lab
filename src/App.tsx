@@ -206,6 +206,9 @@ export const App: React.FC = () => {
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
         onSpawnHazard={handleSpawnHazard}
+        onTriggerMeteor={() => engine?.triggerMeteorStrike()}
+        onTriggerVoidRift={() => engine?.triggerVoidRift()}
+        onTriggerOutbreak={() => engine?.triggerOutbreak()}
         onExportTelemetryCSV={handleExportTelemetryCSV}
         onExportConfigJSON={handleExportConfigJSON}
         onImportConfigJSON={handleImportConfigJSON}

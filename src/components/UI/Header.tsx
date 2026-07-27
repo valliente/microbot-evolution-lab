@@ -15,6 +15,9 @@ interface HeaderProps {
   onSpawnFood: () => void;
   onSpawnBots: () => void;
   onSpawnHazard: () => void;
+  onTriggerMeteor: () => void;
+  onTriggerVoidRift: () => void;
+  onTriggerOutbreak: () => void;
   onExportTelemetryCSV: () => void;
   onExportConfigJSON: () => void;
   onImportConfigJSON: (jsonConfig: Partial<SimulationConfig>) => void;
@@ -235,6 +238,18 @@ export const Header: React.FC<HeaderProps> = ({
         <button onClick={onSpawnHazard} className="btn-holo btn-holo-orange">
           <ShieldAlert style={{ width: 13, height: 13 }} />
           <span>+HAZARD</span>
+        </button>
+
+        <button onClick={onTriggerMeteor} className="btn-holo btn-holo-orange" title="Invoke Meteor Strike">
+          <span>☄️ METEOR</span>
+        </button>
+
+        <button onClick={onTriggerVoidRift} className="btn-holo btn-holo-magenta" title="Invoke Gravitational Void Rift">
+          <span>🌌 RIFT</span>
+        </button>
+
+        <button onClick={onTriggerOutbreak} className="btn-holo btn-holo-green" title="Inject Viral Outbreak">
+          <span>☣️ VIRUS</span>
         </button>
       </div>
 
