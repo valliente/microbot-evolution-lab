@@ -87,7 +87,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
           }
 
-          // 0. Render Spatial Heatmaps Overlay (Mortality, Food Density, Traffic)
+          // Render Spatial Hash Grid Outline Visualizer
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+          ctx.lineWidth = 1;
+          const cellSize = 60;
+          for (let cx = 0; cx < canvas.width; cx += cellSize) {
+            ctx.beginPath();
+            ctx.moveTo(cx, 0);
+            ctx.lineTo(cx, canvas.height);
+            ctx.stroke();
+          }
           const heatmapMode: HeatmapOverlayMode = engine.config.heatmapMode || 'OFF';
           if (heatmapMode !== 'OFF') {
             const cols = 20;
