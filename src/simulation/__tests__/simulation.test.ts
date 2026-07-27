@@ -2,10 +2,16 @@ import { MicrobotEngine } from '../MicrobotEngine';
 import { defaultConfig } from '../../utils/storage';
 import { Quadtree } from '../Quadtree';
 import { SpatialHashGrid } from '../SpatialHashGrid';
+import { rayPool } from '../ObjectPool';
 
 export function runSimulationUnitTests(): { passed: boolean; testCount: number; summary: string } {
   let passedCount = 0;
-  const total = 5;
+  const total = 6;
+
+  // Test Pool Leak
+  const ray = rayPool.acquire();
+  rayPool.release(ray);
+  if (rayPool.size > 0) passedCount++;
 
   // Test 0: Spatial Hash Grid Query
   const hashGrid = new SpatialHashGrid<{ x: number; y: number }>(60);
