@@ -9,9 +9,16 @@ export class ThreadManager {
   public initWorker(workerScriptUrl: string): void {
     if (!this.isSupported) return;
     try {
-      this.worker = new Worker(workerScriptUrl);
+      // Use relative URL resolution for Vite dev + packaged file:// compatibility
+      const resolvedUrl = new URL(workerScriptUrl, import.meta.url).href;
+      this.worker = new Worker(resolvedUrl, { type: 'module' });
     } catch (e) {
-      console.warn('Worker initialization fallback:', e);
+      // Fallback: try direct URL (non-module) for legacy bundlers
+      try {
+        this.worker = new Worker(workerScriptUrl);
+      } catch (e2) {
+        console.warn('Worker initialization fallback:', e2);
+      }
     }
   }
 
