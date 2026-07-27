@@ -169,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span style={{ color: '#8B949E', fontSize: '0.62rem' }}>({stats.seasonProgressPct || 0}%)</span>
         </div>
 
-        {/* Pheromones Toggle */}
+        {/* Pheromones & Split View Toggles */}
         <button
           onClick={() => onUpdateConfig({ showPheromoneTrails: !config.showPheromoneTrails })}
           className={config.showPheromoneTrails ? 'btn-holo btn-holo-magenta' : 'btn-holo btn-holo-dark'}
@@ -177,6 +177,15 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Sparkles style={{ width: 12, height: 12 }} />
           <span>PHEROMONES</span>
+        </button>
+
+        <button
+          onClick={() => onUpdateConfig({ isSplitView: !config.isSplitView })}
+          className={config.isSplitView ? 'btn-holo btn-holo-cyan' : 'btn-holo btn-holo-dark'}
+          style={{ fontSize: '0.68rem', padding: '4px 8px' }}
+          title="Toggle Dual-Canvas Parallel Split View"
+        >
+          <span>SPLIT VIEW 🔲</span>
         </button>
 
         {/* Weather Selector */}

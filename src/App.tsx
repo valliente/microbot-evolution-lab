@@ -229,14 +229,31 @@ export const App: React.FC = () => {
           <GeneticDriftHeatmap stats={stats} />
         </div>
 
-        {/* Right Viewport: Canvas & 3D Analytics Cube */}
+        {/* Right Viewport: Dual-Canvas Split View or Single Viewport */}
         <div className="main-viewport-col">
-          <SimulationCanvas
-            engine={engine}
-            onSelectBot={handleSelectBotById}
-            onSelectRandomBot={handleSelectRandomBot}
-            onUpdateConfig={handleUpdateConfig}
-          />
+          {config.isSplitView ? (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, height: '100%' }}>
+              <SimulationCanvas
+                engine={engine}
+                onSelectBot={handleSelectBotById}
+                onSelectRandomBot={handleSelectRandomBot}
+                onUpdateConfig={handleUpdateConfig}
+              />
+              <SimulationCanvas
+                engine={engine}
+                onSelectBot={handleSelectBotById}
+                onSelectRandomBot={handleSelectRandomBot}
+                onUpdateConfig={handleUpdateConfig}
+              />
+            </div>
+          ) : (
+            <SimulationCanvas
+              engine={engine}
+              onSelectBot={handleSelectBotById}
+              onSelectRandomBot={handleSelectRandomBot}
+              onUpdateConfig={handleUpdateConfig}
+            />
+          )}
 
           {/* Floating 3D Analytics Cube */}
           <AnalyticsCube3D stats={stats} />
