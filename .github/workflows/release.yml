@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.205
+name: Publish Release - 0.1.206
 
 on:
   push:
@@ -39,18 +39,27 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.205"
+          name: "0.1.206"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - 0.1.205 Finale Web Worker & Epigenetics Release
-            
-            ### 🌟 Key Feature Additions:
-            - **Web Worker Multi-Threading**: Offloaded Quadtree physics calculations, DNA crossover/mutation, and spatial collision distance checks to background worker threads.
-            - **Epigenetic Engine**: Starvation and hazard exposure accumulate epigenetic stress triggering adaptive trait expression.
-            - **Symbiosis & Parasitism Mechanics**: Non-predator microbots form symbiotic energy-sharing pairs; parasitic entities siphon host energy on contact.
-            - **3D Genetic Constellation Map**: Interactive rotating 3D species clustering map with one-click PNG snapshot export.
-            - **Performance Diagnostics Overlay**: Real-time FPS, entity counters, and memory object pool telemetry.
-            - **Standalone Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
+            ## 🔧 Microbot Evolution Lab - 0.1.206 Audio Fix & UI Polish Release
+
+            ### 🔇 Critical Audio Bug Fix
+            - Fixed corrupted oscillator loops causing weird pitch/buzzing noises
+            - Audio engine now starts **muted by default** — no surprise noises on launch
+            - Added master volume slider and quick mute toggle in the header toolbar
+            - Rate-limited oscillator spawns (80ms cooldown), capped at 4 concurrent, clamped to 220–880 Hz
+
+            ### ⚡ Performance Optimizations
+            - Cached background grid to offscreen canvas layer (only redraws on resize)
+            - Expanded object pools: trail points, food particles, and raycasts
+            - Quadtree depth guard prevents runaway subdivision on population spikes
+            - React.memo + useMemo on sidebar charts to eliminate redundant redraws
+
+            ### 🎨 UI Polish
+            - Sharper glassmorphism contrast with hover glow transitions
+            - Smooth accordion animations on collapsible parameter sections
+            - Fading bioluminescent movement trails with directional heading vectors
           draft: false
           prerelease: false
           files: |
