@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.204
+name: Publish Release - 0.1.205
 
 on:
   push:
@@ -39,20 +39,17 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.204"
+          name: "0.1.205"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - 0.1.204 High-Performance Engine Overhaul Release
+            ## 🔮 Microbot Evolution Lab - 0.1.205 Finale Web Worker & Epigenetics Release
             
-            ### 🌟 Key Feature Additions & Performance Overhaul:
-            - **Spatial Hash Grid Partitioning**: Dynamic $O(1)$ grid lookup system replacing brute-force spatial loops.
-            - **Zero-Allocation Object Pools**: Memory recycling architecture for food particles, raycasts, and hazard entities.
-            - **Web Worker Multi-Threading**: Offloaded DNA crossover, mutation, and spatial collision distance calculations to background threads.
-            - **Kinetic Physics Engine**: Mass inertia, velocity drag friction ($0.96$), and elastic momentum bouncing between colliding microbots.
-            - **Web Audio API Synth Engine**: Procedural soundscapes for particle feeding, collisions, and ambient energy frequency modulation.
-            - **Performance Diagnostics Overlay**: Real-time FPS counter, entity allocation stats, and thread load telemetry.
-            - **Fluid Resistance Zones**: Interactive spatial water currents and viscous hazard field rendering.
-            - **Tab Visibility State Recovery**: Automated engine state recovery preventing canvas freezes on background tab switches.
+            ### 🌟 Key Feature Additions:
+            - **Web Worker Multi-Threading**: Offloaded Quadtree physics calculations, DNA crossover/mutation, and spatial collision distance checks to background worker threads.
+            - **Epigenetic Engine**: Starvation and hazard exposure accumulate epigenetic stress triggering adaptive trait expression.
+            - **Symbiosis & Parasitism Mechanics**: Non-predator microbots form symbiotic energy-sharing pairs; parasitic entities siphon host energy on contact.
+            - **3D Genetic Constellation Map**: Interactive rotating 3D species clustering map with one-click PNG snapshot export.
+            - **Performance Diagnostics Overlay**: Real-time FPS, entity counters, and memory object pool telemetry.
             - **Standalone Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
           prerelease: false
