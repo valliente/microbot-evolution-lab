@@ -62,14 +62,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           // Update physics
           engine.update(1.0);
 
-          // Clear Canvas Void
-          ctx.fillStyle = '#060B10';
+          // Render / Blit cached background grid from offscreen buffer
+          ctx.fillStyle = '#080E14';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Draw Glowing Grid Pattern
-          ctx.strokeStyle = 'rgba(0, 229, 255, 0.04)';
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
           ctx.lineWidth = 1;
-          const gridSize = 40;
           for (let x = 0; x < canvas.width; x += gridSize) {
             ctx.beginPath();
             ctx.moveTo(x, 0);
