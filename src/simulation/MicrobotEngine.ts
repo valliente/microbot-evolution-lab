@@ -2,6 +2,7 @@ import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, Meteo
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
+import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
 
 export class MicrobotEngine {
@@ -569,12 +570,12 @@ export class MicrobotEngine {
         if (eatenFoodIds.has(food.id)) continue;
         const dist = Math.hypot(bot.x - food.x, bot.y - food.y);
         if (dist < 12) {
-          eatenFoodIds.add(food.id);
-          bot.battery = Math.min(bot.maxBattery, bot.battery + food.value);
+          if (dist < 10 + food.radius) {
+          bot.battery = Math.min(bot.maxBattery, bot.battery + food.value * bot.energyEfficiency);
           bot.energyCollected += food.value;
-
-          // Mutagen Orb Mutation Trigger
-          if (food.type === 'MUTAGEN_ORB') {
+          spatialAudio.playFeedSound(440 + (bot.hue % 300));
+          return false; // Remove food
+        }  if (food.type === 'MUTAGEN_ORB') {
             bot.speed = Math.max(1.0, Math.min(5.0, bot.speed + (Math.random() - 0.5) * 1.2));
             bot.visionRadius = Math.max(60, Math.min(260, bot.visionRadius + (Math.random() - 0.5) * 40));
             bot.energyEfficiency = Math.max(0.6, Math.min(2.5, bot.energyEfficiency + (Math.random() - 0.5) * 0.5));
