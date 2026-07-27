@@ -15,7 +15,26 @@ export class SpatialAudioSynth {
     }
   }
 
-  public playFeedSound(freq: number = 440): void {
+  public playAmbientDrone(avgEnergyPct: number = 0.5): void {
+    if (this.isMuted) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    try {
+      const freq = 120 + avgEnergyPct * 200;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.5);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.5);
+    } catch (e) {}
+  }
     if (this.isMuted) return;
     this.initCtx();
     if (!this.ctx) return;
