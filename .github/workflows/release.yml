@@ -50,7 +50,7 @@ jobs:
             - **Interactive Energy Force Fields**: Glowing force tendrils connecting bots to energy resources and hazard zones.
             - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
-          prerelease: true
+          prerelease: false
           files: |
             MicrobotEvolutionLab.exe
             MicrobotEvolutionLab.hta
