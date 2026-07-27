@@ -3,12 +3,15 @@ import { defaultConfig } from '../../utils/storage';
 import { Quadtree } from '../Quadtree';
 import { SpatialHashGrid } from '../SpatialHashGrid';
 import { rayPool } from '../ObjectPool';
+import { createWorkerMessage } from '../workers/workerProtocol';
 
 export function runSimulationUnitTests(): { passed: boolean; testCount: number; summary: string } {
   let passedCount = 0;
   const total = 6;
 
-  // Test Pool Leak
+  // Test Worker Collision Thread Message
+  const workerMsg = createWorkerMessage('BATCH_COLLISIONS', { entities: [], radius: 10 });
+  if (workerMsg.type === 'BATCH_COLLISIONS') passedCount++;
   const ray = rayPool.acquire();
   rayPool.release(ray);
   if (rayPool.size > 0) passedCount++;
