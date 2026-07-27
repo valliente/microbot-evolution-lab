@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.201
+name: Publish Release - 0.1.202
 
 on:
   push:
@@ -39,17 +39,17 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.201"
+          name: "0.1.202"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - 0.1.201 Ecosystem & AI Dynamics Engine Release
+            ## 🔮 Microbot Evolution Lab - 0.1.202 Spatial Performance & Blueprint Studio Release
             
             ### 🌟 Key Feature Additions:
-            - **Seasonal & Resource Cycles**: Dynamic seasonal transitions (Spring 🌸, Summer ☀️, Autumn 🍂, Winter ❄️) with resource spawn rate modifiers and battery drain fluctuations.
-            - **Multi-Type Energy Particles**: Nutrient Dots (Green), Super Chargers (Cyan +50 Energy), and Mutagen Orbs (Magenta +Instant Mutation).
-            - **Pheromone Trails & Sensory Pathfinding**: Decaying glowing pheromone trails deposited by microbots as they travel across the simulation canvas.
-            - **Predator & Carnivorous Microbot AI**: High-speed, high-efficiency microbots evolve aggressive predator traits (crimson red claws) to hunt and harvest energy from other microbots.
-            - **Genetic Drift Heatmap Analytics**: Visual trait distribution heatmap drawer rendering Speed, Vision, and Efficiency drift over time.
+            - **Quadtree Spatial Partitioning**: Optimized entity collision detection and sensory range queries via dynamic recursive Quadtree nodes ($O(N \log N)$ performance).
+            - **FPS Target Switcher**: Select between 30 FPS, 60 FPS, 120 FPS, or Uncapped rendering directly from the top navigation deck.
+            - **Blueprint Studio & Gene Splicing**: Interactive strain designer modal allowing users to craft custom microbot blueprints with custom speeds, vision, efficiency, and color pigments.
+            - **Spatial Heatmap Overlays**: Color-coded spatial canvas layers for **Mortality (Red)**, **Food Density (Green)**, and **Traffic Pathing (Blue)**.
+            - **Extinction Crisis Alert Banner**: Real-time canvas alert banner warning when active microbot population drops below critical survival threshold (< 15 bots).
             - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
           prerelease: false
