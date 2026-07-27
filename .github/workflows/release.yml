@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.203
+name: Publish Release - 0.1.204
 
 on:
   push:
@@ -39,20 +39,21 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.203"
+          name: "0.1.204"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - 0.1.203 Chaos Engine & Multi-Lab Telemetry Release
+            ## 🔮 Microbot Evolution Lab - 0.1.204 High-Performance Engine Overhaul Release
             
-            ### 🌟 Key Feature Additions:
-            - **Catastrophe Engine**: Invoke localized Meteor Strikes (blast vaporization) and Gravitational Void Rifts (area-of-effect pull forces).
-            - **Pathogen Transmission & Immunity**: Collision-based viral outbreak contagion mechanics with antibody immunity mutation over time.
-            - **Dual-Canvas Parallel Split Mode**: Compare population telemetry side-by-side in real-time split view.
-            - **Base64 Genetic Blueprint Exporter**: Copy encoded DNA strings to clipboard and import/clone custom microbot strains.
-            - **Automated Batch Experiment Runner**: Accelerate evolution calculations up to 10x speed to simulate $N$ generations and export summary reports.
-            - **Extinction Prediction AI**: Calculate real-time Shannon Diversity Index ($H$) with automated low-diversity alerts.
-            - **Automated Unit Test Suite**: Includes automated unit testing for spatial lookups, collision bounds, and pathogen mechanics.
-            - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
+            ### 🌟 Key Feature Additions & Performance Overhaul:
+            - **Spatial Hash Grid Partitioning**: Dynamic $O(1)$ grid lookup system replacing brute-force spatial loops.
+            - **Zero-Allocation Object Pools**: Memory recycling architecture for food particles, raycasts, and hazard entities.
+            - **Web Worker Multi-Threading**: Offloaded DNA crossover, mutation, and spatial collision distance calculations to background threads.
+            - **Kinetic Physics Engine**: Mass inertia, velocity drag friction ($0.96$), and elastic momentum bouncing between colliding microbots.
+            - **Web Audio API Synth Engine**: Procedural soundscapes for particle feeding, collisions, and ambient energy frequency modulation.
+            - **Performance Diagnostics Overlay**: Real-time FPS counter, entity allocation stats, and thread load telemetry.
+            - **Fluid Resistance Zones**: Interactive spatial water currents and viscous hazard field rendering.
+            - **Tab Visibility State Recovery**: Automated engine state recovery preventing canvas freezes on background tab switches.
+            - **Standalone Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
           prerelease: false
           files: |
