@@ -172,6 +172,24 @@ export class MicrobotEngine {
     }
   }
 
+  public spawnFoodParticle(type: ResourceType = 'NUTRIENT_DOT', x?: number, y?: number): void {
+    const fx = x ?? Math.random() * (this.width - 60) + 30;
+    const fy = y ?? Math.random() * (this.height - 60) + 30;
+    const value = type === 'SUPER_CHARGER' ? 50 : type === 'MUTAGEN_ORB' ? 30 : 25;
+    const radius = type === 'SUPER_CHARGER' ? 5 : type === 'MUTAGEN_ORB' ? 6 : 3.5;
+    const color = type === 'SUPER_CHARGER' ? '#00E5FF' : type === 'MUTAGEN_ORB' ? '#E040FB' : '#00E676';
+
+    this.energyParticles.push({
+      id: `F-${this.nextFoodIdNum++}`,
+      x: fx,
+      y: fy,
+      value,
+      radius,
+      type,
+      color
+    });
+  }
+
   public spawnFood(x?: number, y?: number, forcedType?: ResourceType): void {
     const px = x ?? Math.random() * (this.width - 80) + 40;
     const py = y ?? Math.random() * (this.height - 80) + 40;
