@@ -40,3 +40,30 @@ export const rayPool = new ObjectPool<RayParticle>(
   (r) => { r.x1 = 0; r.y1 = 0; r.x2 = 0; r.y2 = 0; r.intensity = 1.0; },
   100
 );
+
+export interface TrailPoint {
+  x: number;
+  y: number;
+}
+
+export const trailPointPool = new ObjectPool<TrailPoint>(
+  () => ({ x: 0, y: 0 }),
+  (t) => { t.x = 0; t.y = 0; },
+  200
+);
+
+export interface PooledFoodParticle {
+  id: string;
+  x: number;
+  y: number;
+  value: number;
+  radius: number;
+  type: string;
+  color: string;
+}
+
+export const foodParticlePool = new ObjectPool<PooledFoodParticle>(
+  () => ({ id: '', x: 0, y: 0, value: 25, radius: 3.5, type: 'NUTRIENT_DOT', color: '#00E676' }),
+  (f) => { f.id = ''; f.x = 0; f.y = 0; f.value = 25; f.radius = 3.5; f.type = 'NUTRIENT_DOT'; f.color = '#00E676'; },
+  150
+);
