@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun, Sparkles, Wind } from 'lucide-react';
+import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun, Sparkles, Wind, Dna } from 'lucide-react';
 import { SimulationConfig, SimulationStats, WeatherEvent, Season } from '../../simulation/types';
 import { GeneticDiversityChart } from './GeneticDiversityChart';
 
@@ -11,6 +11,7 @@ interface HeaderProps {
   onStep: () => void;
   onOpenRosterMenu: () => void;
   onOpenGuide: () => void;
+  onOpenBlueprintStudio: () => void;
   onSpawnFood: () => void;
   onSpawnBots: () => void;
   onSpawnHazard: () => void;
@@ -204,6 +205,11 @@ export const Header: React.FC<HeaderProps> = ({
         <button onClick={onExportTelemetryCSV} className="btn-holo btn-holo-green" title="Export CSV Data">
           <Download style={{ width: 12, height: 12 }} />
           <span>CSV</span>
+        </button>
+
+        <button onClick={onOpenBlueprintStudio} className="btn-holo btn-holo-cyan">
+          <Dna style={{ width: 13, height: 13 }} />
+          <span>BLUEPRINT STUDIO</span>
         </button>
 
         <button onClick={onOpenGuide} className="btn-holo btn-holo-cyan">

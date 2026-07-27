@@ -11,6 +11,7 @@ import { AnalyticsCube3D } from './components/UI/AnalyticsCube3D';
 import { GuideModal } from './components/UI/GuideModal';
 import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
+import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
+  const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
 
   // Sync telemetry state on 80ms interval
   useEffect(() => {
@@ -116,6 +118,15 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSpawnBlueprint = (blueprint: Partial<Microbot>, count: number) => {
+    if (!engine) return;
+    for (let i = 0; i < count; i++) {
+      const bot = engine.spawnMicrobot();
+      engine.overrideMicrobotGenes(bot.id, blueprint);
+    }
+    setStats(engine.getStats());
+  };
+
   const handleOverrideGenes = (id: string, traits: Partial<Microbot>) => {
     if (engine) {
       engine.overrideMicrobotGenes(id, traits);
@@ -176,6 +187,12 @@ export const App: React.FC = () => {
         onClose={() => setIsLineageOpen(false)}
       />
 
+      <BlueprintStudioModal
+        isOpen={isBlueprintOpen}
+        onSpawnBlueprint={handleSpawnBlueprint}
+        onClose={() => setIsBlueprintOpen(false)}
+      />
+
       {/* Header Bar */}
       <Header
         config={config}
@@ -185,6 +202,7 @@ export const App: React.FC = () => {
         onStep={handleStep}
         onOpenRosterMenu={() => setIsRosterOpen(true)}
         onOpenGuide={() => setIsGuideOpen(true)}
+        onOpenBlueprintStudio={() => setIsBlueprintOpen(true)}
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
         onSpawnHazard={handleSpawnHazard}
