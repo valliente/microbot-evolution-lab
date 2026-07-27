@@ -507,7 +507,32 @@ export class MicrobotEngine {
         }
       }
 
-      // Viral Contagion Transmission & Immunity
+      // Elastic momentum collision bouncing between colliding microbots
+      for (const other of this.microbots) {
+        if (other.id !== bot.id) {
+          const dx = other.x - bot.x;
+          const dy = other.y - bot.y;
+          const distSq = dx * dx + dy * dy;
+          if (distSq < 100 && distSq > 0) { // Collision within 10px radius
+            const dist = Math.sqrt(distSq);
+            const nx = dx / dist;
+            const ny = dy / dist;
+            // Separate overlapping bots
+            bot.x -= nx * 1.5;
+            bot.y -= ny * 1.5;
+            other.x += nx * 1.5;
+            other.y += ny * 1.5;
+            // Elastic velocity bounce exchange
+            const kx = bot.vx - other.vx;
+            const ky = bot.vy - other.vy;
+            const p = 2 * (nx * kx + ny * ky) / 2;
+            bot.vx -= p * nx;
+            bot.vy -= p * ny;
+            other.vx += p * nx;
+            other.vy += p * ny;
+          }
+        }
+      }
       if (bot.isInfected) {
         bot.infectionTimer = (bot.infectionTimer || 0) + speedMult;
         bot.battery -= 0.1 * speedMult; // Infection drains battery
