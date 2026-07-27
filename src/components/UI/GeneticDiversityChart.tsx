@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { AlertCircle } from 'lucide-react';
 
 interface GeneticDiversityChartProps {
@@ -6,8 +6,8 @@ interface GeneticDiversityChartProps {
   shannonIndex?: number;
 }
 
-export const GeneticDiversityChart: React.FC<GeneticDiversityChartProps> = ({ buckets, shannonIndex = 1.8 }) => {
-  const maxVal = Math.max(1, ...buckets);
+export const GeneticDiversityChart: React.FC<GeneticDiversityChartProps> = React.memo(({ buckets, shannonIndex = 1.8 }) => {
+  const maxVal = useMemo(() => Math.max(1, ...buckets), [buckets]);
   const isLowDiversity = shannonIndex < 0.8;
 
   return (
@@ -78,4 +78,4 @@ export const GeneticDiversityChart: React.FC<GeneticDiversityChartProps> = ({ bu
       </div>
     </div>
   );
-};
+});
