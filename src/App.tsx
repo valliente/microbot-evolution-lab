@@ -5,8 +5,8 @@ import { loadConfigFromStorage, saveConfigToStorage } from './utils/storage';
 import { Header } from './components/UI/Header';
 import { ControlPanel } from './components/UI/ControlPanel';
 import { InspectorPanel } from './components/UI/InspectorPanel';
-import { StatsDashboard } from './components/UI/StatsDashboard';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
+import { AnalyticsCube3D } from './components/UI/AnalyticsCube3D';
 import { GuideModal } from './components/UI/GuideModal';
 import { RosterModal } from './components/UI/RosterModal';
 
@@ -25,9 +25,8 @@ export const App: React.FC = () => {
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
-  const [isAutoDemo, setIsAutoDemo] = useState<boolean>(false);
 
-  // Sync selected bot object on every tick for real-time telemetry updates
+  // Sync telemetry state on 80ms interval
   useEffect(() => {
     const interval = setInterval(() => {
       setStats(engine.getStats());
@@ -42,18 +41,6 @@ export const App: React.FC = () => {
 
     return () => clearInterval(interval);
   }, [engine]);
-
-  // Auto Demo Mode loop: automatically switches bot selection every 5 seconds
-  useEffect(() => {
-    if (!isAutoDemo || !engine) return;
-
-    const demoInterval = setInterval(() => {
-      const bot = engine.selectRandomMicrobot();
-      setSelectedBot(bot ? { ...bot } : null);
-    }, 5000);
-
-    return () => clearInterval(demoInterval);
-  }, [isAutoDemo, engine]);
 
   const handleUpdateConfig = (newConfig: Partial<SimulationConfig>) => {
     setConfig((prev) => {
@@ -97,6 +84,13 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSelectRandomBot = () => {
+    if (engine) {
+      const bot = engine.selectRandomMicrobot();
+      setSelectedBot(bot ? { ...bot } : null);
+    }
+  };
+
   const handleSpawnFood = () => {
     if (engine) {
       engine.spawnMultipleFood(20);
@@ -107,8 +101,7 @@ export const App: React.FC = () => {
     if (engine) {
       engine.spawnMultipleBots(10);
       if (!selectedBot) {
-        const bot = engine.selectRandomMicrobot();
-        setSelectedBot(bot ? { ...bot } : null);
+        handleSelectRandomBot();
       }
     }
   };
@@ -120,16 +113,9 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleClearHazards = () => {
-    if (engine) {
-      engine.clearHazards();
-      setConfig((prev) => ({ ...prev, hazardCount: 0 }));
-    }
-  };
-
   return (
     <div className="app-container">
-      {/* Microbot Roster Selection Modal */}
+      {/* Selection Modals */}
       <RosterModal
         isOpen={isRosterOpen}
         microbots={engine.microbots}
@@ -138,13 +124,12 @@ export const App: React.FC = () => {
         onClose={() => setIsRosterOpen(false)}
       />
 
-      {/* Beginner Guide Modal */}
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
       {/* Header Bar */}
       <Header
         config={config}
-        isAutoDemo={isAutoDemo}
+        stats={stats}
         onUpdateConfig={handleUpdateConfig}
         onReset={handleReset}
         onStep={handleStep}
@@ -153,27 +138,26 @@ export const App: React.FC = () => {
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
         onSpawnHazard={handleSpawnHazard}
-        onClearHazards={handleClearHazards}
-        onToggleAutoDemo={() => setIsAutoDemo((prev) => !prev)}
       />
 
       {/* Main Workspace Layout */}
-      <main className="main-workspace">
-        {/* Left Column: Controls & Inspector */}
-        <div className="left-sidebar">
-          <InspectorPanel bot={selectedBot} onClose={() => handleSelectBotById(null)} />
+      <main className="workspace-grid">
+        {/* Left Column: Data Hub & Parameters */}
+        <div className="sidebar-col">
+          <InspectorPanel bot={selectedBot} stats={stats} onClose={() => handleSelectBotById(null)} />
           <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
         </div>
 
-        {/* Right Column: Canvas Viewport & Statistics */}
-        <div className="right-viewport">
+        {/* Right Viewport: Canvas & 3D Analytics Cube */}
+        <div className="main-viewport-col">
           <SimulationCanvas
             engine={engine}
             onSelectBot={handleSelectBotById}
-            onSelectRandomBot={() => setIsRosterOpen(true)}
+            onSelectRandomBot={handleSelectRandomBot}
           />
 
-          <StatsDashboard stats={stats} maxPopulation={config.maxPopulation} />
+          {/* Floating 3D Analytics Cube */}
+          <AnalyticsCube3D stats={stats} />
         </div>
       </main>
     </div>

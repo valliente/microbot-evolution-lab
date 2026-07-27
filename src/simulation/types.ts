@@ -28,6 +28,7 @@ export interface Microbot {
   behaviorState: BehaviorState;
   energyCollected: number;
   trail: Vector2D[];
+  batteryHistory: number[]; // Ring buffer for selected bot battery trend
 }
 
 export interface EnergyParticle {
@@ -59,6 +60,7 @@ export interface SimulationConfig {
   showSensoryRings: boolean;
   showMovementTrails: boolean;
   showTargetVectors: boolean;
+  showEnergyForceLines: boolean;
 }
 
 export interface SimulationStats {
@@ -70,6 +72,13 @@ export interface SimulationStats {
   avgEfficiency: number;
   totalDeaths: number;
   totalBirths: number;
+  populationHistory: number[];
+  birthHistory: number[];
+  deathHistory: number[];
+  speedHistogram: number[];
+  visionHistogram: number[];
+  efficiencyHistogram: number[];
+  diversityBuckets: number[];
   historyTimeline: {
     time: number;
     population: number;

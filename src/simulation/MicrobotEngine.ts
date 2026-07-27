@@ -17,8 +17,15 @@ export class MicrobotEngine {
   public totalDeaths: number = 0;
   public generationCount: number = 1;
   public frameCount: number = 0;
+
+  // Ring buffers for telemetry analytics
+  public populationHistory: number[] = new Array(30).fill(45);
+  public birthHistory: number[] = new Array(30).fill(0);
+  public deathHistory: number[] = new Array(30).fill(0);
   public historyTimeline: SimulationStats['historyTimeline'] = [];
 
+  private recentBirths: number = 0;
+  private recentDeaths: number = 0;
   private nextBotIdNum: number = 1;
   private nextFoodIdNum: number = 1;
 
@@ -42,6 +49,12 @@ export class MicrobotEngine {
     this.frameCount = 0;
     this.nextBotIdNum = 1;
     this.nextFoodIdNum = 1;
+    this.recentBirths = 0;
+    this.recentDeaths = 0;
+
+    this.populationHistory = new Array(30).fill(this.config.startPopulation);
+    this.birthHistory = new Array(30).fill(0);
+    this.deathHistory = new Array(30).fill(0);
     this.historyTimeline = [];
 
     // Spawn initial population
@@ -124,11 +137,13 @@ export class MicrobotEngine {
       age: 0,
       behaviorState: 'WANDERING',
       energyCollected: 0,
-      trail: []
+      trail: [],
+      batteryHistory: new Array(30).fill(maxBattery)
     };
 
     this.microbots.push(bot);
     this.totalBirths++;
+    this.recentBirths++;
     return bot;
   }
 
@@ -257,6 +272,15 @@ export class MicrobotEngine {
       const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * speedMult;
       bot.battery -= netDrain;
 
+      // Update individual battery history ring buffer every 10 frames
+      if (this.frameCount % 10 === 0) {
+        if (!bot.batteryHistory) bot.batteryHistory = [];
+        bot.batteryHistory.push(Math.max(0, bot.battery));
+        if (bot.batteryHistory.length > 30) {
+          bot.batteryHistory.shift();
+        }
+      }
+
       // Hazard Damage
       for (const hazard of this.hazards) {
         const dist = Math.hypot(bot.x - hazard.x, bot.y - hazard.y);
@@ -269,6 +293,7 @@ export class MicrobotEngine {
       if (bot.battery <= 0) {
         deadBotIds.add(bot.id);
         this.totalDeaths++;
+        this.recentDeaths++;
         continue;
       }
 
@@ -307,10 +332,29 @@ export class MicrobotEngine {
       this.spawnMicrobot();
     }
 
+    // Update global telemetry buffers every 30 frames (~0.5s)
+    if (this.frameCount % 30 === 0) {
+      this.updateTelemetryBuffers();
+    }
+
     // Record stats timeline snapshot every 60 frames (~1 sec)
     if (this.frameCount % 60 === 0) {
       this.recordHistorySnapshot();
     }
+  }
+
+  private updateTelemetryBuffers(): void {
+    this.populationHistory.push(this.microbots.length);
+    if (this.populationHistory.length > 30) this.populationHistory.shift();
+
+    this.birthHistory.push(this.recentBirths);
+    if (this.birthHistory.length > 30) this.birthHistory.shift();
+
+    this.deathHistory.push(this.recentDeaths);
+    if (this.deathHistory.length > 30) this.deathHistory.shift();
+
+    this.recentBirths = 0;
+    this.recentDeaths = 0;
   }
 
   private recordHistorySnapshot(): void {
@@ -332,10 +376,32 @@ export class MicrobotEngine {
     let sumVision = 0;
     let sumEff = 0;
 
+    // Calculate Trait Histograms (10 buckets each)
+    const speedHistogram = new Array(10).fill(0);
+    const visionHistogram = new Array(10).fill(0);
+    const efficiencyHistogram = new Array(10).fill(0);
+    const diversityBuckets = new Array(12).fill(0);
+
     for (const b of this.microbots) {
       sumSpeed += b.speed;
       sumVision += b.visionRadius;
       sumEff += b.energyEfficiency;
+
+      // Speed bucket (1.0 to 5.0)
+      const sIdx = Math.max(0, Math.min(9, Math.floor(((b.speed - 1.0) / 4.0) * 10)));
+      speedHistogram[sIdx]++;
+
+      // Vision bucket (60 to 260)
+      const vIdx = Math.max(0, Math.min(9, Math.floor(((b.visionRadius - 60) / 200) * 10)));
+      visionHistogram[vIdx]++;
+
+      // Efficiency bucket (0.6 to 2.5)
+      const eIdx = Math.max(0, Math.min(9, Math.floor(((b.energyEfficiency - 0.6) / 1.9) * 10)));
+      efficiencyHistogram[eIdx]++;
+
+      // Hue diversity bucket (0 to 360 degrees)
+      const dIdx = Math.max(0, Math.min(11, Math.floor((b.hue / 360) * 12)));
+      diversityBuckets[dIdx]++;
     }
 
     return {
@@ -347,6 +413,13 @@ export class MicrobotEngine {
       avgEfficiency: pop > 0 ? sumEff / pop : 0,
       totalBirths: this.totalBirths,
       totalDeaths: this.totalDeaths,
+      populationHistory: [...this.populationHistory],
+      birthHistory: [...this.birthHistory],
+      deathHistory: [...this.deathHistory],
+      speedHistogram,
+      visionHistogram,
+      efficiencyHistogram,
+      diversityBuckets,
       historyTimeline: this.historyTimeline
     };
   }

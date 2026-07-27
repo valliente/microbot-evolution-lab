@@ -14,7 +14,8 @@ export const defaultConfig: SimulationConfig = {
   isPaused: false,
   showSensoryRings: true,
   showMovementTrails: true,
-  showTargetVectors: true
+  showTargetVectors: true,
+  showEnergyForceLines: true
 };
 
 export function loadConfigFromStorage(): SimulationConfig {

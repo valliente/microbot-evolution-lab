@@ -1,0 +1,61 @@
+name: Publish Release - Beta 0.1.1
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Web Production & Standalone Bundles
+        run: |
+          npm run build
+          npm run build:package
+          npm run build:exe
+
+      - name: Create Portable Zip Package
+        run: |
+          Compress-Archive -Path "PLAY.bat", "MicrobotEvolutionLab.hta", "dist-standalone\index.html", "README.md", "LICENSE" -DestinationPath "Microbot-Evolution-Lab-Windows.zip" -Force
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "Beta 0.1.1"
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## 🔮 Microbot Evolution Lab - Beta 0.1.1 Release
+            
+            ### 🌟 Key Highlights & Upgrades:
+            - **3D Holographic Anti-Gravity Interface**: Floating glassmorphism panels, dark slate void viewport, and glowing cyan/orange/magenta accents.
+            - **Real-Time Telemetry Engine**: Live battery trends, speed/vision/efficiency histograms, and 3D Analytics Cube for world stats.
+            - **Interactive Energy Force Fields**: Glowing force tendrils connecting bots to energy resources and hazard zones.
+            - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
+          draft: false
+          prerelease: true
+          files: |
+            MicrobotEvolutionLab.exe
+            MicrobotEvolutionLab.hta
+            PLAY.bat
+            Microbot-Evolution-Lab-Windows.zip
+            dist-standalone/index.html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
