@@ -493,9 +493,9 @@ export class MicrobotEngine {
       bot.x = Math.max(15, Math.min(this.width - 15, bot.x));
       bot.y = Math.max(15, Math.min(this.height - 15, bot.y));
 
-      // Battery Drain
-      const baseDrain = 0.015 + 0.012 * (bot.speed * bot.speed);
-      const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
+      // Dynamic metabolism battery drain scaled by speed and mass
+      const speedCost = Math.pow(bot.speed, 1.3) * (bot.mass || 1.0);
+      const netDrain = (0.08 * (speedCost / (bot.energyEfficiency || 1.0))) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
       bot.battery -= netDrain;
 
       // Battery history ring buffer
