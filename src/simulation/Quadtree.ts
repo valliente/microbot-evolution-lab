@@ -14,6 +14,8 @@ export interface Circle {
 export class Quadtree<T extends { x: number; y: number }> {
   public boundary: Rectangle;
   public capacity: number;
+  public maxDepth: number;
+  public depth: number;
   public points: T[] = [];
   public divided: boolean = false;
 
@@ -22,20 +24,23 @@ export class Quadtree<T extends { x: number; y: number }> {
   public southwest: Quadtree<T> | null = null;
   public southeast: Quadtree<T> | null = null;
 
-  constructor(boundary: Rectangle, capacity: number = 8) {
+  constructor(boundary: Rectangle, capacity: number = 12, maxDepth: number = 8, depth: number = 0) {
     this.boundary = boundary;
     this.capacity = capacity;
+    this.maxDepth = maxDepth;
+    this.depth = depth;
   }
 
   private subdivide(): void {
     const { x, y, width, height } = this.boundary;
     const w2 = width / 2;
     const h2 = height / 2;
+    const nd = this.depth + 1;
 
-    this.northwest = new Quadtree<T>({ x, y, width: w2, height: h2 }, this.capacity);
-    this.northeast = new Quadtree<T>({ x: x + w2, y, width: w2, height: h2 }, this.capacity);
-    this.southwest = new Quadtree<T>({ x, y: y + h2, width: w2, height: h2 }, this.capacity);
-    this.southeast = new Quadtree<T>({ x: x + w2, y: y + h2, width: w2, height: h2 }, this.capacity);
+    this.northwest = new Quadtree<T>({ x, y, width: w2, height: h2 }, this.capacity, this.maxDepth, nd);
+    this.northeast = new Quadtree<T>({ x: x + w2, y, width: w2, height: h2 }, this.capacity, this.maxDepth, nd);
+    this.southwest = new Quadtree<T>({ x, y: y + h2, width: w2, height: h2 }, this.capacity, this.maxDepth, nd);
+    this.southeast = new Quadtree<T>({ x: x + w2, y: y + h2, width: w2, height: h2 }, this.capacity, this.maxDepth, nd);
 
     this.divided = true;
   }
@@ -46,6 +51,12 @@ export class Quadtree<T extends { x: number; y: number }> {
     }
 
     if (this.points.length < this.capacity && !this.divided) {
+      this.points.push(point);
+      return true;
+    }
+
+    // Depth guard: stop subdividing past max depth to prevent runaway allocation
+    if (this.depth >= this.maxDepth) {
       this.points.push(point);
       return true;
     }
