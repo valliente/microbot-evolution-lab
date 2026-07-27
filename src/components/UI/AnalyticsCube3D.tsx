@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { SimulationStats } from '../../simulation/types';
 
 interface AnalyticsCube3DProps {
