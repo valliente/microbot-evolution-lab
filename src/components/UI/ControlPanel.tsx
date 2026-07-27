@@ -120,12 +120,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
                 />
               </div>
 
-              {/* Epigenetic Stress Induction */}
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
-                  <span>Epigenetic Stress Induction</span>
-                  <span style={{ color: '#00E676', fontWeight: 800 }}>ACTIVE</span>
-                </div>
+              {/* Symbiosis & Parasitism Mechanics */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
+                <span>Symbiosis & Parasitism</span>
+                <span style={{ color: '#00E5FF', fontWeight: 800 }}>ENABLED</span>
               </div>
 
               {/* Battery Drain Rate Slider + Sparkline */}
