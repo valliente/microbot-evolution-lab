@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun } from 'lucide-react';
-import { SimulationConfig, SimulationStats, WeatherEvent } from '../../simulation/types';
+import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun, Sparkles, Wind } from 'lucide-react';
+import { SimulationConfig, SimulationStats, WeatherEvent, Season } from '../../simulation/types';
 import { GeneticDiversityChart } from './GeneticDiversityChart';
 
 interface HeaderProps {
@@ -49,6 +49,13 @@ export const Header: React.FC<HeaderProps> = ({
       }
     };
     reader.readAsText(file);
+  };
+
+  const seasonIcons: Record<Season, string> = {
+    SPRING: '🌸 Spring',
+    SUMMER: '☀️ Summer',
+    AUTUMN: '🍂 Autumn',
+    WINTER: '❄️ Winter'
   };
 
   return (
@@ -101,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
           <span>RESET</span>
         </button>
 
-        {/* Horizontal Speed Scrubber Slider */}
+        {/* Speed Slider */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -125,8 +132,34 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Weather & Preset Shortcut Deck */}
+      {/* Seasons & Pheromones Control Deck */}
       <div className="glass-deck-pill">
+        {/* Season Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#00E676' }}>
+          <Wind style={{ width: 12, height: 12 }} />
+          <select
+            value={config.currentSeason || 'SPRING'}
+            onChange={(e) => onUpdateConfig({ currentSeason: e.target.value as Season })}
+            style={{ background: '#080E14', color: '#00E676', fontWeight: 800, border: '1px solid rgba(0, 230, 118, 0.4)', borderRadius: 6, padding: '3px 6px', fontSize: '0.68rem', cursor: 'pointer' }}
+          >
+            <option value="SPRING">{seasonIcons.SPRING}</option>
+            <option value="SUMMER">{seasonIcons.SUMMER}</option>
+            <option value="AUTUMN">{seasonIcons.AUTUMN}</option>
+            <option value="WINTER">{seasonIcons.WINTER}</option>
+          </select>
+          <span style={{ color: '#8B949E', fontSize: '0.62rem' }}>({stats.seasonProgressPct || 0}%)</span>
+        </div>
+
+        {/* Pheromones Toggle */}
+        <button
+          onClick={() => onUpdateConfig({ showPheromoneTrails: !config.showPheromoneTrails })}
+          className={config.showPheromoneTrails ? 'btn-holo btn-holo-magenta' : 'btn-holo btn-holo-dark'}
+          style={{ fontSize: '0.68rem', padding: '4px 8px' }}
+        >
+          <Sparkles style={{ width: 12, height: 12 }} />
+          <span>PHEROMONES</span>
+        </button>
+
         {/* Weather Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#FF6B00' }}>
           <Sun style={{ width: 12, height: 12 }} />
@@ -141,35 +174,31 @@ export const Header: React.FC<HeaderProps> = ({
             <option value="RESOURCE_BLOOM">🌸 Resource Bloom (Food)</option>
           </select>
         </div>
-
-        {/* JSON & CSV Telemetry Exports */}
-        <button onClick={onExportConfigJSON} className="btn-holo btn-holo-cyan" title="Save parameter config to .json">
-          <Download style={{ width: 12, height: 12 }} />
-          <span>PRESET</span>
-        </button>
-
-        <button onClick={() => fileInputRef.current?.click()} className="btn-holo btn-holo-cyan" title="Load preset config from .json">
-          <Upload style={{ width: 12, height: 12 }} />
-          <span>LOAD</span>
-        </button>
-        <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} style={{ display: 'none' }} />
-
-        <button onClick={onExportTelemetryCSV} className="btn-holo btn-holo-green" title="Export population history to timestamped .csv">
-          <Download style={{ width: 12, height: 12 }} />
-          <span>CSV DATA</span>
-        </button>
       </div>
 
       {/* Menu Shortcuts Deck */}
       <div className="glass-deck-pill">
+        <button onClick={onExportConfigJSON} className="btn-holo btn-holo-cyan" title="Save preset .json">
+          <Download style={{ width: 12, height: 12 }} />
+        </button>
+
+        <button onClick={() => fileInputRef.current?.click()} className="btn-holo btn-holo-cyan" title="Load preset .json">
+          <Upload style={{ width: 12, height: 12 }} />
+        </button>
+        <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} style={{ display: 'none' }} />
+
+        <button onClick={onExportTelemetryCSV} className="btn-holo btn-holo-green" title="Export CSV Data">
+          <Download style={{ width: 12, height: 12 }} />
+          <span>CSV</span>
+        </button>
+
         <button onClick={onOpenGuide} className="btn-holo btn-holo-cyan">
           <HelpCircle style={{ width: 13, height: 13 }} />
-          <span>GUIDE</span>
         </button>
 
         <button onClick={onOpenRosterMenu} className="btn-holo btn-holo-magenta">
           <Target style={{ width: 13, height: 13 }} />
-          <span>SELECT BOT MENU</span>
+          <span>ROSTER</span>
         </button>
 
         <button onClick={onSpawnFood} className="btn-holo btn-holo-green">

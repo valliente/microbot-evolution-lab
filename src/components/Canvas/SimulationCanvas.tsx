@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
 import { BrushMode } from '../../simulation/types';
-import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles } from 'lucide-react';
+import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
@@ -78,7 +78,19 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
           }
 
-          // 0. Draw Custom Speed Fields (Cyan Translucent Fields)
+          // 0. Draw Decaying Pheromone Trails
+          if (engine.config.showPheromoneTrails) {
+            for (const p of engine.pheromones) {
+              ctx.fillStyle = p.color;
+              ctx.globalAlpha = p.intensity * 0.3;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+              ctx.fill();
+            }
+            ctx.globalAlpha = 1.0;
+          }
+
+          // 1. Draw Speed Fields
           for (const field of engine.speedFields) {
             const grad = ctx.createRadialGradient(field.x, field.y, 5, field.x, field.y, field.radius);
             grad.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
@@ -95,12 +107,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
           }
 
-          // 1. Draw Hazard Zones (Orange Wireframe Mesh & Glow)
+          // 2. Draw Hazard Zones
           for (const hazard of engine.hazards) {
             const pulse = Math.sin(Date.now() / 350) * 4;
             const r = Math.max(10, hazard.radius + pulse);
 
-            // Outer Radial Glow
             const grad = ctx.createRadialGradient(hazard.x, hazard.y, 5, hazard.x, hazard.y, r);
             grad.addColorStop(0, 'rgba(255, 107, 0, 0.35)');
             grad.addColorStop(0.7, 'rgba(255, 107, 0, 0.15)');
@@ -111,7 +122,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.arc(hazard.x, hazard.y, r, 0, Math.PI * 2);
             ctx.fill();
 
-            // Hazard Mesh Wireframe Circles
             ctx.strokeStyle = 'rgba(255, 107, 0, 0.6)';
             ctx.lineWidth = 1.5;
             ctx.setLineDash([6, 6]);
@@ -120,35 +130,37 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Inner Wireframe Cross
-            ctx.strokeStyle = 'rgba(255, 107, 0, 0.25)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(hazard.x - hazard.radius * 0.7, hazard.y);
-            ctx.lineTo(hazard.x + hazard.radius * 0.7, hazard.y);
-            ctx.moveTo(hazard.x, hazard.y - hazard.radius * 0.7);
-            ctx.lineTo(hazard.x, hazard.y + hazard.radius * 0.7);
-            ctx.stroke();
-
-            // Label
             ctx.font = "800 9px 'JetBrains Mono', monospace";
             ctx.fillStyle = 'rgba(255, 107, 0, 0.8)';
             ctx.textAlign = 'center';
             ctx.fillText(hazard.id, hazard.x, hazard.y + 3);
           }
 
-          // 2. Draw Energy Particles (Glowing Bio-Green Dots)
+          // 3. Draw Multi-Type Energy Particles
           for (const food of engine.energyParticles) {
-            ctx.shadowColor = '#00E676';
+            ctx.shadowColor = food.color;
             ctx.shadowBlur = 10;
-            ctx.fillStyle = '#00E676';
+            ctx.fillStyle = food.color;
             ctx.beginPath();
             ctx.arc(food.x, food.y, food.radius, 0, Math.PI * 2);
             ctx.fill();
+
+            if (food.type === 'SUPER_CHARGER') {
+              ctx.strokeStyle = '#ffffff';
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            } else if (food.type === 'MUTAGEN_ORB') {
+              const pulseR = food.radius + Math.sin(Date.now() / 150) * 2;
+              ctx.strokeStyle = '#E040FB';
+              ctx.lineWidth = 1.2;
+              ctx.beginPath();
+              ctx.arc(food.x, food.y, pulseR, 0, Math.PI * 2);
+              ctx.stroke();
+            }
             ctx.shadowBlur = 0;
           }
 
-          // 3. Draw Energy Force Lines
+          // 4. Draw Energy Force Lines
           if (engine.config.showEnergyForceLines) {
             ctx.lineWidth = 1;
             for (const bot of engine.microbots) {
@@ -157,7 +169,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                 const dist = Math.hypot(bot.x - food.x, bot.y - food.y);
                 if (dist <= bot.visionRadius) {
                   const alpha = (1 - dist / bot.visionRadius) * 0.45;
-                  ctx.strokeStyle = `rgba(0, 230, 118, ${alpha})`;
+                  ctx.strokeStyle = food.type === 'MUTAGEN_ORB' ? `rgba(224, 64, 251, ${alpha})` : food.type === 'SUPER_CHARGER' ? `rgba(0, 229, 255, ${alpha})` : `rgba(0, 230, 118, ${alpha})`;
                   ctx.beginPath();
                   ctx.moveTo(bot.x, bot.y);
                   ctx.quadraticCurveTo(
@@ -172,13 +184,13 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             }
           }
 
-          // 4. Draw Microbots & Sensory Raycasting Lines
+          // 5. Draw Microbots & Sensory Raycast Lines
           const selectedBot = engine.getSelectedMicrobot();
 
           for (const bot of engine.microbots) {
             const isSelected = selectedBot && selectedBot.id === bot.id;
 
-            // Sensory Raycasting Lines (LIDAR / Radar Projections)
+            // Sensory Raycasting Lines
             if (engine.config.showSensoryRaycasts || isSelected) {
               const numRays = 8;
               const angleSpread = Math.PI * 0.8;
@@ -186,8 +198,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
               for (let i = 0; i < numRays; i++) {
                 const rayAngle = startAngle + (i / (numRays - 1)) * angleSpread;
-
-                // Check ray collision with nearby food / hazards
                 let rayColor = 'rgba(0, 229, 255, 0.15)';
                 let endDist = bot.visionRadius;
 
@@ -196,7 +206,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                   if (dist < bot.visionRadius) {
                     const foodAngle = Math.atan2(food.y - bot.y, food.x - bot.x);
                     if (Math.abs(foodAngle - rayAngle) < 0.25) {
-                      rayColor = 'rgba(0, 230, 118, 0.6)';
+                      rayColor = food.color;
                       endDist = Math.min(endDist, dist);
                     }
                   }
@@ -241,14 +251,14 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
             // Sensory Vision Ring
             if (isSelected || engine.config.showSensoryRings) {
-              ctx.strokeStyle = isSelected ? '#00E5FF' : 'rgba(0, 229, 255, 0.12)';
+              ctx.strokeStyle = isSelected ? (bot.isPredator ? '#f43f5e' : '#00E5FF') : 'rgba(0, 229, 255, 0.12)';
               ctx.lineWidth = isSelected ? 1.5 : 0.8;
               ctx.beginPath();
               ctx.arc(bot.x, bot.y, bot.visionRadius, 0, Math.PI * 2);
               ctx.stroke();
             }
 
-            // Triangular Vector Body
+            // Triangular Vector Body (Predators get red glowing claws)
             ctx.save();
             ctx.translate(bot.x, bot.y);
             ctx.rotate(bot.heading);
@@ -264,6 +274,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.lineTo(-8, 6);
             ctx.closePath();
             ctx.fill();
+
+            // Predator Claws
+            if (bot.isPredator) {
+              ctx.strokeStyle = '#f43f5e';
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(8, -4); ctx.lineTo(14, -7);
+              ctx.moveTo(8, 4); ctx.lineTo(14, 7);
+              ctx.stroke();
+            }
 
             // Headlight Cone
             ctx.fillStyle = '#ffffff';
@@ -291,24 +311,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               const reticlePulse = Math.sin(Date.now() / 200) * 3;
               const reticleR = 18 + reticlePulse;
 
-              ctx.strokeStyle = '#00E5FF';
+              ctx.strokeStyle = bot.isPredator ? '#f43f5e' : '#00E5FF';
               ctx.lineWidth = 2;
               ctx.beginPath();
               ctx.arc(bot.x, bot.y, reticleR, 0, Math.PI * 2);
               ctx.stroke();
 
-              ctx.beginPath();
-              ctx.moveTo(bot.x - reticleR - 4, bot.y); ctx.lineTo(bot.x - reticleR + 2, bot.y);
-              ctx.moveTo(bot.x + reticleR + 4, bot.y); ctx.lineTo(bot.x + reticleR - 2, bot.y);
-              ctx.moveTo(bot.x, bot.y - reticleR - 4); ctx.lineTo(bot.x, bot.y - reticleR + 2);
-              ctx.moveTo(bot.x, bot.y + reticleR + 4); ctx.lineTo(bot.x, bot.y + reticleR - 2);
-              ctx.stroke();
-
-              // ID Tag & Behavior Cues
-              const cueLabel = bot.behaviorState === 'SEEKING_ENERGY' ? 'Hunting Food 🍏' : bot.behaviorState === 'EVADING_HAZARD' ? 'Fleeing Hazard 💥' : bot.behaviorState === 'REPRODUCING' ? 'Seeking Mate 🧬' : 'Wandering 🧭';
+              const cueLabel = bot.behaviorState === 'HUNTING_PREY' ? 'Predator Hunting ⚔️' : bot.behaviorState === 'SEEKING_ENERGY' ? 'Hunting Food 🍏' : bot.behaviorState === 'EVADING_HAZARD' ? 'Fleeing Hazard 💥' : bot.behaviorState === 'REPRODUCING' ? 'Seeking Mate 🧬' : 'Wandering 🧭';
 
               ctx.font = "800 11px 'JetBrains Mono', monospace";
-              ctx.fillStyle = '#00E5FF';
+              ctx.fillStyle = bot.isPredator ? '#f43f5e' : '#00E5FF';
               ctx.textAlign = 'center';
               ctx.fillText(`★ ${bot.id} (${cueLabel})`, bot.x, bot.y - 22);
             }
@@ -342,7 +354,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     } else if (mode === 'PAINT_SPEED_FIELD') {
       engine.spawnSpeedField(clickX, clickY);
     } else {
-      // Default: Check bot click selection or spawn 5 food dots
       let clickedBot = null;
       let minDist = 28;
 
@@ -432,6 +443,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         >
           <Zap style={{ width: 10, height: 10 }} /> FOOD
         </button>
+
+        <button
+          onClick={() => engine.spawnFood(undefined, undefined, 'MUTAGEN_ORB')}
+          className="btn-holo btn-holo-magenta"
+          style={{ padding: '3px 6px', fontSize: '0.65rem' }}
+          title="Spawn Mutagen Orb"
+        >
+          <Dna style={{ width: 10, height: 10 }} /> MUTAGEN
+        </button>
+
         <button
           onClick={() => onUpdateConfig({ brushMode: currentBrush === 'PAINT_HAZARD' ? 'NONE' : 'PAINT_HAZARD' })}
           className={currentBrush === 'PAINT_HAZARD' ? 'btn-holo btn-holo-orange' : 'btn-holo btn-holo-dark'}

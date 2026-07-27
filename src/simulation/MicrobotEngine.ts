@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, SimulationConfig, SimulationStats } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { calculateSteering } from './steering';
 
@@ -11,6 +11,7 @@ export class MicrobotEngine {
   public energyParticles: EnergyParticle[] = [];
   public hazards: HazardZone[] = [];
   public speedFields: SpeedField[] = [];
+  public pheromones: PheromonePoint[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -18,6 +19,8 @@ export class MicrobotEngine {
   public totalDeaths: number = 0;
   public generationCount: number = 1;
   public frameCount: number = 0;
+  public seasonFrameCount: number = 0;
+  public readonly SEASON_DURATION_FRAMES = 2700; // ~45 seconds per season at 60 FPS
 
   // Ring buffers for telemetry analytics
   public populationHistory: number[] = new Array(30).fill(45);
@@ -45,11 +48,13 @@ export class MicrobotEngine {
     this.energyParticles = [];
     this.hazards = [];
     this.speedFields = [];
+    this.pheromones = [];
     this.selectedMicrobotId = null;
     this.totalBirths = 0;
     this.totalDeaths = 0;
     this.generationCount = 1;
     this.frameCount = 0;
+    this.seasonFrameCount = 0;
     this.nextBotIdNum = 1;
     this.nextFoodIdNum = 1;
     this.nextFieldIdNum = 1;
@@ -108,8 +113,9 @@ export class MicrobotEngine {
         this.generationCount = generation;
       }
 
-      // Mutate traits
-      const mut = this.config.mutationRate;
+      // Mutate traits (Autumn increases mutation rate by 1.5x)
+      const seasonMutMult = this.config.currentSeason === 'AUTUMN' ? 1.5 : 1.0;
+      const mut = this.config.mutationRate * seasonMutMult;
       speed = Math.max(1.0, Math.min(5.0, parent.speed + (Math.random() - 0.5) * mut * 1.5));
       turnRate = Math.max(0.04, Math.min(0.3, parent.turnRate + (Math.random() - 0.5) * mut * 0.1));
       visionRadius = Math.max(60, Math.min(260, parent.visionRadius + (Math.random() - 0.5) * mut * 50));
@@ -117,7 +123,8 @@ export class MicrobotEngine {
       hue = (parent.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360;
     }
 
-    const color = `hsl(${Math.round(hue)}, 95%, 55%)`;
+    const isPredator = speed > 3.4 && energyEfficiency > 1.4;
+    const color = isPredator ? '#f43f5e' : `hsl(${Math.round(hue)}, 95%, 55%)`;
 
     const bot: Microbot = {
       id,
@@ -141,6 +148,7 @@ export class MicrobotEngine {
       age: 0,
       behaviorState: 'WANDERING',
       energyCollected: 0,
+      isPredator,
       trail: [],
       batteryHistory: new Array(30).fill(maxBattery)
     };
@@ -157,15 +165,40 @@ export class MicrobotEngine {
     }
   }
 
-  public spawnFood(x?: number, y?: number): void {
+  public spawnFood(x?: number, y?: number, forcedType?: ResourceType): void {
     const px = x ?? Math.random() * (this.width - 80) + 40;
     const py = y ?? Math.random() * (this.height - 80) + 40;
+
+    let type: ResourceType = forcedType || 'NUTRIENT_DOT';
+    if (!forcedType) {
+      const rand = Math.random();
+      if (rand < 0.78) type = 'NUTRIENT_DOT';
+      else if (rand < 0.90) type = 'SUPER_CHARGER';
+      else type = 'MUTAGEN_ORB';
+    }
+
+    let value = 25;
+    let radius = 4;
+    let color = '#00E676';
+
+    if (type === 'SUPER_CHARGER') {
+      value = 50;
+      radius = 6;
+      color = '#00E5FF';
+    } else if (type === 'MUTAGEN_ORB') {
+      value = 30;
+      radius = 5;
+      color = '#E040FB';
+    }
+
     const particle: EnergyParticle = {
       id: `EP-${this.nextFoodIdNum++}`,
       x: px,
       y: py,
-      value: 25,
-      radius: 4
+      value,
+      radius,
+      type,
+      color
     };
     this.energyParticles.push(particle);
   }
@@ -228,6 +261,8 @@ export class MicrobotEngine {
         bot.hue = traits.hue;
         bot.color = `hsl(${Math.round(traits.hue)}, 95%, 55%)`;
       }
+      bot.isPredator = bot.speed > 3.4 && bot.energyEfficiency > 1.4;
+      if (bot.isPredator) bot.color = '#f43f5e';
     }
   }
 
@@ -263,16 +298,43 @@ export class MicrobotEngine {
     this.frameCount++;
     const speedMult = this.config.simSpeed * dt;
 
-    // Handle Weather Events Mechanics
+    // Automatic Season Rotation Engine
+    if (this.config.autoSeasonCycle) {
+      this.seasonFrameCount += speedMult;
+      if (this.seasonFrameCount >= this.SEASON_DURATION_FRAMES) {
+        this.seasonFrameCount = 0;
+        const seasons: Season[] = ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'];
+        const currentIdx = seasons.indexOf(this.config.currentSeason);
+        const nextSeason = seasons[(currentIdx + 1) % seasons.length];
+        this.config.currentSeason = nextSeason;
+      }
+    }
+
+    // Seasonal Modifiers
+    let seasonSpawnMult = 1.0;
+    let seasonDrainMult = 1.0;
+    let seasonSpeedMult = 1.0;
+
+    if (this.config.currentSeason === 'SPRING') {
+      seasonSpawnMult = 1.5; // +50% food spawn
+    } else if (this.config.currentSeason === 'SUMMER') {
+      seasonSpeedMult = 1.15; // Solar speed boost
+    } else if (this.config.currentSeason === 'AUTUMN') {
+      seasonSpawnMult = 0.75;
+    } else if (this.config.currentSeason === 'WINTER') {
+      seasonSpawnMult = 0.4; // Harsh winter food drop
+      seasonDrainMult = 1.4; // Harsh winter battery drain boost
+    }
+
+    // Weather Events Modifiers
     let weatherBatteryDrainMult = 1.0;
     if (this.config.weatherEvent === 'SOLAR_FLARE') {
-      weatherBatteryDrainMult = 2.5; // Solar Flare increases battery drain
+      weatherBatteryDrainMult = 2.5;
     } else if (this.config.weatherEvent === 'RESOURCE_BLOOM') {
-      if (this.frameCount % 10 === 0 && this.energyParticles.length < this.config.maxEnergyParticles * 1.5) {
+      if (this.frameCount % 8 === 0 && this.energyParticles.length < this.config.maxEnergyParticles * 1.5) {
         this.spawnFood();
       }
     } else if (this.config.weatherEvent === 'TOXIC_DRIFT') {
-      // Toxic Drift moves hazard zones continuously across canvas
       for (const hazard of this.hazards) {
         const vx = hazard.vx || 1.2;
         const vy = hazard.vy || 1.2;
@@ -283,6 +345,16 @@ export class MicrobotEngine {
       }
     }
 
+    // Decay Pheromone Trails
+    if (this.frameCount % 5 === 0 && this.pheromones.length > 0) {
+      for (let i = this.pheromones.length - 1; i >= 0; i--) {
+        this.pheromones[i].intensity -= 0.04;
+        if (this.pheromones[i].intensity <= 0) {
+          this.pheromones.splice(i, 1);
+        }
+      }
+    }
+
     // Rebuild Spatial Grid for food lookup
     this.spatialGrid.clear();
     for (const food of this.energyParticles) {
@@ -290,7 +362,8 @@ export class MicrobotEngine {
     }
 
     // Spawn energy periodically
-    if (this.frameCount % Math.max(1, Math.floor(20 / this.config.energySpawnRate)) === 0) {
+    const spawnRate = this.config.energySpawnRate * seasonSpawnMult;
+    if (this.frameCount % Math.max(1, Math.floor(20 / spawnRate)) === 0) {
       if (this.energyParticles.length < this.config.maxEnergyParticles) {
         this.spawnFood();
       }
@@ -303,8 +376,14 @@ export class MicrobotEngine {
     for (const bot of this.microbots) {
       bot.age += speedMult;
 
-      // Check if inside speed field
-      let currentSpeed = bot.speed;
+      // Update Predator Status dynamically based on evolving traits
+      if (!bot.isPredator && bot.speed > 3.4 && bot.energyEfficiency > 1.4) {
+        bot.isPredator = true;
+        bot.color = '#f43f5e';
+      }
+
+      // Check speed fields
+      let currentSpeed = bot.speed * seasonSpeedMult;
       for (const field of this.speedFields) {
         const dist = Math.hypot(bot.x - field.x, bot.y - field.y);
         if (dist < field.radius) {
@@ -312,22 +391,60 @@ export class MicrobotEngine {
         }
       }
 
-      // Update movement trail history
-      if (this.frameCount % 5 === 0) {
+      // Deposit Pheromones periodically
+      if (this.frameCount % 15 === 0) {
         bot.trail.push({ x: bot.x, y: bot.y });
         if (bot.trail.length > 12) {
           bot.trail.shift();
         }
+
+        if (this.config.showPheromoneTrails && this.pheromones.length < 220) {
+          this.pheromones.push({
+            x: bot.x,
+            y: bot.y,
+            intensity: 1.0,
+            color: bot.color
+          });
+        }
       }
 
-      // Query nearby food using Spatial Hash Grid
+      // Query nearby food
       const nearbyFood = this.spatialGrid.getNearby(bot.x, bot.y, bot.visionRadius);
 
-      // Calculate Steering Vectors
+      // Steering calculations
       const steering = calculateSteering(bot, nearbyFood, this.hazards, this.width, this.height);
       bot.behaviorState = steering.state;
 
-      // Smooth heading rotation
+      // Predator Hunting Behavior Override
+      if (bot.isPredator) {
+        let nearestPrey: Microbot | null = null;
+        let minPreyDist = bot.visionRadius;
+
+        for (const target of this.microbots) {
+          if (target.id !== bot.id && !target.isPredator) {
+            const dist = Math.hypot(bot.x - target.x, bot.y - target.y);
+            if (dist < minPreyDist) {
+              minPreyDist = dist;
+              nearestPrey = target;
+            }
+          }
+        }
+
+        if (nearestPrey) {
+          bot.behaviorState = 'HUNTING_PREY';
+          const desiredHeading = Math.atan2(nearestPrey.y - bot.y, nearestPrey.x - bot.x);
+          steering.desiredHeading = desiredHeading;
+
+          // Harvest Energy upon Predator Contact
+          if (minPreyDist < 16) {
+            bot.battery = Math.min(bot.maxBattery, bot.battery + 35);
+            bot.energyCollected += 35;
+            nearestPrey.battery -= 35;
+          }
+        }
+      }
+
+      // Heading rotation
       let diff = steering.desiredHeading - bot.heading;
       while (diff < -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
@@ -343,12 +460,12 @@ export class MicrobotEngine {
       bot.x = Math.max(15, Math.min(this.width - 15, bot.x));
       bot.y = Math.max(15, Math.min(this.height - 15, bot.y));
 
-      // Calculate battery drain
+      // Battery Drain
       const baseDrain = 0.015 + 0.012 * (bot.speed * bot.speed);
-      const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * speedMult;
+      const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
       bot.battery -= netDrain;
 
-      // Update individual battery history ring buffer every 10 frames
+      // Battery history ring buffer
       if (this.frameCount % 10 === 0) {
         if (!bot.batteryHistory) bot.batteryHistory = [];
         bot.batteryHistory.push(Math.max(0, bot.battery));
@@ -365,7 +482,7 @@ export class MicrobotEngine {
         }
       }
 
-      // Check battery depletion death
+      // Check battery death
       if (bot.battery <= 0) {
         deadBotIds.add(bot.id);
         this.totalDeaths++;
@@ -382,6 +499,13 @@ export class MicrobotEngine {
           bot.battery = Math.min(bot.maxBattery, bot.battery + food.value);
           bot.energyCollected += food.value;
 
+          // Mutagen Orb Mutation Trigger
+          if (food.type === 'MUTAGEN_ORB') {
+            bot.speed = Math.max(1.0, Math.min(5.0, bot.speed + (Math.random() - 0.5) * 1.2));
+            bot.visionRadius = Math.max(60, Math.min(260, bot.visionRadius + (Math.random() - 0.5) * 40));
+            bot.energyEfficiency = Math.max(0.6, Math.min(2.5, bot.energyEfficiency + (Math.random() - 0.5) * 0.5));
+          }
+
           // Asexual Reproduction threshold
           if (bot.battery >= bot.maxBattery * 0.95 && this.microbots.length < this.config.maxPopulation) {
             bot.battery -= 45;
@@ -397,7 +521,7 @@ export class MicrobotEngine {
       this.energyParticles = this.energyParticles.filter((f) => !eatenFoodIds.has(f.id));
     }
 
-    // Filter out dead bots
+    // Filter dead bots
     if (deadBotIds.size > 0) {
       this.microbots = this.microbots.filter((b) => !deadBotIds.has(b.id));
     }
@@ -450,6 +574,7 @@ export class MicrobotEngine {
     let sumSpeed = 0;
     let sumVision = 0;
     let sumEff = 0;
+    let predatorCount = 0;
 
     // Calculate Trait Histograms (10 buckets each)
     const speedHistogram = new Array(10).fill(0);
@@ -461,6 +586,7 @@ export class MicrobotEngine {
       sumSpeed += b.speed;
       sumVision += b.visionRadius;
       sumEff += b.energyEfficiency;
+      if (b.isPredator) predatorCount++;
 
       // Speed bucket (1.0 to 5.0)
       const sIdx = Math.max(0, Math.min(9, Math.floor(((b.speed - 1.0) / 4.0) * 10)));
@@ -479,6 +605,8 @@ export class MicrobotEngine {
       diversityBuckets[dIdx]++;
     }
 
+    const seasonProgressPct = Math.min(100, Math.floor((this.seasonFrameCount / this.SEASON_DURATION_FRAMES) * 100));
+
     return {
       currentPopulation: pop,
       generationCount: this.generationCount,
@@ -488,6 +616,9 @@ export class MicrobotEngine {
       avgEfficiency: pop > 0 ? sumEff / pop : 0,
       totalBirths: this.totalBirths,
       totalDeaths: this.totalDeaths,
+      predatorCount,
+      currentSeason: this.config.currentSeason,
+      seasonProgressPct,
       populationHistory: [...this.populationHistory],
       birthHistory: [...this.birthHistory],
       deathHistory: [...this.deathHistory],

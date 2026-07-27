@@ -5,6 +5,7 @@ import { loadConfigFromStorage, saveConfigToStorage } from './utils/storage';
 import { Header } from './components/UI/Header';
 import { ControlPanel } from './components/UI/ControlPanel';
 import { InspectorPanel } from './components/UI/InspectorPanel';
+import { GeneticDriftHeatmap } from './components/UI/GeneticDriftHeatmap';
 import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
 import { AnalyticsCube3D } from './components/UI/AnalyticsCube3D';
 import { GuideModal } from './components/UI/GuideModal';
@@ -125,9 +126,9 @@ export const App: React.FC = () => {
 
   const handleExportTelemetryCSV = () => {
     if (!engine) return;
-    const header = 'Time (s),Population,Avg Speed,Avg Vision,Total Births,Total Deaths\n';
+    const header = 'Time (s),Population,Avg Speed,Avg Vision,Total Births,Total Deaths,Predators,Season\n';
     const rows = stats.historyTimeline.map(
-      (item) => `${item.time},${item.population},${item.avgSpeed.toFixed(2)},${item.avgVision.toFixed(1)},${stats.totalBirths},${stats.totalDeaths}`
+      (item) => `${item.time},${item.population},${item.avgSpeed.toFixed(2)},${item.avgVision.toFixed(1)},${stats.totalBirths},${stats.totalDeaths},${stats.predatorCount},${stats.currentSeason}`
     ).join('\n');
     const blob = new Blob([header + rows], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -204,6 +205,7 @@ export const App: React.FC = () => {
             onOpenLineageModal={() => setIsLineageOpen(true)}
           />
           <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
+          <GeneticDriftHeatmap stats={stats} />
         </div>
 
         {/* Right Viewport: Canvas & 3D Analytics Cube */}

@@ -1,10 +1,19 @@
-export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING';
+export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY';
 export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_BLOOM';
 export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
+export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER';
+export type ResourceType = 'NUTRIENT_DOT' | 'SUPER_CHARGER' | 'MUTAGEN_ORB';
 
 export interface Vector2D {
   x: number;
   y: number;
+}
+
+export interface PheromonePoint {
+  x: number;
+  y: number;
+  intensity: number;
+  color: string;
 }
 
 export interface Microbot {
@@ -29,8 +38,9 @@ export interface Microbot {
   age: number;
   behaviorState: BehaviorState;
   energyCollected: number;
+  isPredator: boolean;
   trail: Vector2D[];
-  batteryHistory: number[]; // Ring buffer for selected bot battery trend
+  batteryHistory: number[];
 }
 
 export interface EnergyParticle {
@@ -39,6 +49,8 @@ export interface EnergyParticle {
   y: number;
   value: number;
   radius: number;
+  type: ResourceType;
+  color: string;
 }
 
 export interface HazardZone {
@@ -74,8 +86,11 @@ export interface SimulationConfig {
   showTargetVectors: boolean;
   showEnergyForceLines: boolean;
   showSensoryRaycasts: boolean;
+  showPheromoneTrails: boolean;
   weatherEvent: WeatherEvent;
   brushMode: BrushMode;
+  currentSeason: Season;
+  autoSeasonCycle: boolean;
 }
 
 export interface SimulationStats {
@@ -87,6 +102,9 @@ export interface SimulationStats {
   avgEfficiency: number;
   totalDeaths: number;
   totalBirths: number;
+  predatorCount: number;
+  currentSeason: Season;
+  seasonProgressPct: number;
   populationHistory: number[];
   birthHistory: number[];
   deathHistory: number[];

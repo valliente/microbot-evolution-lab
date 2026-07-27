@@ -1,4 +1,4 @@
-name: Publish Release - Beta 0.1.2
+name: Publish Release - 0.1.201
 
 on:
   push:
@@ -39,18 +39,18 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "Beta 0.1.2"
+          name: "0.1.201"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - Beta 0.1.2 Feature Pack Release
+            ## 🔮 Microbot Evolution Lab - 0.1.201 Ecosystem & AI Dynamics Engine Release
             
             ### 🌟 Key Feature Additions:
-            - **Gene Inspector & Interactive DNA Panel**: Real-time genetic attribute overrides (Speed, Vision Radius, Efficiency, Hue) directly from the Bot Data Hub.
-            - **Lineage Tree Modal**: Collapsible visual family tree tracking parents, active microbots, and offspring across generations.
-            - **Environmental Weather Engine**: Dynamic global weather events including Solar Flares (+2.5x Battery Drain), Toxic Drift (Moving Hazards), and Resource Blooms.
-            - **Canvas Painting Brush Tool**: Paint custom Food Clusters, Hazard Zones, and Speed Boost Fields directly onto the simulation grid.
-            - **Sensory LIDAR Raycasting**: Multi-angle sensory ray lines protruding from microbots with color-coded detection of resources (Green) and hazards (Orange).
-            - **Telemetry & Preset Exporters**: Export simulation history to CSV telemetry logs and save/load custom JSON preset configurations.
+            - **Seasonal & Resource Cycles**: Dynamic seasonal transitions (Spring 🌸, Summer ☀️, Autumn 🍂, Winter ❄️) with resource spawn rate modifiers and battery drain fluctuations.
+            - **Multi-Type Energy Particles**: Nutrient Dots (Green), Super Chargers (Cyan +50 Energy), and Mutagen Orbs (Magenta +Instant Mutation).
+            - **Pheromone Trails & Sensory Pathfinding**: Decaying glowing pheromone trails deposited by microbots as they travel across the simulation canvas.
+            - **Predator & Carnivorous Microbot AI**: High-speed, high-efficiency microbots evolve aggressive predator traits (crimson red claws) to hunt and harvest energy from other microbots.
+            - **Genetic Drift Heatmap Analytics**: Visual trait distribution heatmap drawer rendering Speed, Vision, and Efficiency drift over time.
+            - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
           prerelease: false
           files: |

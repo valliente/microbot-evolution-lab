@@ -17,8 +17,11 @@ export const defaultConfig: SimulationConfig = {
   showTargetVectors: true,
   showEnergyForceLines: true,
   showSensoryRaycasts: true,
+  showPheromoneTrails: true,
   weatherEvent: 'CLEAR',
-  brushMode: 'NONE'
+  brushMode: 'NONE',
+  currentSeason: 'SPRING',
+  autoSeasonCycle: true
 };
 
 export function loadConfigFromStorage(): SimulationConfig {
