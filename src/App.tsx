@@ -31,7 +31,16 @@ export const App: React.FC = () => {
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
 
-  // Sync telemetry state on 80ms interval
+  // Handle tab visibility change recovery to prevent canvas freezes
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (!document.hidden && engine) {
+        engine.update(0.01);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [engine]);
   useEffect(() => {
     const interval = setInterval(() => {
       setStats(engine.getStats());
