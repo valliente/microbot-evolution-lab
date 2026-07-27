@@ -1,6 +1,7 @@
 import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
+import { SpatialHashGrid } from './SpatialHashGrid';
 import { calculateSteering } from './steering';
 
 export class MicrobotEngine {
@@ -18,6 +19,7 @@ export class MicrobotEngine {
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
+  public spatialHash: SpatialHashGrid<EnergyParticle>;
   public totalBirths: number = 0;
   public totalDeaths: number = 0;
   public generationCount: number = 1;
@@ -41,7 +43,8 @@ export class MicrobotEngine {
     this.width = width;
     this.height = height;
     this.config = config;
-    this.spatialGrid = new SpatialGrid(width, height, 60);
+    this.spatialGrid = new SpatialGrid(width, height, 50);
+    this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
 
     this.resetSimulation();
   }
