@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.202
+name: Publish Release - 0.1.203
 
 on:
   push:
@@ -39,17 +39,19 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.202"
+          name: "0.1.203"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - 0.1.202 Spatial Performance & Blueprint Studio Release
+            ## 🔮 Microbot Evolution Lab - 0.1.203 Chaos Engine & Multi-Lab Telemetry Release
             
             ### 🌟 Key Feature Additions:
-            - **Quadtree Spatial Partitioning**: Optimized entity collision detection and sensory range queries via dynamic recursive Quadtree nodes ($O(N \log N)$ performance).
-            - **FPS Target Switcher**: Select between 30 FPS, 60 FPS, 120 FPS, or Uncapped rendering directly from the top navigation deck.
-            - **Blueprint Studio & Gene Splicing**: Interactive strain designer modal allowing users to craft custom microbot blueprints with custom speeds, vision, efficiency, and color pigments.
-            - **Spatial Heatmap Overlays**: Color-coded spatial canvas layers for **Mortality (Red)**, **Food Density (Green)**, and **Traffic Pathing (Blue)**.
-            - **Extinction Crisis Alert Banner**: Real-time canvas alert banner warning when active microbot population drops below critical survival threshold (< 15 bots).
+            - **Catastrophe Engine**: Invoke localized Meteor Strikes (blast vaporization) and Gravitational Void Rifts (area-of-effect pull forces).
+            - **Pathogen Transmission & Immunity**: Collision-based viral outbreak contagion mechanics with antibody immunity mutation over time.
+            - **Dual-Canvas Parallel Split Mode**: Compare population telemetry side-by-side in real-time split view.
+            - **Base64 Genetic Blueprint Exporter**: Copy encoded DNA strings to clipboard and import/clone custom microbot strains.
+            - **Automated Batch Experiment Runner**: Accelerate evolution calculations up to 10x speed to simulate $N$ generations and export summary reports.
+            - **Extinction Prediction AI**: Calculate real-time Shannon Diversity Index ($H$) with automated low-diversity alerts.
+            - **Automated Unit Test Suite**: Includes automated unit testing for spatial lookups, collision bounds, and pathogen mechanics.
             - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
           draft: false
           prerelease: false
