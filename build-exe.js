@@ -44,14 +44,13 @@ namespace MicrobotEvolutionLab
                 catch {}
 
                 // Extract HTML to LocalAppData Workspace
-                string appDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicrobotEvolutionLab");
-                if (!Directory.Exists(appDir)) Directory.CreateDirectory(appDir);
-
-                string tempHtml = Path.Combine(appDir, "index.html");
+                    string extractDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MicrobotEvolutionLab");
+                    Directory.CreateDirectory(extractDir);
+                    string targetHtml = Path.Combine(extractDir, "index.html");
                 byte[] bytes = Convert.FromBase64String("${htmlBase64}");
-                File.WriteAllBytes(tempHtml, bytes);
+                File.WriteAllBytes(targetHtml, bytes);
 
-                string fileUri = "file:///" + tempHtml.Replace("\\\\", "/");
+                string fileUri = "file:///" + targetHtml.Replace("\\\\", "/");
 
                 // Attempt to launch using Edge App Mode (Chromium Native Desktop Window)
                 string edgePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft\\Edge\\Application\\msedge.exe");
