@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { calculateSteering } from './steering';
@@ -13,6 +13,8 @@ export class MicrobotEngine {
   public hazards: HazardZone[] = [];
   public speedFields: SpeedField[] = [];
   public pheromones: PheromonePoint[] = [];
+  public meteors: MeteorStrike[] = [];
+  public voidRifts: VoidRift[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -227,14 +229,28 @@ export class MicrobotEngine {
     });
   }
 
-  public spawnSpeedField(x: number, y: number): void {
-    const id = `SF-${this.nextFieldIdNum++}`;
-    this.speedFields.push({
-      id,
-      x,
-      y,
-      radius: 50,
-      multiplier: 1.8
+  public triggerMeteorStrike(x?: number, y?: number): void {
+    const mx = x ?? Math.random() * (this.width - 200) + 100;
+    const my = y ?? Math.random() * (this.height - 200) + 100;
+    this.meteors.push({
+      id: `M-${Date.now()}`,
+      x: mx,
+      y: my,
+      radius: 10,
+      maxRadius: 110,
+      progress: 0
+    });
+  }
+
+  public triggerVoidRift(x?: number, y?: number): void {
+    const rx = x ?? Math.random() * (this.width - 200) + 100;
+    const ry = y ?? Math.random() * (this.height - 200) + 100;
+    this.voidRifts.push({
+      id: `VR-${Date.now()}`,
+      x: rx,
+      y: ry,
+      radius: 90,
+      pullForce: 2.8
     });
   }
 
