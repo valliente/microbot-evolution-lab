@@ -49,6 +49,7 @@ export interface Microbot {
   battery: number;
   maxBattery: number;
   energyEfficiency: number;
+  enzymeType?: 'SUGRASE' | 'LIPASE' | 'MUTAGENASE';
   mass?: number;
   drag?: number;
   hue: number;
