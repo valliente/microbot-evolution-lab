@@ -493,11 +493,27 @@ export class MicrobotEngine {
         }
       }
 
-      // Hazard Damage
-      for (const hazard of this.hazards) {
-        const dist = Math.hypot(bot.x - hazard.x, bot.y - hazard.y);
-        if (dist < hazard.radius) {
-          bot.battery -= hazard.damageRate * speedMult * 2.0;
+      // Viral Contagion Transmission & Immunity
+      if (bot.isInfected) {
+        bot.infectionTimer = (bot.infectionTimer || 0) + speedMult;
+        bot.battery -= 0.1 * speedMult; // Infection drains battery
+        bot.behaviorState = 'INFECTED';
+
+        // Recovery & Antibody Immunity development after 300 frames
+        if (bot.infectionTimer >= 300) {
+          bot.isInfected = false;
+          bot.hasAntibodies = true;
+        } else {
+          // Spread virus to nearby non-immune bots
+          for (const target of this.microbots) {
+            if (target.id !== bot.id && !target.isInfected && !target.hasAntibodies) {
+              const dist = Math.hypot(bot.x - target.x, bot.y - target.y);
+              if (dist < 20 && Math.random() < 0.35) {
+                target.isInfected = true;
+                target.infectionTimer = 0;
+              }
+            }
+          }
         }
       }
 
@@ -588,12 +604,20 @@ export class MicrobotEngine {
     }
   }
 
+  public triggerOutbreak(): void {
+    if (this.microbots.length === 0) return;
+    const targetIdx = Math.floor(Math.random() * this.microbots.length);
+    this.microbots[targetIdx].isInfected = true;
+    this.microbots[targetIdx].infectionTimer = 0;
+  }
+
   public getStats(): SimulationStats {
     const pop = this.microbots.length;
     let sumSpeed = 0;
     let sumVision = 0;
     let sumEff = 0;
     let predatorCount = 0;
+    let infectedCount = 0;
 
     // Calculate Trait Histograms (10 buckets each)
     const speedHistogram = new Array(10).fill(0);
@@ -606,6 +630,7 @@ export class MicrobotEngine {
       sumVision += b.visionRadius;
       sumEff += b.energyEfficiency;
       if (b.isPredator) predatorCount++;
+      if (b.isInfected) infectedCount++;
 
       // Speed bucket (1.0 to 5.0)
       const sIdx = Math.max(0, Math.min(9, Math.floor(((b.speed - 1.0) / 4.0) * 10)));
@@ -624,6 +649,17 @@ export class MicrobotEngine {
       diversityBuckets[dIdx]++;
     }
 
+    // Compute Shannon Diversity Index: H = -sum(p_i * ln(p_i))
+    let shannonIndex = 0;
+    if (pop > 0) {
+      for (const count of diversityBuckets) {
+        if (count > 0) {
+          const p = count / pop;
+          shannonIndex -= p * Math.log(p);
+        }
+      }
+    }
+
     const seasonProgressPct = Math.min(100, Math.floor((this.seasonFrameCount / this.SEASON_DURATION_FRAMES) * 100));
 
     return {
@@ -636,6 +672,8 @@ export class MicrobotEngine {
       totalBirths: this.totalBirths,
       totalDeaths: this.totalDeaths,
       predatorCount,
+      infectedCount,
+      shannonDiversityIndex: parseFloat(shannonIndex.toFixed(2)),
       currentSeason: this.config.currentSeason,
       seasonProgressPct,
       populationHistory: [...this.populationHistory],
