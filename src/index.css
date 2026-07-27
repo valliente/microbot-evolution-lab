@@ -171,7 +171,11 @@ body {
   color: #ffffff;
 }
 
-/* Glass Panel Component */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.4); }
+  50% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.8); }
+  100% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.4); }
+}
 .glass-panel {
   background: rgba(15, 26, 36, 0.75);
   backdrop-filter: blur(16px);
