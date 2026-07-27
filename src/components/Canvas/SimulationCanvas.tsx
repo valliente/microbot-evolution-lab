@@ -59,6 +59,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
+          const frameStartTime = performance.now();
+          const MAX_FRAME_BUDGET_MS = 14;
+
           // Update physics
           engine.update(1.0);
 
