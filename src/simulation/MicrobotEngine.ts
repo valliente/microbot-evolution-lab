@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SimulationConfig, SimulationStats } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, SimulationConfig, SimulationStats } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { calculateSteering } from './steering';
 
@@ -10,6 +10,7 @@ export class MicrobotEngine {
   public microbots: Microbot[] = [];
   public energyParticles: EnergyParticle[] = [];
   public hazards: HazardZone[] = [];
+  public speedFields: SpeedField[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -28,6 +29,7 @@ export class MicrobotEngine {
   private recentDeaths: number = 0;
   private nextBotIdNum: number = 1;
   private nextFoodIdNum: number = 1;
+  private nextFieldIdNum: number = 1;
 
   constructor(width: number, height: number, config: SimulationConfig) {
     this.width = width;
@@ -42,6 +44,7 @@ export class MicrobotEngine {
     this.microbots = [];
     this.energyParticles = [];
     this.hazards = [];
+    this.speedFields = [];
     this.selectedMicrobotId = null;
     this.totalBirths = 0;
     this.totalDeaths = 0;
@@ -49,6 +52,7 @@ export class MicrobotEngine {
     this.frameCount = 0;
     this.nextBotIdNum = 1;
     this.nextFoodIdNum = 1;
+    this.nextFieldIdNum = 1;
     this.recentBirths = 0;
     this.recentDeaths = 0;
 
@@ -172,12 +176,32 @@ export class MicrobotEngine {
     }
   }
 
-  public spawnHazard(): void {
+  public spawnHazard(x?: number, y?: number): void {
     const id = `HZ-${this.hazards.length + 1}`;
     const radius = 60 + Math.random() * 40;
-    const x = Math.random() * (this.width - radius * 2) + radius;
-    const y = Math.random() * (this.height - radius * 2) + radius;
-    this.hazards.push({ id, x, y, radius, damageRate: 0.8 });
+    const hx = x ?? Math.random() * (this.width - radius * 2) + radius;
+    const hy = y ?? Math.random() * (this.height - radius * 2) + radius;
+    const angle = Math.random() * Math.PI * 2;
+    this.hazards.push({
+      id,
+      x: hx,
+      y: hy,
+      radius,
+      damageRate: 0.8,
+      vx: Math.cos(angle) * 1.5,
+      vy: Math.sin(angle) * 1.5
+    });
+  }
+
+  public spawnSpeedField(x: number, y: number): void {
+    const id = `SF-${this.nextFieldIdNum++}`;
+    this.speedFields.push({
+      id,
+      x,
+      y,
+      radius: 50,
+      multiplier: 1.8
+    });
   }
 
   public clearHazards(): void {
@@ -191,6 +215,30 @@ export class MicrobotEngine {
     if (this.hazards.length > this.config.hazardCount) {
       this.hazards = this.hazards.slice(0, this.config.hazardCount);
     }
+  }
+
+  public overrideMicrobotGenes(id: string, traits: Partial<Microbot>): void {
+    const bot = this.microbots.find((b) => b.id === id);
+    if (bot) {
+      if (traits.speed !== undefined) bot.speed = traits.speed;
+      if (traits.visionRadius !== undefined) bot.visionRadius = traits.visionRadius;
+      if (traits.energyEfficiency !== undefined) bot.energyEfficiency = traits.energyEfficiency;
+      if (traits.turnRate !== undefined) bot.turnRate = traits.turnRate;
+      if (traits.hue !== undefined) {
+        bot.hue = traits.hue;
+        bot.color = `hsl(${Math.round(traits.hue)}, 95%, 55%)`;
+      }
+    }
+  }
+
+  public getLineageTree(botId: string): { parent: Microbot | null; current: Microbot | null; children: Microbot[] } {
+    const current = this.microbots.find((b) => b.id === botId) || null;
+    let parent: Microbot | null = null;
+    if (current && current.parentId) {
+      parent = this.microbots.find((b) => b.id === current.parentId) || null;
+    }
+    const children = current ? this.microbots.filter((b) => b.parentId === current.id) : [];
+    return { parent, current, children };
   }
 
   public selectRandomMicrobot(): Microbot | null {
@@ -215,6 +263,26 @@ export class MicrobotEngine {
     this.frameCount++;
     const speedMult = this.config.simSpeed * dt;
 
+    // Handle Weather Events Mechanics
+    let weatherBatteryDrainMult = 1.0;
+    if (this.config.weatherEvent === 'SOLAR_FLARE') {
+      weatherBatteryDrainMult = 2.5; // Solar Flare increases battery drain
+    } else if (this.config.weatherEvent === 'RESOURCE_BLOOM') {
+      if (this.frameCount % 10 === 0 && this.energyParticles.length < this.config.maxEnergyParticles * 1.5) {
+        this.spawnFood();
+      }
+    } else if (this.config.weatherEvent === 'TOXIC_DRIFT') {
+      // Toxic Drift moves hazard zones continuously across canvas
+      for (const hazard of this.hazards) {
+        const vx = hazard.vx || 1.2;
+        const vy = hazard.vy || 1.2;
+        hazard.x += vx * speedMult;
+        hazard.y += vy * speedMult;
+        if (hazard.x < hazard.radius || hazard.x > this.width - hazard.radius) hazard.vx = -vx;
+        if (hazard.y < hazard.radius || hazard.y > this.height - hazard.radius) hazard.vy = -vy;
+      }
+    }
+
     // Rebuild Spatial Grid for food lookup
     this.spatialGrid.clear();
     for (const food of this.energyParticles) {
@@ -230,11 +298,19 @@ export class MicrobotEngine {
 
     const eatenFoodIds = new Set<string>();
     const deadBotIds = new Set<string>();
-    const newOffspring: Microbot[] = [];
 
     // Update Microbots
     for (const bot of this.microbots) {
       bot.age += speedMult;
+
+      // Check if inside speed field
+      let currentSpeed = bot.speed;
+      for (const field of this.speedFields) {
+        const dist = Math.hypot(bot.x - field.x, bot.y - field.y);
+        if (dist < field.radius) {
+          currentSpeed *= field.multiplier;
+        }
+      }
 
       // Update movement trail history
       if (this.frameCount % 5 === 0) {
@@ -258,8 +334,8 @@ export class MicrobotEngine {
       bot.heading += diff * bot.turnRate * speedMult;
 
       // Velocity & Position
-      bot.vx = Math.cos(bot.heading) * bot.speed;
-      bot.vy = Math.sin(bot.heading) * bot.speed;
+      bot.vx = Math.cos(bot.heading) * currentSpeed;
+      bot.vy = Math.sin(bot.heading) * currentSpeed;
       bot.x += bot.vx * speedMult;
       bot.y += bot.vy * speedMult;
 
@@ -269,7 +345,7 @@ export class MicrobotEngine {
 
       // Calculate battery drain
       const baseDrain = 0.015 + 0.012 * (bot.speed * bot.speed);
-      const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * speedMult;
+      const netDrain = (baseDrain / bot.energyEfficiency) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * speedMult;
       bot.battery -= netDrain;
 
       // Update individual battery history ring buffer every 10 frames
@@ -310,8 +386,7 @@ export class MicrobotEngine {
           if (bot.battery >= bot.maxBattery * 0.95 && this.microbots.length < this.config.maxPopulation) {
             bot.battery -= 45;
             bot.behaviorState = 'REPRODUCING';
-            const child = this.spawnMicrobot(bot);
-            newOffspring.push(child);
+            this.spawnMicrobot(bot);
           }
         }
       }

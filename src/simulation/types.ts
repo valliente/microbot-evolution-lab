@@ -1,4 +1,6 @@
 export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING';
+export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_BLOOM';
+export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
 
 export interface Vector2D {
   x: number;
@@ -45,6 +47,16 @@ export interface HazardZone {
   y: number;
   radius: number;
   damageRate: number;
+  vx?: number;
+  vy?: number;
+}
+
+export interface SpeedField {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  multiplier: number;
 }
 
 export interface SimulationConfig {
@@ -61,6 +73,9 @@ export interface SimulationConfig {
   showMovementTrails: boolean;
   showTargetVectors: boolean;
   showEnergyForceLines: boolean;
+  showSensoryRaycasts: boolean;
+  weatherEvent: WeatherEvent;
+  brushMode: BrushMode;
 }
 
 export interface SimulationStats {

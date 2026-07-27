@@ -1,20 +1,24 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
-import { Target, MousePointerClick } from 'lucide-react';
+import { BrushMode } from '../../simulation/types';
+import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles } from 'lucide-react';
 
 interface SimulationCanvasProps {
   engine: MicrobotEngine;
   onSelectBot: (botId: string | null) => void;
   onSelectRandomBot: () => void;
+  onUpdateConfig: (newConfig: any) => void;
 }
 
 export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   engine,
   onSelectBot,
-  onSelectRandomBot
+  onSelectRandomBot,
+  onUpdateConfig
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const isMouseDownRef = useRef<boolean>(false);
 
   // Resize Observer for dynamic canvas viewport
   useEffect(() => {
@@ -74,6 +78,23 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.stroke();
           }
 
+          // 0. Draw Custom Speed Fields (Cyan Translucent Fields)
+          for (const field of engine.speedFields) {
+            const grad = ctx.createRadialGradient(field.x, field.y, 5, field.x, field.y, field.radius);
+            grad.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
+            grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = 'rgba(0, 229, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+
           // 1. Draw Hazard Zones (Orange Wireframe Mesh & Glow)
           for (const hazard of engine.hazards) {
             const pulse = Math.sin(Date.now() / 350) * 4;
@@ -127,11 +148,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.shadowBlur = 0;
           }
 
-          // 3. Draw Energy Force Lines (connecting microbots to food & hazard boundaries)
+          // 3. Draw Energy Force Lines
           if (engine.config.showEnergyForceLines) {
             ctx.lineWidth = 1;
             for (const bot of engine.microbots) {
-              // Food Force Lines
               const nearbyFood = engine.spatialGrid.getNearby(bot.x, bot.y, bot.visionRadius);
               for (const food of nearbyFood) {
                 const dist = Math.hypot(bot.x - food.x, bot.y - food.y);
@@ -149,29 +169,61 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                   ctx.stroke();
                 }
               }
-
-              // Hazard Force Tendrils
-              for (const hazard of engine.hazards) {
-                const dist = Math.hypot(bot.x - hazard.x, bot.y - hazard.y);
-                if (dist <= bot.visionRadius + hazard.radius) {
-                  const alpha = (1 - dist / (bot.visionRadius + hazard.radius)) * 0.5;
-                  ctx.strokeStyle = `rgba(255, 107, 0, ${alpha})`;
-                  ctx.setLineDash([3, 3]);
-                  ctx.beginPath();
-                  ctx.moveTo(bot.x, bot.y);
-                  ctx.lineTo(hazard.x, hazard.y);
-                  ctx.stroke();
-                  ctx.setLineDash([]);
-                }
-              }
             }
           }
 
-          // 4. Draw Microbots
+          // 4. Draw Microbots & Sensory Raycasting Lines
           const selectedBot = engine.getSelectedMicrobot();
 
           for (const bot of engine.microbots) {
             const isSelected = selectedBot && selectedBot.id === bot.id;
+
+            // Sensory Raycasting Lines (LIDAR / Radar Projections)
+            if (engine.config.showSensoryRaycasts || isSelected) {
+              const numRays = 8;
+              const angleSpread = Math.PI * 0.8;
+              const startAngle = bot.heading - angleSpread / 2;
+
+              for (let i = 0; i < numRays; i++) {
+                const rayAngle = startAngle + (i / (numRays - 1)) * angleSpread;
+
+                // Check ray collision with nearby food / hazards
+                let rayColor = 'rgba(0, 229, 255, 0.15)';
+                let endDist = bot.visionRadius;
+
+                for (const food of engine.energyParticles) {
+                  const dist = Math.hypot(bot.x - food.x, bot.y - food.y);
+                  if (dist < bot.visionRadius) {
+                    const foodAngle = Math.atan2(food.y - bot.y, food.x - bot.x);
+                    if (Math.abs(foodAngle - rayAngle) < 0.25) {
+                      rayColor = 'rgba(0, 230, 118, 0.6)';
+                      endDist = Math.min(endDist, dist);
+                    }
+                  }
+                }
+
+                for (const hazard of engine.hazards) {
+                  const dist = Math.hypot(bot.x - hazard.x, bot.y - hazard.y);
+                  if (dist < bot.visionRadius + hazard.radius) {
+                    const hazAngle = Math.atan2(hazard.y - bot.y, hazard.x - bot.x);
+                    if (Math.abs(hazAngle - rayAngle) < 0.3) {
+                      rayColor = 'rgba(255, 107, 0, 0.7)';
+                      endDist = Math.min(endDist, dist);
+                    }
+                  }
+                }
+
+                const hitX = bot.x + Math.cos(rayAngle) * endDist;
+                const hitY = bot.y + Math.sin(rayAngle) * endDist;
+
+                ctx.strokeStyle = rayColor;
+                ctx.lineWidth = isSelected ? 1.5 : 1;
+                ctx.beginPath();
+                ctx.moveTo(bot.x, bot.y);
+                ctx.lineTo(hitX, hitY);
+                ctx.stroke();
+              }
+            }
 
             // Movement Trail
             if (engine.config.showMovementTrails && bot.trail.length > 1) {
@@ -196,28 +248,14 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               ctx.stroke();
             }
 
-            // Target Vector Arrow
-            if (isSelected && engine.config.showTargetVectors) {
-              ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
-              ctx.lineWidth = 1.2;
-              ctx.setLineDash([4, 4]);
-              ctx.beginPath();
-              ctx.moveTo(bot.x, bot.y);
-              ctx.lineTo(bot.x + Math.cos(bot.heading) * bot.visionRadius * 0.8, bot.y + Math.sin(bot.heading) * bot.visionRadius * 0.8);
-              ctx.stroke();
-              ctx.setLineDash([]);
-            }
-
-            // Microbot Triangular Vector Pod Shape
+            // Triangular Vector Body
             ctx.save();
             ctx.translate(bot.x, bot.y);
             ctx.rotate(bot.heading);
 
-            // Glow Effect
             ctx.shadowColor = bot.color;
             ctx.shadowBlur = isSelected ? 20 : 10;
 
-            // Triangular Body Concept
             ctx.fillStyle = bot.color;
             ctx.beginPath();
             ctx.moveTo(10, 0);
@@ -227,7 +265,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.closePath();
             ctx.fill();
 
-            // Headlight / Eye Nose Cone
+            // Headlight Cone
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(6, 0, 2, 0, Math.PI * 2);
@@ -236,7 +274,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.shadowBlur = 0;
             ctx.restore();
 
-            // Battery Health Indicator Bar
+            // Health Bar
             const batteryRatio = Math.max(0, Math.min(1, bot.battery / bot.maxBattery));
             const barW = 20;
             const barH = 3;
@@ -245,11 +283,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(barX, barY, barW, barH);
-
             ctx.fillStyle = batteryRatio > 0.4 ? '#00E676' : batteryRatio > 0.2 ? '#FF6B00' : '#f43f5e';
             ctx.fillRect(barX, barY, barW * batteryRatio, barH);
 
-            // Selected Target Reticle Indicator
+            // Selected Target Reticle
             if (isSelected) {
               const reticlePulse = Math.sin(Date.now() / 200) * 3;
               const reticleR = 18 + reticlePulse;
@@ -260,7 +297,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               ctx.arc(bot.x, bot.y, reticleR, 0, Math.PI * 2);
               ctx.stroke();
 
-              // Crosshair Ticks
               ctx.beginPath();
               ctx.moveTo(bot.x - reticleR - 4, bot.y); ctx.lineTo(bot.x - reticleR + 2, bot.y);
               ctx.moveTo(bot.x + reticleR + 4, bot.y); ctx.lineTo(bot.x + reticleR - 2, bot.y);
@@ -268,11 +304,13 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               ctx.moveTo(bot.x, bot.y + reticleR + 4); ctx.lineTo(bot.x, bot.y + reticleR - 2);
               ctx.stroke();
 
-              // ID Tag
+              // ID Tag & Behavior Cues
+              const cueLabel = bot.behaviorState === 'SEEKING_ENERGY' ? 'Hunting Food 🍏' : bot.behaviorState === 'EVADING_HAZARD' ? 'Fleeing Hazard 💥' : bot.behaviorState === 'REPRODUCING' ? 'Seeking Mate 🧬' : 'Wandering 🧭';
+
               ctx.font = "800 11px 'JetBrains Mono', monospace";
               ctx.fillStyle = '#00E5FF';
               ctx.textAlign = 'center';
-              ctx.fillText(`★ ${bot.id}`, bot.x, bot.y - 22);
+              ctx.fillText(`★ ${bot.id} (${cueLabel})`, bot.x, bot.y - 22);
             }
           }
         }
@@ -286,8 +324,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     return () => cancelAnimationFrame(animationFrameId);
   }, [engine]);
 
-  // Handle Canvas Clicks: Select bot or spawn 5 food dots
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  // Handle Canvas Painting / Clicks
+  const handleCanvasInteraction = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -295,30 +333,42 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    let clickedBot = null;
-    let minDist = 28;
+    const mode: BrushMode = engine.config.brushMode || 'NONE';
 
-    for (const bot of engine.microbots) {
-      const dist = Math.hypot(bot.x - clickX, bot.y - clickY);
-      if (dist < minDist) {
-        minDist = dist;
-        clickedBot = bot;
-      }
-    }
-
-    if (clickedBot) {
-      onSelectBot(clickedBot.id);
+    if (mode === 'PAINT_FOOD') {
+      engine.spawnFood(clickX, clickY);
+    } else if (mode === 'PAINT_HAZARD') {
+      engine.spawnHazard(clickX, clickY);
+    } else if (mode === 'PAINT_SPEED_FIELD') {
+      engine.spawnSpeedField(clickX, clickY);
     } else {
-      for (let i = 0; i < 5; i++) {
-        engine.spawnFood(
-          clickX + (Math.random() - 0.5) * 20,
-          clickY + (Math.random() - 0.5) * 20
-        );
+      // Default: Check bot click selection or spawn 5 food dots
+      let clickedBot = null;
+      let minDist = 28;
+
+      for (const bot of engine.microbots) {
+        const dist = Math.hypot(bot.x - clickX, bot.y - clickY);
+        if (dist < minDist) {
+          minDist = dist;
+          clickedBot = bot;
+        }
+      }
+
+      if (clickedBot) {
+        onSelectBot(clickedBot.id);
+      } else {
+        for (let i = 0; i < 5; i++) {
+          engine.spawnFood(
+            clickX + (Math.random() - 0.5) * 20,
+            clickY + (Math.random() - 0.5) * 20
+          );
+        }
       }
     }
   };
 
   const selectedBot = engine.getSelectedMicrobot();
+  const currentBrush = engine.config.brushMode || 'NONE';
 
   return (
     <div ref={containerRef} className="canvas-viewport-card" style={{ width: '100%', height: '100%' }}>
@@ -359,11 +409,52 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         </button>
       </div>
 
+      {/* Canvas Brush Tool Picker Bar */}
+      <div style={{
+        position: 'absolute',
+        top: 14,
+        left: 14,
+        zIndex: 20,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        padding: '4px 8px',
+        background: 'rgba(15, 26, 36, 0.85)',
+        border: '1px solid rgba(0, 229, 255, 0.3)',
+        borderRadius: 10,
+        backdropFilter: 'blur(12px)'
+      }}>
+        <span style={{ fontSize: '0.65rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>BRUSH:</span>
+        <button
+          onClick={() => onUpdateConfig({ brushMode: currentBrush === 'PAINT_FOOD' ? 'NONE' : 'PAINT_FOOD' })}
+          className={currentBrush === 'PAINT_FOOD' ? 'btn-holo btn-holo-green' : 'btn-holo btn-holo-dark'}
+          style={{ padding: '3px 6px', fontSize: '0.65rem' }}
+        >
+          <Zap style={{ width: 10, height: 10 }} /> FOOD
+        </button>
+        <button
+          onClick={() => onUpdateConfig({ brushMode: currentBrush === 'PAINT_HAZARD' ? 'NONE' : 'PAINT_HAZARD' })}
+          className={currentBrush === 'PAINT_HAZARD' ? 'btn-holo btn-holo-orange' : 'btn-holo btn-holo-dark'}
+          style={{ padding: '3px 6px', fontSize: '0.65rem' }}
+        >
+          <ShieldAlert style={{ width: 10, height: 10 }} /> HAZARD
+        </button>
+        <button
+          onClick={() => onUpdateConfig({ brushMode: currentBrush === 'PAINT_SPEED_FIELD' ? 'NONE' : 'PAINT_SPEED_FIELD' })}
+          className={currentBrush === 'PAINT_SPEED_FIELD' ? 'btn-holo btn-holo-cyan' : 'btn-holo btn-holo-dark'}
+          style={{ padding: '3px 6px', fontSize: '0.65rem' }}
+        >
+          <Sparkles style={{ width: 10, height: 10 }} /> SPEED FIELD
+        </button>
+      </div>
+
       {/* Main Simulation Viewport Canvas */}
       <canvas
         ref={canvasRef}
-        onClick={handleCanvasClick}
-        style={{ display: 'block', width: '100%', height: '100%', cursor: 'crosshair' }}
+        onMouseDown={(e) => { isMouseDownRef.current = true; handleCanvasInteraction(e); }}
+        onMouseMove={(e) => { if (isMouseDownRef.current) handleCanvasInteraction(e); }}
+        onMouseUp={() => { isMouseDownRef.current = false; }}
+        style={{ display: 'block', width: '100%', height: '100%', cursor: currentBrush !== 'NONE' ? 'cell' : 'crosshair' }}
       />
 
       {/* Click Tip Overlay */}
@@ -385,7 +476,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         fontFamily: "'JetBrains Mono', monospace"
       }}>
         <MousePointerClick style={{ width: 14, height: 14, color: '#00E676' }} />
-        <span>Click anywhere on canvas to drop food!</span>
+        <span>
+          {currentBrush === 'PAINT_FOOD' ? 'Click or drag to paint food clusters!' : currentBrush === 'PAINT_HAZARD' ? 'Click to paint hazard zones!' : currentBrush === 'PAINT_SPEED_FIELD' ? 'Click to paint speed fields!' : 'Click anywhere on canvas to drop food!'}
+        </span>
       </div>
     </div>
   );

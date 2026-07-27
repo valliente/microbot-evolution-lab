@@ -1,6 +1,6 @@
-import React from 'react';
-import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert } from 'lucide-react';
-import { SimulationConfig, SimulationStats } from '../../simulation/types';
+import React, { useRef } from 'react';
+import { Play, Pause, RotateCcw, Cpu, HelpCircle, Target, Plus, ShieldAlert, Download, Upload, Sun } from 'lucide-react';
+import { SimulationConfig, SimulationStats, WeatherEvent } from '../../simulation/types';
 import { GeneticDiversityChart } from './GeneticDiversityChart';
 
 interface HeaderProps {
@@ -14,6 +14,9 @@ interface HeaderProps {
   onSpawnFood: () => void;
   onSpawnBots: () => void;
   onSpawnHazard: () => void;
+  onExportTelemetryCSV: () => void;
+  onExportConfigJSON: () => void;
+  onImportConfigJSON: (jsonConfig: Partial<SimulationConfig>) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,8 +29,28 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGuide,
   onSpawnFood,
   onSpawnBots,
-  onSpawnHazard
+  onSpawnHazard,
+  onExportTelemetryCSV,
+  onExportConfigJSON,
+  onImportConfigJSON
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target?.result as string);
+        onImportConfigJSON(parsed);
+      } catch (err) {
+        alert('Invalid JSON preset file!');
+      }
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <header className="top-nav-bar">
       {/* Title & Brand */}
@@ -102,7 +125,42 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Menu & Action Shortcut Deck */}
+      {/* Weather & Preset Shortcut Deck */}
+      <div className="glass-deck-pill">
+        {/* Weather Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#FF6B00' }}>
+          <Sun style={{ width: 12, height: 12 }} />
+          <select
+            value={config.weatherEvent || 'CLEAR'}
+            onChange={(e) => onUpdateConfig({ weatherEvent: e.target.value as WeatherEvent })}
+            style={{ background: '#080E14', color: '#FF6B00', fontWeight: 800, border: '1px solid rgba(255, 107, 0, 0.4)', borderRadius: 6, padding: '3px 6px', fontSize: '0.68rem', cursor: 'pointer' }}
+          >
+            <option value="CLEAR">☀️ Weather: Clear</option>
+            <option value="SOLAR_FLARE">🔥 Solar Flare (+Drain)</option>
+            <option value="TOXIC_DRIFT">☣️ Toxic Drift (Hazards)</option>
+            <option value="RESOURCE_BLOOM">🌸 Resource Bloom (Food)</option>
+          </select>
+        </div>
+
+        {/* JSON & CSV Telemetry Exports */}
+        <button onClick={onExportConfigJSON} className="btn-holo btn-holo-cyan" title="Save parameter config to .json">
+          <Download style={{ width: 12, height: 12 }} />
+          <span>PRESET</span>
+        </button>
+
+        <button onClick={() => fileInputRef.current?.click()} className="btn-holo btn-holo-cyan" title="Load preset config from .json">
+          <Upload style={{ width: 12, height: 12 }} />
+          <span>LOAD</span>
+        </button>
+        <input ref={fileInputRef} type="file" accept=".json" onChange={handleFileChange} style={{ display: 'none' }} />
+
+        <button onClick={onExportTelemetryCSV} className="btn-holo btn-holo-green" title="Export population history to timestamped .csv">
+          <Download style={{ width: 12, height: 12 }} />
+          <span>CSV DATA</span>
+        </button>
+      </div>
+
+      {/* Menu Shortcuts Deck */}
       <div className="glass-deck-pill">
         <button onClick={onOpenGuide} className="btn-holo btn-holo-cyan">
           <HelpCircle style={{ width: 13, height: 13 }} />

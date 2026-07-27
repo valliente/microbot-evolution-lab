@@ -9,6 +9,7 @@ import { SimulationCanvas } from './components/Canvas/SimulationCanvas';
 import { AnalyticsCube3D } from './components/UI/AnalyticsCube3D';
 import { GuideModal } from './components/UI/GuideModal';
 import { RosterModal } from './components/UI/RosterModal';
+import { LineageModal } from './components/UI/LineageModal';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -25,6 +26,7 @@ export const App: React.FC = () => {
   const [stats, setStats] = useState<SimulationStats>(() => engine.getStats());
   const [isGuideOpen, setIsGuideOpen] = useState<boolean>(false);
   const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
+  const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
 
   // Sync telemetry state on 80ms interval
   useEffect(() => {
@@ -113,6 +115,44 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleOverrideGenes = (id: string, traits: Partial<Microbot>) => {
+    if (engine) {
+      engine.overrideMicrobotGenes(id, traits);
+      const current = engine.getSelectedMicrobot();
+      if (current) setSelectedBot({ ...current });
+    }
+  };
+
+  const handleExportTelemetryCSV = () => {
+    if (!engine) return;
+    const header = 'Time (s),Population,Avg Speed,Avg Vision,Total Births,Total Deaths\n';
+    const rows = stats.historyTimeline.map(
+      (item) => `${item.time},${item.population},${item.avgSpeed.toFixed(2)},${item.avgVision.toFixed(1)},${stats.totalBirths},${stats.totalDeaths}`
+    ).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `microbot_telemetry_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportConfigJSON = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(config, null, 2));
+    const a = document.createElement('a');
+    a.href = dataStr;
+    a.download = `microbot_preset_config_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+  };
+
+  const handleImportConfigJSON = (jsonConfig: Partial<SimulationConfig>) => {
+    handleUpdateConfig(jsonConfig);
+    alert('Simulation Preset Loaded Successfully!');
+  };
+
+  const lineageData = selectedBot && engine ? engine.getLineageTree(selectedBot.id) : { parent: null, current: null, children: [] };
+
   return (
     <div className="app-container">
       {/* Selection Modals */}
@@ -126,6 +166,15 @@ export const App: React.FC = () => {
 
       <GuideModal isOpen={isGuideOpen} onClose={() => setIsGuideOpen(false)} />
 
+      <LineageModal
+        isOpen={isLineageOpen}
+        selectedBot={lineageData.current}
+        parentBot={lineageData.parent}
+        childBots={lineageData.children}
+        onSelectBot={(id) => { handleSelectBotById(id); }}
+        onClose={() => setIsLineageOpen(false)}
+      />
+
       {/* Header Bar */}
       <Header
         config={config}
@@ -138,13 +187,22 @@ export const App: React.FC = () => {
         onSpawnFood={handleSpawnFood}
         onSpawnBots={handleSpawnBots}
         onSpawnHazard={handleSpawnHazard}
+        onExportTelemetryCSV={handleExportTelemetryCSV}
+        onExportConfigJSON={handleExportConfigJSON}
+        onImportConfigJSON={handleImportConfigJSON}
       />
 
       {/* Main Workspace Layout */}
       <main className="workspace-grid">
         {/* Left Column: Data Hub & Parameters */}
         <div className="sidebar-col">
-          <InspectorPanel bot={selectedBot} stats={stats} onClose={() => handleSelectBotById(null)} />
+          <InspectorPanel
+            bot={selectedBot}
+            stats={stats}
+            onClose={() => handleSelectBotById(null)}
+            onOverrideGenes={handleOverrideGenes}
+            onOpenLineageModal={() => setIsLineageOpen(true)}
+          />
           <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
         </div>
 
@@ -154,6 +212,7 @@ export const App: React.FC = () => {
             engine={engine}
             onSelectBot={handleSelectBotById}
             onSelectRandomBot={handleSelectRandomBot}
+            onUpdateConfig={handleUpdateConfig}
           />
 
           {/* Floating 3D Analytics Cube */}

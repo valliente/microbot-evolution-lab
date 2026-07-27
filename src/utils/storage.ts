@@ -15,7 +15,10 @@ export const defaultConfig: SimulationConfig = {
   showSensoryRings: true,
   showMovementTrails: true,
   showTargetVectors: true,
-  showEnergyForceLines: true
+  showEnergyForceLines: true,
+  showSensoryRaycasts: true,
+  weatherEvent: 'CLEAR',
+  brushMode: 'NONE'
 };
 
 export function loadConfigFromStorage(): SimulationConfig {

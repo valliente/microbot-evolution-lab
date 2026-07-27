@@ -1,4 +1,4 @@
-name: Publish Release - Beta 0.1.1
+name: Publish Release - Beta 0.1.2
 
 on:
   push:
@@ -36,19 +36,21 @@ jobs:
         run: |
           Compress-Archive -Path "PLAY.bat", "MicrobotEvolutionLab.hta", "dist-standalone\index.html", "README.md", "LICENSE" -DestinationPath "Microbot-Evolution-Lab-Windows.zip" -Force
 
-      - name: Publish GitHub Release
+      - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "Beta 0.1.1"
+          name: "Beta 0.1.2"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔮 Microbot Evolution Lab - Beta 0.1.1 Release
+            ## 🔮 Microbot Evolution Lab - Beta 0.1.2 Feature Pack Release
             
-            ### 🌟 Key Highlights & Upgrades:
-            - **3D Holographic Anti-Gravity Interface**: Floating glassmorphism panels, dark slate void viewport, and glowing cyan/orange/magenta accents.
-            - **Real-Time Telemetry Engine**: Live battery trends, speed/vision/efficiency histograms, and 3D Analytics Cube for world stats.
-            - **Interactive Energy Force Fields**: Glowing force tendrils connecting bots to energy resources and hazard zones.
-            - **Standalone Windows Executable**: Bundled with native `MicrobotEvolutionLab.exe` compiled for Windows.
+            ### 🌟 Key Feature Additions:
+            - **Gene Inspector & Interactive DNA Panel**: Real-time genetic attribute overrides (Speed, Vision Radius, Efficiency, Hue) directly from the Bot Data Hub.
+            - **Lineage Tree Modal**: Collapsible visual family tree tracking parents, active microbots, and offspring across generations.
+            - **Environmental Weather Engine**: Dynamic global weather events including Solar Flares (+2.5x Battery Drain), Toxic Drift (Moving Hazards), and Resource Blooms.
+            - **Canvas Painting Brush Tool**: Paint custom Food Clusters, Hazard Zones, and Speed Boost Fields directly onto the simulation grid.
+            - **Sensory LIDAR Raycasting**: Multi-angle sensory ray lines protruding from microbots with color-coded detection of resources (Green) and hazards (Orange).
+            - **Telemetry & Preset Exporters**: Export simulation history to CSV telemetry logs and save/load custom JSON preset configurations.
           draft: false
           prerelease: false
           files: |
