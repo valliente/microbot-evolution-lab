@@ -32,5 +32,19 @@ self.onmessage = (event: MessageEvent) => {
       offspring.visionRadius += (Math.random() - 0.5) * 15;
     }
     self.postMessage({ type: 'DNA_CROSSOVER_COMPLETE', payload: offspring });
+  } else if (type === 'BATCH_COLLISIONS') {
+    const { entities, radius } = payload;
+    const collisions = [];
+    const radSq = radius * radius;
+    for (let i = 0; i < entities.length; i++) {
+      for (let j = i + 1; j < entities.length; j++) {
+        const dx = entities[j].x - entities[i].x;
+        const dy = entities[j].y - entities[i].y;
+        if (dx * dx + dy * dy <= radSq) {
+          collisions.push([entities[i].id, entities[j].id]);
+        }
+      }
+    }
+    self.postMessage({ type: 'COLLISIONS_COMPUTED', payload: collisions });
   }
 };
