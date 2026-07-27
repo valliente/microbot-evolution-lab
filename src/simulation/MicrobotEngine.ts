@@ -494,7 +494,16 @@ export class MicrobotEngine {
       bot.x = Math.max(15, Math.min(this.width - 15, bot.x));
       bot.y = Math.max(15, Math.min(this.height - 15, bot.y));
 
-      // Dynamic metabolism battery drain scaled by speed and mass
+      // Epigenetic Stress accumulation on starvation or hazard exposure
+      if (bot.battery < 30) {
+        bot.epigeneticStress = (bot.epigeneticStress || 0) + 0.05 * speedMult;
+      }
+      if ((bot.epigeneticStress || 0) > 10.0) {
+        // Trigger Epigenetic Trait Mutation Adaptation (speed & vision boost)
+        bot.speed = Math.min(5.0, bot.speed * 1.15);
+        bot.visionRadius = Math.min(260, bot.visionRadius * 1.2);
+        bot.epigeneticStress = 0; // Reset after expression
+      }
       const speedCost = Math.pow(bot.speed, 1.3) * (bot.mass || 1.0);
       const netDrain = (0.08 * (speedCost / (bot.energyEfficiency || 1.0))) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
       bot.battery -= netDrain;
