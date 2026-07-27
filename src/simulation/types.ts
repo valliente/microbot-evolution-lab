@@ -49,6 +49,8 @@ export interface Microbot {
   battery: number;
   maxBattery: number;
   energyEfficiency: number;
+  mass?: number;
+  drag?: number;
   hue: number;
   color: string;
   generation: number;
