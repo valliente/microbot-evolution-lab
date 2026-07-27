@@ -106,7 +106,7 @@ namespace MicrobotEvolutionLab
                     };
 
                     form.Controls.Add(browser);
-                    browser.Navigate(tempHtml);
+                    browser.Navigate(targetHtml);
                     Application.Run(form);
                 }
             }

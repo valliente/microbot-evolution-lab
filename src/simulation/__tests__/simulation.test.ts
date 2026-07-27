@@ -44,9 +44,9 @@ export function runSimulationUnitTests(): { passed: boolean; testCount: number; 
   if (infectedCount >= 1) passedCount++;
 
   // Test Epigenetic Trigger State
+  const firstBot = engine.microbots[0];
   engine.overrideMicrobotGenes(firstBot.id, { epigeneticStress: 15.0 });
   if (firstBot.epigeneticStress === 15.0) passedCount++;
-  const firstBot = engine.microbots[0];
   engine.overrideMicrobotGenes(firstBot.id, { speed: 4.5, visionRadius: 220 });
   if (firstBot.speed === 4.5 && firstBot.visionRadius === 220) passedCount++;
 
