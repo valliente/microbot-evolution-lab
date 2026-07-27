@@ -521,7 +521,19 @@ export class MicrobotEngine {
         }
       }
 
-      // Elastic momentum collision bouncing between colliding microbots
+      // Symbiotic Energy Sharing Pairing
+      for (const partner of this.microbots) {
+        if (partner.id !== bot.id && !bot.isPredator && !partner.isPredator) {
+          const dist = Math.hypot(partner.x - bot.x, partner.y - bot.y);
+          if (dist < 25 && Math.abs(bot.hue - partner.hue) < 20) {
+            bot.symbiontPartnerId = partner.id;
+            // Equalize battery between symbiont partners
+            const avgEnergy = (bot.battery + partner.battery) / 2;
+            bot.battery = avgEnergy;
+            partner.battery = avgEnergy;
+          }
+        }
+      }
       for (const other of this.microbots) {
         if (other.id !== bot.id) {
           const dx = other.x - bot.x;
