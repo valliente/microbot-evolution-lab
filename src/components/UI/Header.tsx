@@ -263,7 +263,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Top Far Right: Genetic Diversity Chart */}
-      <GeneticDiversityChart buckets={stats.diversityBuckets || new Array(12).fill(1)} />
+      <GeneticDiversityChart buckets={stats.diversityBuckets || new Array(12).fill(1)} shannonIndex={stats.shannonDiversityIndex} />
     </header>
   );
 };
