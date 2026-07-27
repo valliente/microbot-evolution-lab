@@ -92,7 +92,7 @@ namespace MicrobotEvolutionLab
                 {
                     Form form = new Form
                     {
-                        Text = "Microbot Evolution Lab - 0.1.205",
+                        Text = "Microbot Evolution Lab - 0.1.206",
                         Width = 1280,
                         Height = 850,
                         StartPosition = FormStartPosition.CenterScreen,
