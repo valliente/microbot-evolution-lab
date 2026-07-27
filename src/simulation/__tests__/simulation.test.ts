@@ -4,10 +4,24 @@ import { Quadtree } from '../Quadtree';
 import { SpatialHashGrid } from '../SpatialHashGrid';
 import { rayPool } from '../ObjectPool';
 import { createWorkerMessage } from '../workers/workerProtocol';
+import { SpatialAudioSynth } from '../../audio/SpatialAudioSynth';
 
 export function runSimulationUnitTests(): { passed: boolean; testCount: number; summary: string } {
   let passedCount = 0;
-  const total = 6;
+  const total = 9;
+
+  // Test Audio: starts muted by default
+  const audio = new SpatialAudioSynth();
+  if (audio.getMuted() === true) passedCount++;
+
+  // Test Audio: toggleMute flips state
+  audio.toggleMute();
+  if (audio.getMuted() === false) passedCount++;
+  audio.toggleMute(); // back to muted
+
+  // Test Audio: volume clamp
+  audio.setVolume(1.5);
+  if (audio.getVolume() === 1.0) passedCount++;
 
   // Test Worker Collision Thread Message
   const workerMsg = createWorkerMessage('BATCH_COLLISIONS', { entities: [], radius: 10 });
