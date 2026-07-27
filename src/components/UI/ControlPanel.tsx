@@ -41,7 +41,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
           </div>
 
           {(openSection === 'pop' || openSection === 'all') && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflow: 'hidden', transition: 'max-height 0.3s ease, opacity 0.3s ease', maxHeight: 600, opacity: 1 }}>
               {/* Start Pop Slider + Sparkline */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 50px', gap: 8, alignItems: 'center' }}>
                 <div>
