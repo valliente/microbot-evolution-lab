@@ -50,6 +50,11 @@ export interface Microbot {
   maxBattery: number;
   energyEfficiency: number;
   enzymeType?: 'SUGRASE' | 'LIPASE' | 'MUTAGENASE';
+  epigeneticStress?: number;
+  radiationExposure?: number;
+  temperature?: number;
+  symbiontPartnerId?: string | null;
+  isParasite?: boolean;
   mass?: number;
   drag?: number;
   hue: number;
