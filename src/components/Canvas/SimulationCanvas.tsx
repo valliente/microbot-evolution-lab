@@ -18,6 +18,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
 
   // Resize Observer for dynamic canvas viewport
@@ -35,6 +37,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         canvas.width = width;
         canvas.height = height;
         engine.resize(width, height);
+        bgDirtyRef.current = true; // Mark background layer for redraw
       }
     };
 
@@ -45,7 +48,43 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     return () => resizeObserver.disconnect();
   }, [engine]);
 
-  // Main 60 FPS Render Loop
+  // Render cached background grid layer (only on resize / first paint)
+  const renderBgLayer = (width: number, height: number): HTMLCanvasElement => {
+    if (!bgLayerRef.current) {
+      bgLayerRef.current = document.createElement('canvas');
+    }
+    const bg = bgLayerRef.current;
+    bg.width = width;
+    bg.height = height;
+    const bctx = bg.getContext('2d');
+    if (!bctx) return bg;
+
+    bctx.fillStyle = '#080E14';
+    bctx.fillRect(0, 0, width, height);
+
+    // Energy grid
+    bctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
+    bctx.lineWidth = 1;
+    const gridSize = 40;
+    for (let x = 0; x < width; x += gridSize) {
+      bctx.beginPath(); bctx.moveTo(x, 0); bctx.lineTo(x, height); bctx.stroke();
+    }
+    for (let y = 0; y < height; y += gridSize) {
+      bctx.beginPath(); bctx.moveTo(0, y); bctx.lineTo(width, y); bctx.stroke();
+    }
+
+    // Spatial hash overlay
+    bctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+    const cellSize = 60;
+    for (let cx = 0; cx < width; cx += cellSize) {
+      bctx.beginPath(); bctx.moveTo(cx, 0); bctx.lineTo(cx, height); bctx.stroke();
+    }
+
+    bgDirtyRef.current = false;
+    return bg;
+  };
+
+  // Main Render Loop
   useEffect(() => {
     let animationFrameId: number;
 
@@ -63,35 +102,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           // Update physics
           engine.update(1.0);
 
-          // Render / Blit cached background grid from offscreen buffer
-          ctx.fillStyle = '#080E14';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
-          ctx.lineWidth = 1;
-          const gridSize = 40;
-          for (let x = 0; x < canvas.width; x += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-            ctx.stroke();
+          // Blit cached background layer (only rebuild on resize)
+          if (bgDirtyRef.current || !bgLayerRef.current) {
+            renderBgLayer(canvas.width, canvas.height);
           }
-          for (let y = 0; y < canvas.height; y += gridSize) {
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(canvas.width, y);
-            ctx.stroke();
-          }
-
-          // Render Spatial Hash Grid Outline Visualizer
-          ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
-          ctx.lineWidth = 1;
-          const cellSize = 60;
-          for (let cx = 0; cx < canvas.width; cx += cellSize) {
-            ctx.beginPath();
-            ctx.moveTo(cx, 0);
-            ctx.lineTo(cx, canvas.height);
-            ctx.stroke();
-          }
+          ctx.drawImage(bgLayerRef.current!, 0, 0);
           const heatmapMode: HeatmapOverlayMode = engine.config.heatmapMode || 'OFF';
           if (heatmapMode !== 'OFF') {
             const cols = 20;
