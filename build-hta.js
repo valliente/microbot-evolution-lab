@@ -15,7 +15,7 @@ const htaHeader = `<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<title>Microbot Evolution Lab - 0.1.203</title>
+<title>Microbot Evolution Lab - 0.1.204</title>
 <HTA:APPLICATION
   ID="MicrobotEvolutionLabApp"
   APPLICATIONNAME="Microbot Evolution Lab"
