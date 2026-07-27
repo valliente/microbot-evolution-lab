@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Dna, Sliders, Sparkles, Plus } from 'lucide-react';
+import { X, Dna, Plus } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface BlueprintStudioModalProps {
@@ -17,7 +17,7 @@ export const BlueprintStudioModal: React.FC<BlueprintStudioModalProps> = ({
   const [speed, setSpeed] = useState<number>(3.2);
   const [visionRadius, setVisionRadius] = useState<number>(160);
   const [energyEfficiency, setEnergyEfficiency] = useState<number>(1.8);
-  const [turnRate, setTurnRate] = useState<number>(0.15);
+  const [turnRate] = useState<number>(0.15);
   const [hue, setHue] = useState<number>(280);
   const [spawnCount, setSpawnCount] = useState<number>(5);
 

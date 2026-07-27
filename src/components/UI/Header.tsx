@@ -28,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   onStep,
   onOpenRosterMenu,
   onOpenGuide,
+  onOpenBlueprintStudio,
   onSpawnFood,
   onSpawnBots,
   onSpawnHazard,

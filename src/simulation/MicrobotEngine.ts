@@ -356,10 +356,12 @@ export class MicrobotEngine {
       }
     }
 
-    // Rebuild Spatial Grid for food lookup
+    // Rebuild Spatial Grid & Quadtree for food lookup
     this.spatialGrid.clear();
+    const quadtree = new Quadtree<EnergyParticle>({ x: 0, y: 0, width: this.width, height: this.height }, 8);
     for (const food of this.energyParticles) {
       this.spatialGrid.insert(food);
+      quadtree.insert(food);
     }
 
     // Spawn energy periodically
