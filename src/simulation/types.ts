@@ -1,5 +1,6 @@
-export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY';
+export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY' | 'INFECTED';
 export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_BLOOM';
+export type CatastropheType = 'NONE' | 'METEOR_STRIKE' | 'VOID_RIFT';
 export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
 export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER';
 export type ResourceType = 'NUTRIENT_DOT' | 'SUPER_CHARGER' | 'MUTAGEN_ORB';
@@ -15,6 +16,23 @@ export interface PheromonePoint {
   y: number;
   intensity: number;
   color: string;
+}
+
+export interface MeteorStrike {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  maxRadius: number;
+  progress: number; // 0 to 1
+}
+
+export interface VoidRift {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  pullForce: number;
 }
 
 export interface Microbot {
@@ -40,6 +58,9 @@ export interface Microbot {
   behaviorState: BehaviorState;
   energyCollected: number;
   isPredator: boolean;
+  isInfected?: boolean;
+  infectionTimer?: number;
+  hasAntibodies?: boolean;
   trail: Vector2D[];
   batteryHistory: number[];
 }
@@ -89,6 +110,7 @@ export interface SimulationConfig {
   showEnergyForceLines: boolean;
   showSensoryRaycasts: boolean;
   showPheromoneTrails: boolean;
+  isSplitView: boolean;
   weatherEvent: WeatherEvent;
   brushMode: BrushMode;
   heatmapMode: HeatmapOverlayMode;
@@ -106,6 +128,8 @@ export interface SimulationStats {
   totalDeaths: number;
   totalBirths: number;
   predatorCount: number;
+  infectedCount: number;
+  shannonDiversityIndex: number;
   currentSeason: Season;
   seasonProgressPct: number;
   populationHistory: number[];
