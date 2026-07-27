@@ -494,7 +494,11 @@ export class MicrobotEngine {
       bot.x = Math.max(15, Math.min(this.width - 15, bot.x));
       bot.y = Math.max(15, Math.min(this.height - 15, bot.y));
 
-      // Epigenetic Stress accumulation on starvation or hazard exposure
+      // Temperature & Radiation Exposure Tracking
+      bot.temperature = 22 + (this.config.weatherEvent === 'SOLAR_FLARE' ? 18 : 0);
+      if (this.config.weatherEvent === 'TOXIC_DRIFT') {
+        bot.radiationExposure = (bot.radiationExposure || 0) + 0.1 * speedMult;
+      }
       if (bot.battery < 30) {
         bot.epigeneticStress = (bot.epigeneticStress || 0) + 0.05 * speedMult;
       }
