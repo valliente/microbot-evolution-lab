@@ -59,7 +59,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
-          const frameStartTime = performance.now();
+          // Skip heavy rendering if document tab is hidden in background
+          if (document.hidden) {
+            animFrameId = requestAnimationFrame(render);
+            return;
+          }
           const MAX_FRAME_BUDGET_MS = 14;
 
           // Update physics
