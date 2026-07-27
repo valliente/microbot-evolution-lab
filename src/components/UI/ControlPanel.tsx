@@ -24,6 +24,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
         gap: 6
       }}>
         <span style={{ color: '#00E5FF' }}>●</span> PARAMETERS & CONTROLS
+        <span style={{ fontSize: '0.62rem', color: '#00E676', marginLeft: 'auto' }}>⚡ WORKER ON</span>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
