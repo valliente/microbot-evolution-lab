@@ -12,6 +12,7 @@ import { GuideModal } from './components/UI/GuideModal';
 import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
 import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
+import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -235,6 +236,8 @@ export const App: React.FC = () => {
             onOpenLineageModal={() => setIsLineageOpen(true)}
           />
           <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
+          {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
+          <GeneticConstellation3D bots={engine?.microbots || []} />
           <GeneticDriftHeatmap stats={stats} />
         </div>
 
