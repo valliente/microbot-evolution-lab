@@ -521,7 +521,19 @@ export class MicrobotEngine {
         }
       }
 
-      // Symbiotic Energy Sharing Pairing
+      // Parasitic Energy Drain Mechanics
+      if (bot.isParasite) {
+        for (const host of this.microbots) {
+          if (host.id !== bot.id && !host.isParasite) {
+            const dist = Math.hypot(host.x - bot.x, host.y - bot.y);
+            if (dist < 18) {
+              const siphon = 0.5 * speedMult;
+              host.battery = Math.max(0, host.battery - siphon);
+              bot.battery = Math.min(bot.maxBattery, bot.battery + siphon);
+            }
+          }
+        }
+      }
       for (const partner of this.microbots) {
         if (partner.id !== bot.id && !bot.isPredator && !partner.isPredator) {
           const dist = Math.hypot(partner.x - bot.x, partner.y - bot.y);
