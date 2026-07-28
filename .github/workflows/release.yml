@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.207
+name: Publish Release - 0.1.208
 
 on:
   push:
@@ -44,10 +44,10 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.207"
+          name: "0.1.208"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🧬 Microbot Evolution Lab - 0.1.207 Quantum Release
+            ## 🧬 Microbot Evolution Lab - 0.1.208 Performance Release
 
             ### 🚀 Highlights
             - Quantum Genetic Engine
