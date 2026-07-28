@@ -108,6 +108,7 @@ export interface Microbot {
   hasAntibodies?: boolean;
   trail: Vector2D[];
   batteryHistory: number[];
+  genome?: QuantumGenome;
 }
 
 export interface EnergyParticle {
