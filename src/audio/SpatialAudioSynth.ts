@@ -103,6 +103,50 @@ export class SpatialAudioSynth {
   public getMuted(): boolean {
     return this.isMuted;
   }
+
+  public playDisasterSound(type: 'METEOR' | 'VOID' | 'VIRUS' | 'STORM' | 'INVERSION'): void {
+    if (this.isMuted) return;
+    if (this.activeOscCount >= this.maxConcurrentOsc) return;
+
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      if (type === 'METEOR' || type === 'STORM') {
+         osc.type = 'sawtooth';
+         osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+         osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 1.0);
+      } else if (type === 'VOID' || type === 'INVERSION') {
+         osc.type = 'triangle';
+         osc.frequency.setValueAtTime(40, this.ctx.currentTime);
+         osc.frequency.linearRampToValueAtTime(120, this.ctx.currentTime + 0.8);
+      } else {
+         osc.type = 'square';
+         osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+      }
+
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.15, this.ctx.currentTime + 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.0);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      this.activeOscCount++;
+      osc.onended = () => {
+        this.activeOscCount = Math.max(0, this.activeOscCount - 1);
+        try { gain.disconnect(); } catch (_) {}
+      };
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 1.0);
+    } catch (e) {
+       // Ignore autoplay policy errors
+    }
+  }
 }
 
 export const spatialAudio = new SpatialAudioSynth();

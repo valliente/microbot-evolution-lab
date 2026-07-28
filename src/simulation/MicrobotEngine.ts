@@ -321,6 +321,7 @@ export class MicrobotEngine {
   public triggerMeteorStrike(x?: number, y?: number): void {
     const mx = x ?? Math.random() * (this.width - 200) + 100;
     const my = y ?? Math.random() * (this.height - 200) + 100;
+    spatialAudio.playDisasterSound('METEOR');
     this.meteors.push({
       id: `M-${Date.now()}`,
       x: mx,
@@ -334,6 +335,7 @@ export class MicrobotEngine {
   public triggerVoidRift(x?: number, y?: number): void {
     const rx = x ?? Math.random() * (this.width - 200) + 100;
     const ry = y ?? Math.random() * (this.height - 200) + 100;
+    spatialAudio.playDisasterSound('VOID');
     this.voidRifts.push({
       id: `VR-${Date.now()}`,
       x: rx,
@@ -373,6 +375,7 @@ export class MicrobotEngine {
   }
 
   public triggerRadiationStorm(): void {
+    spatialAudio.playDisasterSound('STORM');
     this.activeDisasters.push({
       type: 'RADIATION_STORM',
       active: true,
@@ -393,6 +396,7 @@ export class MicrobotEngine {
   }
 
   public triggerMagneticInversion(): void {
+    spatialAudio.playDisasterSound('INVERSION');
     this.activeDisasters.push({
       type: 'MAGNETIC_INVERSION',
       active: true,
@@ -864,6 +868,7 @@ export class MicrobotEngine {
   }
 
   public triggerOutbreak(): void {
+    spatialAudio.playDisasterSound('VIRUS');
     if (this.microbots.length === 0) return;
     const targetIdx = Math.floor(Math.random() * this.microbots.length);
     this.microbots[targetIdx].isInfected = true;
