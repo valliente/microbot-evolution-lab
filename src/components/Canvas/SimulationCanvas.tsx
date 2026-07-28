@@ -405,19 +405,36 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               }
             }
 
-            // Bioluminescent Movement Trail with fading alpha
+            // Bioluminescent Movement Trail with fading alpha and Quantum State overrides
             if (engine.config.showMovementTrails && bot.trail.length > 1) {
+              const isDecaying = bot.genome && Object.values(bot.genome).some((a: any) => a.state === 'DECAYING');
+              const isEntangled = bot.genome && Object.values(bot.genome).some((a: any) => a.state === 'ENTANGLED');
+              
               const trailLen = bot.trail.length;
               for (let i = 1; i < trailLen; i++) {
                 const alpha = (i / trailLen) * 0.35;
-                ctx.strokeStyle = bot.color;
-                ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                
+                if (isDecaying) {
+                  ctx.strokeStyle = i % 2 === 0 ? '#f43f5e' : bot.color;
+                  ctx.lineWidth = 1 + (i / trailLen) * 2;
+                  ctx.setLineDash([2, 4]);
+                } else if (isEntangled) {
+                  ctx.strokeStyle = '#E040FB';
+                  ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                  ctx.setLineDash([4, 2]);
+                } else {
+                  ctx.strokeStyle = bot.color;
+                  ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                  ctx.setLineDash([]);
+                }
+                
                 ctx.globalAlpha = alpha;
                 ctx.beginPath();
                 ctx.moveTo(bot.trail[i - 1].x, bot.trail[i - 1].y);
                 ctx.lineTo(bot.trail[i].x, bot.trail[i].y);
                 ctx.stroke();
               }
+              ctx.setLineDash([]);
               ctx.globalAlpha = 1.0;
             }
 
