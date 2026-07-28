@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.206
+name: Publish Release - 0.1.207
 
 on:
   push:
@@ -36,30 +36,24 @@ jobs:
         run: |
           Compress-Archive -Path "PLAY.bat", "MicrobotEvolutionLab.hta", "dist-standalone\index.html", "README.md", "LICENSE" -DestinationPath "Microbot-Evolution-Lab-Windows.zip" -Force
 
+      - name: Generate Checksums
+        run: |
+          Get-FileHash -Path MicrobotEvolutionLab.exe -Algorithm SHA256 > checksums.txt
+          Get-FileHash -Path Microbot-Evolution-Lab-Windows.zip -Algorithm SHA256 >> checksums.txt
+
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.206"
+          name: "0.1.207"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🔧 Microbot Evolution Lab - 0.1.206 Audio Fix & UI Polish Release
+            ## 🧬 Microbot Evolution Lab - 0.1.207 Quantum Release
 
-            ### 🔇 Critical Audio Bug Fix
-            - Fixed corrupted oscillator loops causing weird pitch/buzzing noises
-            - Audio engine now starts **muted by default** — no surprise noises on launch
-            - Added master volume slider and quick mute toggle in the header toolbar
-            - Rate-limited oscillator spawns (80ms cooldown), capped at 4 concurrent, clamped to 220–880 Hz
-
-            ### ⚡ Performance Optimizations
-            - Cached background grid to offscreen canvas layer (only redraws on resize)
-            - Expanded object pools: trail points, food particles, and raycasts
-            - Quadtree depth guard prevents runaway subdivision on population spikes
-            - React.memo + useMemo on sidebar charts to eliminate redundant redraws
-
-            ### 🎨 UI Polish
-            - Sharper glassmorphism contrast with hover glow transitions
-            - Smooth accordion animations on collapsible parameter sections
-            - Fading bioluminescent movement trails with directional heading vectors
+            ### 🚀 Highlights
+            - Quantum Genetic Engine
+            - Radiation Storm & Magnetic Inversion Disasters
+            - SharedArrayBuffer Threading Overhaul
+            - Dynamic JSON/CSV Export
           draft: false
           prerelease: false
           files: |
@@ -68,5 +62,6 @@ jobs:
             PLAY.bat
             Microbot-Evolution-Lab-Windows.zip
             dist-standalone/index.html
+            checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
