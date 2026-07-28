@@ -1,3 +1,5 @@
+import { resolveWorkerUrl } from '../../utils/pathSanitizer';
+
 export class ThreadManager {
   private worker: Worker | null = null;
   private isSupported: boolean;
@@ -10,7 +12,7 @@ export class ThreadManager {
     if (!this.isSupported) return;
     try {
       // Use relative URL resolution for Vite dev + packaged file:// compatibility
-      const resolvedUrl = new URL(workerScriptUrl, import.meta.url).href;
+      const resolvedUrl = resolveWorkerUrl(workerScriptUrl);
       this.worker = new Worker(resolvedUrl, { type: 'module' });
     } catch (e) {
       // Fallback: try direct URL (non-module) for legacy bundlers
