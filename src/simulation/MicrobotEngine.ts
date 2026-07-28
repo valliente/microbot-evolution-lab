@@ -22,6 +22,8 @@ export class MicrobotEngine {
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: {x: number, y: number, vx: number, vy: number, life: number, color: string}[] = [];
   public selectedMicrobotId: string | null = null;
+  public positionBuffer: SharedArrayBuffer;
+  public positionsView: Float32Array;
 
   public spatialGrid: SpatialGrid;
   public spatialHash: SpatialHashGrid<EnergyParticle>;
@@ -50,6 +52,11 @@ export class MicrobotEngine {
     this.config = config;
     this.spatialGrid = new SpatialGrid(width, height, 50);
     this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
+    
+    // Allocate 1000 bots * 2 coords (x,y) * 4 bytes
+    this.positionBuffer = new SharedArrayBuffer(1000 * 2 * 4);
+    this.positionsView = new Float32Array(this.positionBuffer);
+    
     this.generateBiomes();
 
     this.resetSimulation();
@@ -525,9 +532,18 @@ export class MicrobotEngine {
     const eatenFoodIds = new Set<string>();
     const deadBotIds = new Set<string>();
 
+    let botIndex = 0;
+
     // Update Microbots
     for (const bot of this.microbots) {
       bot.age += speedMult;
+
+      // Update SharedArrayBuffer for SIMD/Worker thread read access
+      if (botIndex < 1000) {
+        this.positionsView[botIndex * 2] = bot.x;
+        this.positionsView[botIndex * 2 + 1] = bot.y;
+      }
+      botIndex++;
 
       // Update Predator Status dynamically based on evolving traits
       if (!bot.isPredator && bot.speed > 3.4 && bot.energyEfficiency > 1.4) {
