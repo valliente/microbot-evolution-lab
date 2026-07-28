@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -17,6 +17,7 @@ export class MicrobotEngine {
   public pheromones: PheromonePoint[] = [];
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
+  public biomes: SectorBiome[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -46,8 +47,51 @@ export class MicrobotEngine {
     this.config = config;
     this.spatialGrid = new SpatialGrid(width, height, 50);
     this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
+    this.generateBiomes();
 
     this.resetSimulation();
+  }
+
+  public generateBiomes(): void {
+    this.biomes = [];
+    const cols = 2;
+    const rows = 2;
+    const sectorWidth = this.width / cols;
+    const sectorHeight = this.height / rows;
+
+    const biomeTypes: SectorBiome['type'][] = ['NORMAL', 'TOXIC_SLUDGE', 'CRYO_ZONE', 'HIGH_G_FIELD'];
+    
+    // Shuffle biome types
+    for (let i = biomeTypes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [biomeTypes[i], biomeTypes[j]] = [biomeTypes[j], biomeTypes[i]];
+    }
+
+    let typeIndex = 0;
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const type = biomeTypes[typeIndex % biomeTypes.length];
+        let color = 'rgba(255,255,255,0)';
+        if (type === 'TOXIC_SLUDGE') color = 'rgba(163, 230, 53, 0.05)';
+        if (type === 'CRYO_ZONE') color = 'rgba(56, 189, 248, 0.05)';
+        if (type === 'HIGH_G_FIELD') color = 'rgba(244, 63, 94, 0.05)';
+
+        this.biomes.push({
+          id: `biome-${i}-${j}`,
+          type,
+          x: i * sectorWidth,
+          y: j * sectorHeight,
+          width: sectorWidth,
+          height: sectorHeight,
+          color
+        });
+        typeIndex++;
+      }
+    }
+  }
+
+  public getBiomeAt(x: number, y: number): SectorBiome | undefined {
+    return this.biomes.find(b => x >= b.x && x <= b.x + b.width && y >= b.y && y <= b.y + b.height);
   }
 
   public resetSimulation(): void {
@@ -94,6 +138,7 @@ export class MicrobotEngine {
     this.width = Math.max(600, width);
     this.height = Math.max(400, height);
     this.spatialGrid = new SpatialGrid(this.width, this.height, 60);
+    this.generateBiomes();
   }
 
   public spawnMicrobot(parent?: Microbot): Microbot {
