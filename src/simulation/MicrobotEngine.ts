@@ -488,6 +488,9 @@ export class MicrobotEngine {
         if (currentBiome.type === 'TOXIC_SLUDGE') {
           currentSpeed *= 0.6; // Friction
           bot.battery -= 0.15 * speedMult; // Acid burn
+        } else if (currentBiome.type === 'CRYO_ZONE') {
+          currentSpeed *= 0.4; // Extreme dampening
+          bot.battery -= (0.08 * (1.5 / bot.energyEfficiency)) * speedMult; // Cold drain
         }
       }
       for (const field of this.speedFields) {
