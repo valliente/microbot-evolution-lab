@@ -1,5 +1,16 @@
 export function clamp(val: number, min: number, max: number): number {
+  if (isNaN(val)) return min;
   return Math.max(min, Math.min(max, val));
+}
+
+export function safeSqrt(val: number): number {
+  if (isNaN(val) || val < 0) return 0;
+  return Math.sqrt(val);
+}
+
+export function safeAtan2(y: number, x: number): number {
+  if (isNaN(y) || isNaN(x)) return 0;
+  return Math.atan2(y, x);
 }
 
 export function wrapAngle(angle: number): number {
