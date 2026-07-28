@@ -901,6 +901,12 @@ export class MicrobotEngine {
     const visionHistogram = new Array(10).fill(0);
     const efficiencyHistogram = new Array(10).fill(0);
     const diversityBuckets = new Array(12).fill(0);
+    const biomePopulation: Record<string, number> = {
+      'NORMAL': 0,
+      'TOXIC_SLUDGE': 0,
+      'CRYO_ZONE': 0,
+      'HIGH_G_FIELD': 0
+    };
 
     for (const b of this.microbots) {
       sumSpeed += b.speed;
@@ -924,6 +930,13 @@ export class MicrobotEngine {
       // Hue diversity bucket (0 to 360 degrees)
       const dIdx = Math.max(0, Math.min(11, Math.floor((b.hue / 360) * 12)));
       diversityBuckets[dIdx]++;
+
+      const biome = this.getBiomeAt(b.x, b.y);
+      if (biome && biomePopulation[biome.type] !== undefined) {
+        biomePopulation[biome.type]++;
+      } else {
+        biomePopulation['NORMAL']++;
+      }
     }
 
     // Compute Shannon Diversity Index: H = -sum(p_i * ln(p_i))
@@ -960,6 +973,7 @@ export class MicrobotEngine {
       visionHistogram,
       efficiencyHistogram,
       diversityBuckets,
+      biomePopulation,
       historyTimeline: this.historyTimeline
     };
   }

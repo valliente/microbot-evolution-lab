@@ -186,6 +186,7 @@ export interface SimulationStats {
   visionHistogram: number[];
   efficiencyHistogram: number[];
   diversityBuckets: number[];
+  biomePopulation: Record<string, number>;
   historyTimeline: {
     time: number;
     population: number;

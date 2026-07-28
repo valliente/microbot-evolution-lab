@@ -3,6 +3,7 @@ import { Activity, Users, Dna, Zap, Heart, Skull } from 'lucide-react';
 import { SimulationStats } from '../../simulation/types';
 import { PopulationChart } from './PopulationChart';
 import { QuantumDiversityChart } from './QuantumDiversityChart';
+import { BiomePopulationChart } from './BiomePopulationChart';
 
 interface StatsDashboardProps {
   stats: SimulationStats;
@@ -12,7 +13,7 @@ interface StatsDashboardProps {
 export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, maxPopulation }) => {
   return (
     <div className="panel-card" style={{ padding: '10px 14px' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr) 180px 180px', gap: 10, alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr) 180px 180px 220px', gap: 10, alignItems: 'center' }}>
         {/* Metric Cards */}
         <div style={{ background: 'rgba(3, 7, 18, 0.6)', padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ fontSize: '0.62rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace" }}>
@@ -76,6 +77,11 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, maxPopula
         {/* Real-time Quantum Diversity Chart */}
         <div style={{ height: 44, background: 'rgba(3, 7, 18, 0.8)', borderRadius: 8, padding: '4px 8px', border: '1px solid rgba(255,255,255,0.08)' }}>
           <QuantumDiversityChart history={stats.historyTimeline} />
+        </div>
+
+        {/* Real-time Biome Distribution Chart */}
+        <div style={{ height: 44, background: 'rgba(3, 7, 18, 0.8)', borderRadius: 8, padding: '4px 8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <BiomePopulationChart biomePopulation={stats.biomePopulation} totalPopulation={stats.currentPopulation} />
         </div>
       </div>
     </div>
