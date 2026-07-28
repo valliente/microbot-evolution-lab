@@ -19,6 +19,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const trailLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
   const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
@@ -141,7 +142,34 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           if (bgDirtyRef.current || !bgLayerRef.current) {
             renderBgLayer(canvas.width, canvas.height);
           }
+          
+          if (!trailLayerRef.current) {
+             trailLayerRef.current = document.createElement('canvas');
+             trailLayerRef.current.width = canvas.width;
+             trailLayerRef.current.height = canvas.height;
+          } else if (trailLayerRef.current.width !== canvas.width || trailLayerRef.current.height !== canvas.height) {
+             trailLayerRef.current.width = canvas.width;
+             trailLayerRef.current.height = canvas.height;
+          }
+          
+          const tctx = trailLayerRef.current.getContext('2d');
+          if (tctx) {
+             tctx.fillStyle = 'rgba(8, 14, 20, 0.25)'; // Fading color for interpolation buffer
+             tctx.fillRect(0, 0, canvas.width, canvas.height);
+          }
+
+          // Main canvas clearing
           ctx.drawImage(bgLayerRef.current!, 0, 0);
+          
+          if (engine.config.enableFrameInterpolation) {
+             ctx.drawImage(trailLayerRef.current, 0, 0);
+          }
+
+          // We swap ctx for tctx so all entities are drawn to the trail buffer for interpolation
+          // However, to keep it simple and avoid refactoring all draw calls, we will draw entities directly to ctx, 
+          // and then copy ctx to trailLayerRef for the NEXT frame.
+          // This way, next frame we fade trailLayerRef and draw it on top of background.
+
           const heatmapMode: HeatmapOverlayMode = engine.config.heatmapMode || 'OFF';
           if (heatmapMode !== 'OFF') {
             const cols = 20;
@@ -208,9 +236,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.beginPath();
             ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
             ctx.stroke();
+            ctx.restore();
           }
 
-          // 2. Draw Hazard Zones
+          // Copy current frame to trail buffer for the next frame's interpolation
+          if (tctx && engine.config.enableFrameInterpolation) {
+             // To prevent infinite smearing of static UI, we only copy the canvas state before UI overlays
+             tctx.drawImage(canvas, 0, 0);
+          }
+
+          // 9. Draw Tool Overlays (Brush)
           for (const hazard of engine.hazards) {
             const pulse = Math.sin(Date.now() / 350) * 4;
             const r = Math.max(10, hazard.radius + pulse);

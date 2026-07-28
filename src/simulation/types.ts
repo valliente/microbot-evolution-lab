@@ -161,6 +161,7 @@ export interface SimulationConfig {
   heatmapMode: HeatmapOverlayMode;
   currentSeason: Season;
   autoSeasonCycle: boolean;
+  enableFrameInterpolation: boolean;
 }
 
 export interface SimulationStats {
