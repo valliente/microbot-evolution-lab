@@ -191,5 +191,6 @@ export interface SimulationStats {
     population: number;
     avgSpeed: number;
     avgVision: number;
+    diversity: number;
   }[];
 }

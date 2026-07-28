@@ -872,7 +872,8 @@ export class MicrobotEngine {
       time: Math.floor(this.frameCount / 60),
       population: stats.currentPopulation,
       avgSpeed: stats.avgSpeed,
-      avgVision: stats.avgVision
+      avgVision: stats.avgVision,
+      diversity: stats.shannonDiversityIndex
     });
     if (this.historyTimeline.length > 60) {
       this.historyTimeline.shift();
