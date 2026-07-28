@@ -179,6 +179,7 @@ export interface SimulationStats {
   shannonDiversityIndex: number;
   currentSeason: Season;
   seasonProgressPct: number;
+  actualTPS: number;
   populationHistory: number[];
   birthHistory: number[];
   deathHistory: number[];

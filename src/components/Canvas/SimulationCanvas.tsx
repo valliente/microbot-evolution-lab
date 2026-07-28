@@ -82,6 +82,17 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     };
   }, [engine]);
 
+  // Fix(memory): properly unbind window-level event listeners
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      isMouseDownRef.current = false;
+    };
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, []);
+
   // Render cached background grid layer (only on resize / first paint)
   const renderBgLayer = (width: number, height: number): HTMLCanvasElement => {
     if (!bgLayerRef.current) {

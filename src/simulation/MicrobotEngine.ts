@@ -7,6 +7,7 @@ import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 import { ccdSubstep, sanitizeVector, clamp } from './physics';
+import { ThreadManager } from './workers/ThreadManager';
 
 export class MicrobotEngine {
   public width: number;
@@ -41,6 +42,11 @@ export class MicrobotEngine {
   public birthHistory: number[] = new Array(30).fill(0);
   public deathHistory: number[] = new Array(30).fill(0);
   public historyTimeline: SimulationStats['historyTimeline'] = [];
+  public positionBuffer: SharedArrayBuffer;
+  public positionsView: Float32Array;
+  
+  private lastFrameTime: number = performance.now();
+  private actualTPS: number = 0;
 
   private recentBirths: number = 0;
   private recentDeaths: number = 0;
@@ -52,7 +58,10 @@ export class MicrobotEngine {
     this.width = width;
     this.height = height;
     this.config = config;
-    this.spatialGrid = new SpatialGrid(width, height, 50);
+    this.spatialGrid = new SpatialGrid(width, height, 100);
+    this.threadManager = new ThreadManager();
+    // Initialize Web Worker for physics collisions if configured
+    this.threadManager.initWorker('/workers/simulationWorker.ts');
     this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
     
     // Allocate 1000 bots * 2 coords (x,y) * 4 bytes
@@ -117,10 +126,19 @@ export class MicrobotEngine {
     this.totalBirths = 0;
     this.totalDeaths = 0;
     this.generationCount = 1;
+    this.nextBotIdNum = 1;
     this.frameCount = 0;
     this.seasonFrameCount = 0;
-    this.nextBotIdNum = 1;
-    this.nextFoodIdNum = 1;
+    this.lastFrameTime = performance.now();
+    this.actualTPS = 0;
+    this.historyTimeline = [];
+    
+    // Fix(memory): dispose orphaned Web Worker contexts to prevent RAM growth over time
+    this.threadManager.terminate();
+    this.threadManager = new ThreadManager();
+    this.threadManager.initWorker('/workers/simulationWorker.ts');
+
+    this.spatialGrid.clear();
     this.nextFieldIdNum = 1;
     this.recentBirths = 0;
     this.recentDeaths = 0;
@@ -448,8 +466,12 @@ export class MicrobotEngine {
 
   public update(dt: number = 1.0): void {
     if (this.config.isPaused) return;
+    
+    const now = performance.now();
+    const deltaMs = now - this.lastFrameTime;
+    this.actualTPS = deltaMs > 0 ? 1000 / deltaMs : 0;
+    this.lastFrameTime = now;
 
-    this.frameCount++;
     const speedMult = this.config.simSpeed * dt;
 
     // Automatic Season Rotation Engine
@@ -981,6 +1003,7 @@ export class MicrobotEngine {
       shannonDiversityIndex: parseFloat(shannonIndex.toFixed(2)),
       currentSeason: this.config.currentSeason,
       seasonProgressPct,
+      actualTPS: this.actualTPS,
       populationHistory: [...this.populationHistory],
       birthHistory: [...this.birthHistory],
       deathHistory: [...this.deathHistory],

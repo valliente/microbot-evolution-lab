@@ -15,6 +15,7 @@ import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
 import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
 import { ErrorOverlay } from './components/UI/ErrorOverlay';
 import { telemetryManager } from './utils/telemetryManager';
+import { spatialAudio } from './audio/SpatialAudioSynth';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -48,6 +49,7 @@ export const App: React.FC = () => {
     return () => {
       window.removeEventListener('error', handleGlobalError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      spatialAudio.dispose();
     };
   }, []);
 
@@ -73,6 +75,12 @@ export const App: React.FC = () => {
         setSelectedBot(nextBot);
       } else if (current) {
         setSelectedBot({ ...current });
+      } else {
+        // Fix(ui): resolve state freeze in Bot Data Hub when tracked bot dies during selection
+        if (engine.selectedMicrobotId) {
+           engine.selectedMicrobotId = null;
+        }
+        setSelectedBot(null);
       }
     });
 

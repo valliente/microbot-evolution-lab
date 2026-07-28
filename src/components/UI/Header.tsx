@@ -141,7 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
             onChange={(e) => onUpdateConfig({ simSpeed: parseFloat(e.target.value) })}
             style={{ width: 70, height: 4 }}
           />
-          <span style={{ fontWeight: 800, width: 32 }}>{config.simSpeed.toFixed(2)}x</span>
+          <span style={{ fontWeight: 800, width: 64 }}>{config.simSpeed.toFixed(2)}x ({stats.actualTPS ? stats.actualTPS.toFixed(0) : 0} TPS)</span>
         </div>
 
         {/* FPS Target Switcher */}

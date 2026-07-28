@@ -12,6 +12,19 @@ export class SpatialAudioSynth {
     // Lazy AudioContext initialization on first user interaction
   }
 
+  // Fix(audio): sanitize audio node cleanup on app exit to prevent ghost hums
+  public dispose(): void {
+    if (this.masterGain) {
+      try { this.masterGain.disconnect(); } catch (e) {}
+      this.masterGain = null;
+    }
+    if (this.ctx) {
+      try { this.ctx.close(); } catch (e) {}
+      this.ctx = null;
+    }
+    this.activeOscCount = 0;
+  }
+
   private initCtx(): void {
     if (!this.ctx && typeof window !== 'undefined') {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
