@@ -491,6 +491,13 @@ export class MicrobotEngine {
         } else if (currentBiome.type === 'CRYO_ZONE') {
           currentSpeed *= 0.4; // Extreme dampening
           bot.battery -= (0.08 * (1.5 / bot.energyEfficiency)) * speedMult; // Cold drain
+        } else if (currentBiome.type === 'HIGH_G_FIELD') {
+          const centerX = currentBiome.x + (currentBiome.width / 2);
+          const centerY = currentBiome.y + (currentBiome.height / 2);
+          const angleToCenter = Math.atan2(centerY - bot.y, centerX - bot.x);
+          const gForce = 0.5;
+          bot.vx += Math.cos(angleToCenter) * gForce * speedMult;
+          bot.vy += Math.sin(angleToCenter) * gForce * speedMult;
         }
       }
       for (const field of this.speedFields) {
