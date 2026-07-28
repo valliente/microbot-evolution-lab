@@ -62,6 +62,19 @@ export class Quadtree<T extends { x: number; y: number }> {
     }
 
     if (!this.divided) {
+      // Fix(perf): optimize Quadtree node splitting by preventing splits if all points share the same location
+      let allSame = true;
+      for (let i = 1; i < this.points.length; i++) {
+        if (this.points[i].x !== this.points[0].x || this.points[i].y !== this.points[0].y) {
+          allSame = false;
+          break;
+        }
+      }
+      if (allSame && this.points.length > 0 && point.x === this.points[0].x && point.y === this.points[0].y) {
+        this.points.push(point);
+        return true;
+      }
+
       this.subdivide();
       // Re-insert existing points into children
       for (const p of this.points) {

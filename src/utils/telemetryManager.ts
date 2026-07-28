@@ -16,11 +16,18 @@ class TelemetryManager {
     return () => this.listeners.delete(listener);
   }
 
+  private pendingUpdate: boolean = false;
+
   public startPolling(engine: MicrobotEngine, frequencyMs: number = 80) {
     if (this.intervalId) this.stopPolling();
     this.intervalId = window.setInterval(() => {
-      this.lastStats = engine.getStats();
-      this.listeners.forEach((listener) => listener(this.lastStats!));
+      if (this.pendingUpdate) return;
+      this.pendingUpdate = true;
+      requestAnimationFrame(() => {
+        this.lastStats = engine.getStats();
+        this.listeners.forEach((listener) => listener(this.lastStats!));
+        this.pendingUpdate = false;
+      });
     }, frequencyMs);
   }
 

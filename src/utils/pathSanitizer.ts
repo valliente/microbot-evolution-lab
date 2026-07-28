@@ -5,13 +5,18 @@ export function sanitizePath(relativePath: string): string {
     window.location.href.includes('app.asar') ||
     window.location.protocol === 'tauri:';
 
+  // Fix(build): implement dynamic import.meta.env pathing for packaged assets
+  let cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
+    const base = import.meta.env.BASE_URL;
+    return base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+  }
+
   if (!isPackaged) {
     return relativePath;
   }
 
-  // Sanitize for file:// context where absolute paths break
-  let cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
-  
   // Ensure we don't duplicate base paths in bundled environments
   if (cleanPath.startsWith('./')) {
     cleanPath = cleanPath.substring(2);

@@ -231,7 +231,8 @@ body {
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
-  padding-right: 4px;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
 }
 
 .main-viewport-col {

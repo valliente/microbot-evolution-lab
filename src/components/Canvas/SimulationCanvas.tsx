@@ -154,6 +154,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   // Main Render Loop
   useEffect(() => {
     let animationFrameId: number;
+    let lastTime = performance.now();
 
     const render = () => {
       const canvas = canvasRef.current;
@@ -168,8 +169,13 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             return;
           }
 
-          // Update physics
-          engine.update(1.0);
+          // Update physics with clamped delta-time to prevent tab-resume jumps
+          const now = performance.now();
+          let dt = (now - lastTime) / (1000 / (engine.config.targetFPS || 60));
+          if (dt > 3.0) dt = 3.0; // clamp max 3 frames of time
+          lastTime = now;
+
+          engine.update(dt);
 
           // Blit cached background layer (only rebuild on resize)
           if (bgDirtyRef.current || !bgLayerRef.current) {
