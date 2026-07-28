@@ -21,7 +21,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
   const trailLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
-  const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
   const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
   const frameCountRef = useRef<number>(0);

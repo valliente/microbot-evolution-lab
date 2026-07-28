@@ -1,5 +1,4 @@
 import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster } from './types';
-import { processGenomeDecay } from './genetics/quantumDecay';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -25,8 +24,7 @@ export class MicrobotEngine {
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
-  public positionBuffer: SharedArrayBuffer;
-  public positionsView: Float32Array;
+  public threadManager: ThreadManager;
 
   public spatialGrid: SpatialGrid;
   public spatialHash: SpatialHashGrid<EnergyParticle>;

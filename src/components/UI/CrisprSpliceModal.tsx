@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Microbot, QuantumAllele } from '../../simulation/types';
-import { Dna, Save, Scissors } from 'lucide-react';
+import { Save, Scissors } from 'lucide-react';
 import { applyCrisprSplice } from '../../simulation/genetics/crisprSplice';
 
 interface CrisprSpliceModalProps {
@@ -17,18 +17,17 @@ export const CrisprSpliceModal: React.FC<CrisprSpliceModalProps> = ({ bot, onClo
     if (!bot.genome || !selectedGene) return;
     const allele = genome[selectedGene] as QuantumAllele;
     if (allele) {
-       applyCrisprSplice(bot.genome, selectedGene as keyof typeof bot.genome, {
-         baseValue: allele.baseValue,
-         variance: allele.variance,
-         observationProbability: 1.0, // Force observation
-         state: 'OBSERVED'
-       });
+       bot.genome = applyCrisprSplice(bot.genome, [{
+         targetGene: selectedGene as keyof typeof bot.genome,
+         newValue: allele.baseValue,
+         varianceOverride: allele.quantumVariance
+       }]);
        onApply();
        onClose();
     }
   };
 
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'baseValue' | 'variance') => {
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'baseValue' | 'quantumVariance') => {
     if (!selectedGene) return;
     setGenome((prev: any) => ({
       ...prev,
@@ -66,7 +65,7 @@ export const CrisprSpliceModal: React.FC<CrisprSpliceModalProps> = ({ bot, onClo
         <p style={{ color: '#9CA3AF', fontSize: '0.85rem' }}>Select a quantum allele to override its base sequence and collapse its superposition forcibly.</p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          {alleles.map(([geneName, allele]) => (
+          {alleles.map(([geneName]) => (
             <button
               key={geneName}
               onClick={() => setSelectedGene(geneName)}
@@ -101,12 +100,12 @@ export const CrisprSpliceModal: React.FC<CrisprSpliceModalProps> = ({ bot, onClo
             </label>
 
             <label style={{ display: 'flex', flexDirection: 'column', gap: 4, color: '#E5E7EB', fontSize: '0.8rem' }}>
-              Mutation Variance: {(genome[selectedGene] as QuantumAllele).variance.toFixed(2)}
+               Quantum Variance: {(genome[selectedGene] as QuantumAllele).quantumVariance.toFixed(2)}
               <input 
                 type="range" 
-                min={0} max={5} step={0.1} 
-                value={(genome[selectedGene] as QuantumAllele).variance}
-                onChange={(e) => handleSliderChange(e, 'variance')}
+                min={0} max={2} step={0.05} 
+                value={(genome[selectedGene] as QuantumAllele).quantumVariance}
+                onChange={(e) => handleSliderChange(e, 'quantumVariance')}
               />
             </label>
 

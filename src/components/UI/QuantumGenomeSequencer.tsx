@@ -1,6 +1,6 @@
 import React from 'react';
 import { Microbot, QuantumAllele } from '../../simulation/types';
-import { Dna, Zap, AlertTriangle } from 'lucide-react';
+import { Dna } from 'lucide-react';
 
 interface QuantumGenomeSequencerProps {
   bot: Microbot | null;
@@ -80,7 +80,7 @@ export const QuantumGenomeSequencer: React.FC<QuantumGenomeSequencerProps> = ({ 
               
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#9CA3AF' }}>
                 <span>Val: {a.baseValue.toFixed(2)}</span>
-                <span>Var: ±{a.variance.toFixed(2)}</span>
+                <span>Var: ±{a.quantumVariance.toFixed(2)}</span>
                 <span>Obs Prob: {(a.observationProbability * 100).toFixed(0)}%</span>
               </div>
 
