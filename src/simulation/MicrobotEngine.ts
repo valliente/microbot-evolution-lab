@@ -1,4 +1,5 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster } from './types';
+import { processGenomeDecay } from './genetics/quantumDecay';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -18,6 +19,7 @@ export class MicrobotEngine {
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
   public biomes: SectorBiome[] = [];
+  public activeDisasters: EnvironmentalDisaster[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -100,6 +102,7 @@ export class MicrobotEngine {
     this.hazards = [];
     this.speedFields = [];
     this.pheromones = [];
+    this.activeDisasters = [];
     this.selectedMicrobotId = null;
     this.totalBirths = 0;
     this.totalDeaths = 0;
@@ -361,6 +364,15 @@ export class MicrobotEngine {
     }
   }
 
+  public triggerRadiationStorm(): void {
+    this.activeDisasters.push({
+      type: 'RADIATION_STORM',
+      active: true,
+      intensity: 0.8,
+      durationLeft: 400
+    });
+  }
+
   public getLineageTree(botId: string): { parent: Microbot | null; current: Microbot | null; children: Microbot[] } {
     const current = this.microbots.find((b) => b.id === botId) || null;
     let parent: Microbot | null = null;
@@ -440,6 +452,17 @@ export class MicrobotEngine {
       }
     }
 
+    // Process active disasters
+    for (let i = this.activeDisasters.length - 1; i >= 0; i--) {
+      const disaster = this.activeDisasters[i];
+      disaster.durationLeft -= speedMult;
+      if (disaster.durationLeft <= 0) {
+        this.activeDisasters.splice(i, 1);
+      }
+    }
+
+    const hasRadiationStorm = this.activeDisasters.some(d => d.type === 'RADIATION_STORM');
+
     // Decay Pheromone Trails
     if (this.frameCount % 5 === 0 && this.pheromones.length > 0) {
       for (let i = this.pheromones.length - 1; i >= 0; i--) {
@@ -500,6 +523,16 @@ export class MicrobotEngine {
           bot.vy += Math.sin(angleToCenter) * gForce * speedMult;
         }
       }
+      // Apply Disasters
+      if (hasRadiationStorm) {
+        bot.battery -= 0.1 * speedMult;
+        // Mock genetic mutation from radiation
+        if (Math.random() < 0.005 * speedMult) {
+           bot.hue = (bot.hue + Math.random() * 40 - 20 + 360) % 360;
+           bot.color = `hsl(${Math.round(bot.hue)}, 95%, 55%)`;
+        }
+      }
+
       for (const field of this.speedFields) {
         const dist = Math.hypot(bot.x - field.x, bot.y - field.y);
         if (dist < field.radius) {
