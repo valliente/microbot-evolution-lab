@@ -31,8 +31,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
         {/* Cluster 1: Population Dynamics */}
         <div style={{ background: 'rgba(8, 14, 20, 0.6)', borderRadius: 10, border: '1px solid rgba(0, 229, 255, 0.2)', padding: '8px 10px' }}>
           <div
+            className="accordion-header"
             onClick={() => setOpenSection(openSection === 'pop' ? 'all' : 'pop')}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: 6 }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}
           >
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem', fontWeight: 800, color: '#00E5FF', display: 'flex', alignItems: 'center', gap: 6 }}>
               <Users style={{ width: 13, height: 13 }} /> Population Dynamics
@@ -92,8 +93,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
         {/* Cluster 2: Genetic Dynamics */}
         <div style={{ background: 'rgba(8, 14, 20, 0.6)', borderRadius: 10, border: '1px solid rgba(224, 64, 251, 0.2)', padding: '8px 10px' }}>
           <div
+            className="accordion-header"
             onClick={() => setOpenSection(openSection === 'gen' ? 'all' : 'gen')}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: 6 }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}
           >
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem', fontWeight: 800, color: '#E040FB', display: 'flex', alignItems: 'center', gap: 6 }}>
               <Dna style={{ width: 13, height: 13 }} /> Genetic Dynamics
@@ -154,8 +156,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
         {/* Cluster 3: Environmental Forces */}
         <div style={{ background: 'rgba(8, 14, 20, 0.6)', borderRadius: 10, border: '1px solid rgba(255, 107, 0, 0.2)', padding: '8px 10px' }}>
           <div
+            className="accordion-header"
             onClick={() => setOpenSection(openSection === 'env' ? 'all' : 'env')}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: 6 }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}
           >
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem', fontWeight: 800, color: '#FF6B00', display: 'flex', alignItems: 'center', gap: 6 }}>
               <ShieldAlert style={{ width: 13, height: 13 }} /> Environmental Forces

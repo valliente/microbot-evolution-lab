@@ -32,7 +32,15 @@ export function loadConfigFromStorage(): SimulationConfig {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (data) {
-      return { ...defaultConfig, ...JSON.parse(data), isPaused: false };
+      const parsed = JSON.parse(data);
+      const sanitized: any = { ...defaultConfig };
+      for (const key in parsed) {
+        if (key in defaultConfig && typeof parsed[key] === typeof (defaultConfig as any)[key]) {
+          sanitized[key] = parsed[key];
+        }
+      }
+      sanitized.isPaused = false;
+      return sanitized as SimulationConfig;
     }
   } catch (e) {
     console.error('Failed to load config from storage:', e);

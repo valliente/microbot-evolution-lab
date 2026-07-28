@@ -197,7 +197,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
              tctx.fillRect(0, 0, canvas.width, canvas.height);
           }
 
-          // Main canvas clearing
+          // Fix(canvas): implement coordinate clearing rects to prevent multi-layer redraw flickering
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(bgLayerRef.current!, 0, 0);
           
           if (engine.config.enableFrameInterpolation) {
