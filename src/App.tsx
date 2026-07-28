@@ -200,8 +200,21 @@ export const App: React.FC = () => {
 
   const lineageData = selectedBot && engine ? engine.getLineageTree(selectedBot.id) : { parent: null, current: null, children: [] };
 
+  // Determine dynamic biome/season tint
+  let dynamicBgTint = 'radial-gradient(circle at 50% 30%, rgba(15, 30, 45, 0.6) 0%, rgba(8, 14, 20, 0.95) 70%)';
+  if (stats.currentSeason === 'WINTER') {
+    dynamicBgTint = 'radial-gradient(circle at 50% 30%, rgba(10, 20, 45, 0.6) 0%, rgba(5, 10, 25, 0.95) 70%)';
+  } else if (stats.currentSeason === 'SUMMER') {
+    dynamicBgTint = 'radial-gradient(circle at 50% 30%, rgba(45, 30, 15, 0.6) 0%, rgba(20, 14, 8, 0.95) 70%)';
+  }
+  if (engine?.activeDisasters.some(d => d.type === 'RADIATION_STORM' && d.active)) {
+    dynamicBgTint = 'radial-gradient(circle at 50% 30%, rgba(20, 45, 15, 0.6) 0%, rgba(10, 25, 5, 0.95) 70%)';
+  }
+
   return (
-    <div className="app-container">
+    <div className="app-container" style={{
+      background: `${dynamicBgTint}, radial-gradient(circle at 80% 80%, rgba(224, 64, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(0, 229, 255, 0.05) 0%, transparent 50%)`
+    }}>
       <ErrorOverlay 
         error={simulationError} 
         onRecover={() => {
