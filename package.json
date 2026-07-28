@@ -1,15 +1,15 @@
 {
   "name": "microbot-evolution-lab",
   "private": true,
-  "version": "0.1.207",
+  "version": "0.1.208",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:single": "tsc && vite build --config vite.singlefile.config.ts",
+    "build": "tsc && vite build --emptyOutDir",
+    "build:single": "tsc && vite build --emptyOutDir --config vite.singlefile.config.ts",
     "build:package": "npm run build:single && node build-hta.js",
     "build:exe": "npm run build:single && node build-exe.js",
-    "build:electron": "tsc && vite build && electron-builder --win",
+    "build:electron": "tsc && vite build --emptyOutDir && electron-builder --win",
     "preview": "vite preview"
   },
   "dependencies": {
