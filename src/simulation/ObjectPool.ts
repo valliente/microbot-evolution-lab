@@ -67,3 +67,18 @@ export const foodParticlePool = new ObjectPool<PooledFoodParticle>(
   (f) => { f.id = ''; f.x = 0; f.y = 0; f.value = 25; f.radius = 3.5; f.type = 'NUTRIENT_DOT'; f.color = '#00E676'; },
   150
 );
+
+export interface PooledDisasterParticle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  life: number;
+  color: string;
+}
+
+export const disasterParticlePool = new ObjectPool<PooledDisasterParticle>(
+  () => ({ x: 0, y: 0, vx: 0, vy: 0, life: 0, color: '#ffffff' }),
+  (p) => { p.x = 0; p.y = 0; p.vx = 0; p.vy = 0; p.life = 0; p.color = '#ffffff'; },
+  100
+);

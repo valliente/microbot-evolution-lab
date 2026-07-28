@@ -5,6 +5,7 @@ import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
+import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 
 export class MicrobotEngine {
   public width: number;
@@ -20,7 +21,7 @@ export class MicrobotEngine {
   public voidRifts: VoidRift[] = [];
   public biomes: SectorBiome[] = [];
   public activeDisasters: EnvironmentalDisaster[] = [];
-  public disasterParticles: {x: number, y: number, vx: number, vy: number, life: number, color: string}[] = [];
+  public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
   public positionBuffer: SharedArrayBuffer;
   public positionsView: Float32Array;
@@ -384,14 +385,14 @@ export class MicrobotEngine {
     });
     // Visual explosion
     for(let i=0; i<30; i++) {
-       this.disasterParticles.push({
-         x: this.width/2 + (Math.random()-0.5)*100,
-         y: this.height/2 + (Math.random()-0.5)*100,
-         vx: (Math.random()-0.5)*15,
-         vy: (Math.random()-0.5)*15,
-         life: 100 + Math.random()*50,
-         color: '#39ff14' // neon green radiation
-       });
+       const p = disasterParticlePool.acquire();
+       p.x = this.width/2 + (Math.random()-0.5)*100;
+       p.y = this.height/2 + (Math.random()-0.5)*100;
+       p.vx = (Math.random()-0.5)*15;
+       p.vy = (Math.random()-0.5)*15;
+       p.life = 100 + Math.random()*50;
+       p.color = '#39ff14';
+       this.disasterParticles.push(p);
     }
   }
 
@@ -405,14 +406,14 @@ export class MicrobotEngine {
     });
     // Visual explosion
     for(let i=0; i<40; i++) {
-       this.disasterParticles.push({
-         x: this.width/2,
-         y: this.height/2,
-         vx: (Math.random()-0.5)*20,
-         vy: (Math.random()-0.5)*20,
-         life: 80 + Math.random()*40,
-         color: '#9d00ff' // neon purple magnetic
-       });
+       const p = disasterParticlePool.acquire();
+       p.x = this.width/2;
+       p.y = this.height/2;
+       p.vx = (Math.random()-0.5)*20;
+       p.vy = (Math.random()-0.5)*20;
+       p.life = 80 + Math.random()*40;
+       p.color = '#9d00ff';
+       this.disasterParticles.push(p);
     }
   }
 
@@ -818,13 +819,14 @@ export class MicrobotEngine {
       this.spawnMicrobot();
     }
 
-    // Process disaster particles
+    // Update Disaster Particles
     for (let i = this.disasterParticles.length - 1; i >= 0; i--) {
        const p = this.disasterParticles[i];
        p.x += p.vx * speedMult;
        p.y += p.vy * speedMult;
        p.life -= 2 * speedMult;
        if (p.life <= 0) {
+          disasterParticlePool.release(p);
           this.disasterParticles.splice(i, 1);
        }
     }
