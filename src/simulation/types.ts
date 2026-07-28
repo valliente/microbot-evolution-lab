@@ -109,6 +109,9 @@ export interface Microbot {
   trail: Vector2D[];
   batteryHistory: number[];
   genome?: QuantumGenome;
+  carnivoreGene?: number;
+  huntingSkill?: number;
+  pheromoneLevel?: number;
 }
 
 export interface EnergyParticle {
