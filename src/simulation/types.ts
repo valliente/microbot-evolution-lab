@@ -1,10 +1,29 @@
 export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY' | 'INFECTED';
 export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_BLOOM';
-export type CatastropheType = 'NONE' | 'METEOR_STRIKE' | 'VOID_RIFT';
+export type CatastropheType = 'NONE' | 'METEOR_STRIKE' | 'VOID_RIFT' | 'RADIATION_STORM' | 'MAGNETIC_INVERSION';
 export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
 export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER';
 export type ResourceType = 'NUTRIENT_DOT' | 'SUPER_CHARGER' | 'MUTAGEN_ORB';
 export type HeatmapOverlayMode = 'OFF' | 'MORTALITY' | 'FOOD_DENSITY' | 'TRAFFIC';
+
+export type BiomeType = 'NORMAL' | 'TOXIC_SLUDGE' | 'CRYO_ZONE' | 'HIGH_G_FIELD';
+
+export interface SectorBiome {
+  id: string;
+  type: BiomeType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+}
+
+export interface EnvironmentalDisaster {
+  type: CatastropheType;
+  active: boolean;
+  intensity: number;
+  durationLeft: number;
+}
 
 export interface Vector2D {
   x: number;
