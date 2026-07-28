@@ -25,6 +25,9 @@ export class MicrobotEngine {
   public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
   public threadManager: ThreadManager;
+  public energyPositionsX: Float32Array = new Float32Array(5000);
+  public energyPositionsY: Float32Array = new Float32Array(5000);
+  public raycastBuffer: Float32Array = new Float32Array(100);
 
   public spatialGrid: SpatialGrid;
   public spatialHash: SpatialHashGrid<EnergyParticle>;

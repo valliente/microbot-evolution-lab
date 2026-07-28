@@ -69,16 +69,32 @@ export const foodParticlePool = new ObjectPool<PooledFoodParticle>(
 );
 
 export interface PooledDisasterParticle {
+  id: number;
   x: number;
   y: number;
   vx: number;
   vy: number;
   life: number;
+  maxLife: number;
   color: string;
+  size: number;
 }
 
 export const disasterParticlePool = new ObjectPool<PooledDisasterParticle>(
-  () => ({ x: 0, y: 0, vx: 0, vy: 0, life: 0, color: '#ffffff' }),
-  (p) => { p.x = 0; p.y = 0; p.vx = 0; p.vy = 0; p.life = 0; p.color = '#ffffff'; },
+  () => ({ id: 0, x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 0, color: '#ffffff', size: 1 }),
+  (p) => { p.id = 0; p.x = 0; p.y = 0; p.vx = 0; p.vy = 0; p.life = 0; p.maxLife = 0; p.color = '#ffffff'; p.size = 1; },
   100
+);
+
+export interface PooledTrailParticle {
+  x: number;
+  y: number;
+  life: number;
+  color: string;
+}
+
+export const trailParticlePool = new ObjectPool<PooledTrailParticle>(
+  () => ({ x: 0, y: 0, life: 1.0, color: '#ffffff' }),
+  (p) => { p.x = 0; p.y = 0; p.life = 1.0; p.color = '#ffffff'; },
+  500
 );

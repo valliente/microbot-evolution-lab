@@ -3,10 +3,15 @@ export function clamp(val: number, min: number, max: number): number {
 }
 
 export function wrapAngle(angle: number): number {
+  if (isNaN(angle)) return 0;
   let a = angle;
   while (a < -Math.PI) a += Math.PI * 2;
   while (a > Math.PI) a -= Math.PI * 2;
   return a;
+}
+
+export function clampAngle(angle: number): number {
+  return wrapAngle(angle);
 }
 
 export function distance(x1: number, y1: number, x2: number, y2: number): number {
