@@ -481,6 +481,15 @@ export class MicrobotEngine {
 
       // Check speed fields
       let currentSpeed = bot.speed * seasonSpeedMult;
+
+      // Apply Biome Effects
+      const currentBiome = this.getBiomeAt(bot.x, bot.y);
+      if (currentBiome) {
+        if (currentBiome.type === 'TOXIC_SLUDGE') {
+          currentSpeed *= 0.6; // Friction
+          bot.battery -= 0.15 * speedMult; // Acid burn
+        }
+      }
       for (const field of this.speedFields) {
         const dist = Math.hypot(bot.x - field.x, bot.y - field.y);
         if (dist < field.radius) {
