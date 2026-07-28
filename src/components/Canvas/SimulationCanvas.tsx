@@ -228,6 +228,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.shadowBlur = 0;
           }
 
+          // 3.5 Draw Disaster Particles
+          for (const p of engine.disasterParticles) {
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = p.life / 150;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2 + (p.life / 50), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.globalAlpha = 1.0;
+
           // 4. Draw Energy Force Lines
           if (engine.config.showEnergyForceLines) {
             ctx.lineWidth = 1;

@@ -20,6 +20,7 @@ export class MicrobotEngine {
   public voidRifts: VoidRift[] = [];
   public biomes: SectorBiome[] = [];
   public activeDisasters: EnvironmentalDisaster[] = [];
+  public disasterParticles: {x: number, y: number, vx: number, vy: number, life: number, color: string}[] = [];
   public selectedMicrobotId: string | null = null;
 
   public spatialGrid: SpatialGrid;
@@ -371,6 +372,17 @@ export class MicrobotEngine {
       intensity: 0.8,
       durationLeft: 400
     });
+    // Visual explosion
+    for(let i=0; i<30; i++) {
+       this.disasterParticles.push({
+         x: this.width/2 + (Math.random()-0.5)*100,
+         y: this.height/2 + (Math.random()-0.5)*100,
+         vx: (Math.random()-0.5)*15,
+         vy: (Math.random()-0.5)*15,
+         life: 100 + Math.random()*50,
+         color: '#39ff14' // neon green radiation
+       });
+    }
   }
 
   public triggerMagneticInversion(): void {
@@ -380,6 +392,17 @@ export class MicrobotEngine {
       intensity: 1.0,
       durationLeft: 300
     });
+    // Visual explosion
+    for(let i=0; i<40; i++) {
+       this.disasterParticles.push({
+         x: this.width/2,
+         y: this.height/2,
+         vx: (Math.random()-0.5)*20,
+         vy: (Math.random()-0.5)*20,
+         life: 80 + Math.random()*40,
+         color: '#9d00ff' // neon purple magnetic
+       });
+    }
   }
 
   public getLineageTree(botId: string): { parent: Microbot | null; current: Microbot | null; children: Microbot[] } {
@@ -770,9 +793,20 @@ export class MicrobotEngine {
       this.microbots = this.microbots.filter((b) => !deadBotIds.has(b.id));
     }
 
-    // Safety Net: Keep population alive infinitely so simulation never ends!
+      // Safety Net: Keep population alive infinitely so simulation never ends!
     while (this.microbots.length < 12) {
       this.spawnMicrobot();
+    }
+
+    // Process disaster particles
+    for (let i = this.disasterParticles.length - 1; i >= 0; i--) {
+       const p = this.disasterParticles[i];
+       p.x += p.vx * speedMult;
+       p.y += p.vy * speedMult;
+       p.life -= 2 * speedMult;
+       if (p.life <= 0) {
+          this.disasterParticles.splice(i, 1);
+       }
     }
 
     // Update global telemetry buffers every 30 frames (~0.5s)
