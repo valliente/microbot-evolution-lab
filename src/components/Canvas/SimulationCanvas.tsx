@@ -113,6 +113,28 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     for (let cx = 0; cx < width; cx += cellSize) {
       bctx.beginPath(); bctx.moveTo(cx, 0); bctx.lineTo(cx, height); bctx.stroke();
     }
+    for (let cy = 0; cy < height; cy += cellSize) {
+      bctx.beginPath(); bctx.moveTo(0, cy); bctx.lineTo(width, cy); bctx.stroke();
+    }
+
+    // Biome boundary grid overlays
+    if (engine && engine.biomes) {
+       for (const biome of engine.biomes) {
+          if (biome.color !== 'rgba(255,255,255,0)') {
+             bctx.fillStyle = biome.color;
+             bctx.fillRect(biome.x, biome.y, biome.width, biome.height);
+          }
+          
+          // Draw Biome border and Label
+          bctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+          bctx.lineWidth = 1;
+          bctx.strokeRect(biome.x, biome.y, biome.width, biome.height);
+
+          bctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+          bctx.font = "8px 'JetBrains Mono', monospace";
+          bctx.fillText(biome.type.replace(/_/g, ' '), biome.x + 8, biome.y + 16);
+       }
+    }
 
     bgDirtyRef.current = false;
     return bg;
