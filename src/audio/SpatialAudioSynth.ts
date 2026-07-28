@@ -89,6 +89,50 @@ export class SpatialAudioSynth {
     // Kept as no-op for API compatibility
   }
 
+  public playBiomeHum(biomeType: string): void {
+    if (this.isMuted) return;
+    if (this.activeOscCount >= this.maxConcurrentOsc) return;
+
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      if (biomeType === 'TOXIC_SLUDGE') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(60, this.ctx.currentTime);
+      } else if (biomeType === 'CRYO_ZONE') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+      } else if (biomeType === 'HIGH_G_FIELD') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(45, this.ctx.currentTime);
+      } else {
+        return; // NORMAL biome has no extra hum
+      }
+
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.04, this.ctx.currentTime + 1.0);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 3.0);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      this.activeOscCount++;
+      osc.onended = () => {
+        this.activeOscCount = Math.max(0, this.activeOscCount - 1);
+        try { gain.disconnect(); } catch (_) {}
+      };
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 3.0);
+    } catch (e) {
+      // Audio autoplay restrictions catch
+    }
+  }
+
   public toggleMute(): boolean {
     this.isMuted = !this.isMuted;
     // Immediately silence master output when muting

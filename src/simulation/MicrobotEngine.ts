@@ -838,6 +838,18 @@ export class MicrobotEngine {
     if (this.frameCount % 60 === 0) {
       this.recordHistorySnapshot();
     }
+
+    // Play Biome ambient hums periodically (every ~3 seconds = 180 frames)
+    if (this.frameCount % 180 === 0 && this.biomes.length > 0) {
+      // Pick a random bot to determine which biome to play sound for
+      if (this.microbots.length > 0) {
+        const randBot = this.microbots[Math.floor(Math.random() * this.microbots.length)];
+        const biome = this.getBiomeAt(randBot.x, randBot.y);
+        if (biome) {
+          spatialAudio.playBiomeHum(biome.type);
+        }
+      }
+    }
   }
 
   private updateTelemetryBuffers(): void {
