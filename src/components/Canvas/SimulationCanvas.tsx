@@ -565,6 +565,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const currentBrush = engine.config.brushMode || 'NONE';
   const currentHeatmap = engine.config.heatmapMode || 'OFF';
   const isExtinctionRisk = engine.microbots.length < 15;
+  const isRadiationStorm = engine.activeDisasters.some(d => d.type === 'RADIATION_STORM');
+  const isMagneticInversion = engine.activeDisasters.some(d => d.type === 'MAGNETIC_INVERSION');
 
   return (
     <div ref={containerRef} className="canvas-viewport-card" style={{ width: '100%', height: '100%' }}>
@@ -592,6 +594,60 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         }}>
           <AlertTriangle style={{ width: 14, height: 14 }} />
           <span>⚠️ EXTINCTION CRISIS ALERT: POPULATION BELOW 15 BOTS! RECOVERY INITIATED</span>
+        </div>
+      )}
+
+      {/* Radiation Storm Alert Banner */}
+      {isRadiationStorm && (
+        <div style={{
+          position: 'absolute',
+          top: 96,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 22,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 18px',
+          background: 'rgba(245, 158, 11, 0.85)',
+          border: '1px solid #f59e0b',
+          borderRadius: 12,
+          color: '#ffffff',
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: '0.75rem',
+          fontWeight: 800,
+          boxShadow: '0 0 25px rgba(245, 158, 11, 0.5)',
+          pointerEvents: 'none'
+        }}>
+          <AlertTriangle style={{ width: 14, height: 14 }} />
+          <span>☢️ GLOBAL RADIATION STORM ACTIVE: MUTATION RATES INCREASED</span>
+        </div>
+      )}
+
+      {/* Magnetic Inversion Alert Banner */}
+      {isMagneticInversion && (
+        <div style={{
+          position: 'absolute',
+          top: 132,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 22,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '6px 18px',
+          background: 'rgba(217, 70, 239, 0.85)',
+          border: '1px solid #d946ef',
+          borderRadius: 12,
+          color: '#ffffff',
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: '0.75rem',
+          fontWeight: 800,
+          boxShadow: '0 0 25px rgba(217, 70, 239, 0.5)',
+          pointerEvents: 'none'
+        }}>
+          <AlertTriangle style={{ width: 14, height: 14 }} />
+          <span>🧲 POLARITY INVERSION: ALL HEADINGS REVERSED</span>
         </div>
       )}
 
