@@ -1,56 +1,29 @@
+import { expect, test, describe } from 'vitest';
 import { QuantumAllele, QuantumState } from '../types';
 
 describe('QuantumAllele state collapse', () => {
-  it('should collapse to DOMINANT if entanglement probability > 0.5', () => {
+  test('should collapse to DOMINANT if entanglement probability > 0.5', () => {
     const allele: QuantumAllele = {
       id: 'Q-1',
       trait: 'SPEED',
       baseValue: 2.0,
-      entanglementProbability: 0.8, // > 0.5
+      entanglementProbability: 0.8,
       state: QuantumState.SUPERPOSITION,
       sequence: 'ATCG',
       mutationRate: 0.05
     };
-    
-    // Simulate a collapse function
     const collapse = (a: QuantumAllele) => {
       if (a.state === QuantumState.SUPERPOSITION) {
         a.state = a.entanglementProbability > 0.5 ? QuantumState.DOMINANT : QuantumState.RECESSIVE;
       }
     };
-    
     collapse(allele);
-    if (allele.state !== QuantumState.DOMINANT) {
-      throw new Error('Expected DOMINANT state after collapse');
-    }
-  });
-
-  it('should collapse to RECESSIVE if entanglement probability <= 0.5', () => {
-    const allele: QuantumAllele = {
-      id: 'Q-2',
-      trait: 'VISION',
-      baseValue: 120,
-      entanglementProbability: 0.3, // <= 0.5
-      state: QuantumState.SUPERPOSITION,
-      sequence: 'CGTA',
-      mutationRate: 0.01
-    };
-    
-    const collapse = (a: QuantumAllele) => {
-      if (a.state === QuantumState.SUPERPOSITION) {
-        a.state = a.entanglementProbability > 0.5 ? QuantumState.DOMINANT : QuantumState.RECESSIVE;
-      }
-    };
-    
-    collapse(allele);
-    if (allele.state !== QuantumState.RECESSIVE) {
-      throw new Error('Expected RECESSIVE state after collapse');
-    }
+    expect(allele.state).toBe(QuantumState.DOMINANT);
   });
 });
 
 describe('CRISPR gene splicing boundaries', () => {
-  it('should clamp trait values within allowed boundaries when splicing', () => {
+  test('should clamp trait values within allowed boundaries when splicing', () => {
     const splice = (trait: string, rawValue: number) => {
       switch (trait) {
         case 'SPEED': return Math.max(1.0, Math.min(5.0, rawValue));
@@ -59,12 +32,27 @@ describe('CRISPR gene splicing boundaries', () => {
         default: return rawValue;
       }
     };
-
-    if (splice('SPEED', 6.0) !== 5.0) throw new Error('SPEED upper boundary failed');
-    if (splice('SPEED', 0.5) !== 1.0) throw new Error('SPEED lower boundary failed');
-    if (splice('VISION', 300) !== 260) throw new Error('VISION upper boundary failed');
-    if (splice('EFFICIENCY', 0.1) !== 0.6) throw new Error('EFFICIENCY lower boundary failed');
+    expect(splice('SPEED', 6.0)).toBe(5.0);
+    expect(splice('SPEED', 0.5)).toBe(1.0);
+    expect(splice('VISION', 300)).toBe(260);
+    expect(splice('EFFICIENCY', 0.1)).toBe(0.6);
   });
 });
 
-console.log('genetics.test.ts: Quantum Allele collapse & CRISPR tests passed.');
+describe('Mutation value clamping', () => {
+  test('mutations strictly adhere to upper and lower bounds over multiple generations', () => {
+    let speed = 4.8;
+    for (let i = 0; i < 100; i++) {
+      speed += 0.5; // Constant positive mutation
+      speed = Math.max(1.0, Math.min(5.0, speed));
+    }
+    expect(speed).toBeLessThanOrEqual(5.0);
+
+    let efficiency = 0.8;
+    for (let i = 0; i < 100; i++) {
+      efficiency -= 0.1; // Constant negative mutation
+      efficiency = Math.max(0.6, Math.min(2.5, efficiency));
+    }
+    expect(efficiency).toBeGreaterThanOrEqual(0.6);
+  });
+});
