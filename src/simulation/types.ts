@@ -112,6 +112,8 @@ export interface Microbot {
   carnivoreGene?: number;
   huntingSkill?: number;
   pheromoneLevel?: number;
+  symbiosisGene?: number;
+  biomeAdaptation?: BiomeType;
 }
 
 export interface EnergyParticle {
