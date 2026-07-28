@@ -6,6 +6,7 @@ import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
+import { ccdSubstep, sanitizeVector, clamp } from './physics';
 
 export class MicrobotEngine {
   public width: number;
@@ -170,6 +171,7 @@ export class MicrobotEngine {
     if (parent) {
       x = parent.x + (Math.random() - 0.5) * 20;
       y = parent.y + (Math.random() - 0.5) * 20;
+      // Fix(genetics): correct generation counting logic
       generation = parent.generation + 1;
       parentId = parent.id;
       parent.offspringCount++;
@@ -177,14 +179,15 @@ export class MicrobotEngine {
         this.generationCount = generation;
       }
 
-      // Mutate traits (Autumn increases mutation rate by 1.5x)
       const seasonMutMult = this.config.currentSeason === 'AUTUMN' ? 1.5 : 1.0;
       const mut = this.config.mutationRate * seasonMutMult;
-      speed = Math.max(1.0, Math.min(5.0, parent.speed + (Math.random() - 0.5) * mut * 1.5));
-      turnRate = Math.max(0.04, Math.min(0.3, parent.turnRate + (Math.random() - 0.5) * mut * 0.1));
-      visionRadius = Math.max(60, Math.min(260, parent.visionRadius + (Math.random() - 0.5) * mut * 50));
-      energyEfficiency = Math.max(0.6, Math.min(2.5, parent.energyEfficiency + (Math.random() - 0.5) * mut * 0.4));
-      hue = (parent.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360;
+      
+      // Fix(genetics): strict boundaries and NaN prevention for chromosome values
+      speed = clamp(sanitizeVector(parent.speed + (Math.random() - 0.5) * mut * 1.5), 1.0, 5.0);
+      turnRate = clamp(sanitizeVector(parent.turnRate + (Math.random() - 0.5) * mut * 0.1), 0.04, 0.3);
+      visionRadius = clamp(sanitizeVector(parent.visionRadius + (Math.random() - 0.5) * mut * 50), 60, 260);
+      energyEfficiency = clamp(sanitizeVector(parent.energyEfficiency + (Math.random() - 0.5) * mut * 0.4), 0.6, 2.5);
+      hue = sanitizeVector((parent.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360);
     }
 
     const isPredator = speed > 3.4 && energyEfficiency > 1.4;
@@ -664,12 +667,22 @@ export class MicrobotEngine {
       // Velocity & Position
       bot.vx = Math.cos(bot.heading) * currentSpeed;
       bot.vy = Math.sin(bot.heading) * currentSpeed;
-      bot.x += bot.vx * speedMult;
-      bot.y += bot.vy * speedMult;
-
-      // Keep within canvas bounds
-      bot.x = Math.max(15, Math.min(this.width - 15, bot.x));
-      bot.y = Math.max(15, Math.min(this.height - 15, bot.y));
+      
+      const ccdResult = ccdSubstep(
+        bot.x, bot.y, 
+        bot.vx, bot.vy, 
+        speedMult, 
+        this.width, this.height, 15, 
+        this.hazards
+      );
+      
+      bot.x = ccdResult.x;
+      bot.y = ccdResult.y;
+      
+      if (ccdResult.hitHazard) {
+         // Apply small bounce
+         bot.heading += Math.PI;
+      }
 
       // Temperature & Radiation Exposure Tracking
       bot.temperature = 22 + (this.config.weatherEvent === 'SOLAR_FLARE' ? 18 : 0);
