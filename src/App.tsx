@@ -13,6 +13,7 @@ import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
 import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
 import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
+import { ErrorOverlay } from './components/UI/ErrorOverlay';
 import { telemetryManager } from './utils/telemetryManager';
 
 export const App: React.FC = () => {
@@ -32,6 +33,23 @@ export const App: React.FC = () => {
   const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
+  const [simulationError, setSimulationError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const handleGlobalError = (event: ErrorEvent) => {
+      setSimulationError(event.error || new Error(event.message));
+    };
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      setSimulationError(event.reason instanceof Error ? event.reason : new Error(String(event.reason)));
+    };
+    
+    window.addEventListener('error', handleGlobalError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => {
+      window.removeEventListener('error', handleGlobalError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
 
   // Handle tab visibility change recovery to prevent canvas freezes
   useEffect(() => {
@@ -184,6 +202,13 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
+      <ErrorOverlay 
+        error={simulationError} 
+        onRecover={() => {
+          setSimulationError(null);
+          handleReset();
+        }} 
+      />
       {/* Selection Modals */}
       <RosterModal
         isOpen={isRosterOpen}
