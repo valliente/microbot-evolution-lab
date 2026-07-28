@@ -226,6 +226,8 @@ export const App: React.FC = () => {
         onTriggerMeteor={() => engine?.triggerMeteorStrike()}
         onTriggerVoidRift={() => engine?.triggerVoidRift()}
         onTriggerOutbreak={() => engine?.triggerOutbreak()}
+        onTriggerRadiationStorm={() => engine?.triggerRadiationStorm()}
+        onTriggerMagneticInversion={() => engine?.triggerMagneticInversion()}
         onExportTelemetryCSV={handleExportTelemetryCSV}
         onExportConfigJSON={handleExportConfigJSON}
         onImportConfigJSON={handleImportConfigJSON}

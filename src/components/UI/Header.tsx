@@ -19,6 +19,8 @@ interface HeaderProps {
   onTriggerMeteor: () => void;
   onTriggerVoidRift: () => void;
   onTriggerOutbreak: () => void;
+  onTriggerRadiationStorm: () => void;
+  onTriggerMagneticInversion: () => void;
   onExportTelemetryCSV: () => void;
   onExportConfigJSON: () => void;
   onImportConfigJSON: (jsonConfig: Partial<SimulationConfig>) => void;
@@ -39,6 +41,8 @@ export const Header: React.FC<HeaderProps> = ({
   onTriggerMeteor,
   onTriggerVoidRift,
   onTriggerOutbreak,
+  onTriggerRadiationStorm,
+  onTriggerMagneticInversion,
   onExportTelemetryCSV,
   onExportConfigJSON,
   onImportConfigJSON
@@ -275,6 +279,14 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button onClick={onTriggerOutbreak} className="btn-holo btn-holo-green" title="Inject Viral Outbreak">
           <span>☣️ VIRUS</span>
+        </button>
+
+        <button onClick={onTriggerRadiationStorm} className="btn-holo btn-holo-orange" title="Trigger Radiation Storm">
+          <span>☢️ STORM</span>
+        </button>
+
+        <button onClick={onTriggerMagneticInversion} className="btn-holo btn-holo-magenta" title="Trigger Magnetic Inversion">
+          <span>🧲 INVERT</span>
         </button>
       </div>
 
