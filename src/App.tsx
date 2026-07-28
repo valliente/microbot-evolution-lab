@@ -13,6 +13,7 @@ import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
 import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
 import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
+import { telemetryManager } from './utils/telemetryManager';
 
 export const App: React.FC = () => {
   const [config, setConfig] = useState<SimulationConfig>(loadConfigFromStorage);
@@ -42,9 +43,12 @@ export const App: React.FC = () => {
     document.addEventListener('visibilitychange', handleVisibility);
     return () => document.removeEventListener('visibilitychange', handleVisibility);
   }, [engine]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStats(engine.getStats());
+    telemetryManager.startPolling(engine, 80);
+    const unsubscribe = telemetryManager.subscribe((newStats) => {
+      setStats(newStats);
+      
       const current = engine.getSelectedMicrobot();
       if (!current && engine.microbots.length > 0) {
         const nextBot = engine.selectRandomMicrobot();
@@ -52,9 +56,12 @@ export const App: React.FC = () => {
       } else if (current) {
         setSelectedBot({ ...current });
       }
-    }, 80);
+    });
 
-    return () => clearInterval(interval);
+    return () => {
+      unsubscribe();
+      telemetryManager.stopPolling();
+    };
   }, [engine]);
 
   const handleUpdateConfig = (newConfig: Partial<SimulationConfig>) => {
