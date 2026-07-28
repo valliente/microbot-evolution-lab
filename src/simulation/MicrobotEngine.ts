@@ -373,6 +373,15 @@ export class MicrobotEngine {
     });
   }
 
+  public triggerMagneticInversion(): void {
+    this.activeDisasters.push({
+      type: 'MAGNETIC_INVERSION',
+      active: true,
+      intensity: 1.0,
+      durationLeft: 300
+    });
+  }
+
   public getLineageTree(botId: string): { parent: Microbot | null; current: Microbot | null; children: Microbot[] } {
     const current = this.microbots.find((b) => b.id === botId) || null;
     let parent: Microbot | null = null;
@@ -462,6 +471,7 @@ export class MicrobotEngine {
     }
 
     const hasRadiationStorm = this.activeDisasters.some(d => d.type === 'RADIATION_STORM');
+    const hasMagneticInversion = this.activeDisasters.some(d => d.type === 'MAGNETIC_INVERSION');
 
     // Decay Pheromone Trails
     if (this.frameCount % 5 === 0 && this.pheromones.length > 0) {
@@ -531,6 +541,14 @@ export class MicrobotEngine {
            bot.hue = (bot.hue + Math.random() * 40 - 20 + 360) % 360;
            bot.color = `hsl(${Math.round(bot.hue)}, 95%, 55%)`;
         }
+      }
+      if (hasMagneticInversion) {
+         // Invert heading unexpectedly
+         if (Math.random() < 0.05 * speedMult) {
+           bot.heading += Math.PI;
+           bot.vx = -bot.vx;
+           bot.vy = -bot.vy;
+         }
       }
 
       for (const field of this.speedFields) {
