@@ -20,7 +20,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
+  const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
+  const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
+  const frameCountRef = useRef<number>(0);
 
   // Resize Observer for dynamic canvas viewport
   useEffect(() => {
@@ -34,18 +37,48 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
       const canvas = canvasRef.current;
       if (canvas) {
-        canvas.width = width;
-        canvas.height = height;
+        // Dynamic Resolution Scaling
+        const scale = resolutionScaleRef.current;
+        canvas.width = Math.floor(width * scale);
+        canvas.height = Math.floor(height * scale);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        
+        const ctx = canvas.getContext('2d');
+        if (ctx) ctx.scale(scale, scale);
+
         engine.resize(width, height);
         bgDirtyRef.current = true; // Mark background layer for redraw
       }
     };
 
+    // Frame-rate monitor for dynamic downscaling
+    let lastTime = performance.now();
+    const monitorInterval = setInterval(() => {
+        const now = performance.now();
+        if (now - lastTime >= 1000) {
+           const fps = frameCountRef.current;
+           frameCountRef.current = 0;
+           lastTime = now;
+           
+           if (fps < 30 && resolutionScaleRef.current > 0.5) {
+               resolutionScaleRef.current = Math.max(0.5, resolutionScaleRef.current - 0.25);
+               updateCanvasDimensions();
+           } else if (fps > 55 && resolutionScaleRef.current < (window.devicePixelRatio || 1)) {
+               resolutionScaleRef.current = Math.min((window.devicePixelRatio || 1), resolutionScaleRef.current + 0.1);
+               updateCanvasDimensions();
+           }
+        }
+    }, 1000);
+
     updateCanvasDimensions();
     const resizeObserver = new ResizeObserver(updateCanvasDimensions);
     resizeObserver.observe(container);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+       resizeObserver.disconnect();
+       clearInterval(monitorInterval);
+    };
   }, [engine]);
 
   // Render cached background grid layer (only on resize / first paint)
@@ -93,6 +126,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
+          frameCountRef.current++; // Increment for FPS monitor
+          
           // Skip heavy rendering if document tab is hidden in background
           if (document.hidden) {
             animationFrameId = requestAnimationFrame(render);
