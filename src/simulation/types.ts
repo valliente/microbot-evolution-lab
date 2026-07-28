@@ -11,6 +11,24 @@ export interface Vector2D {
   y: number;
 }
 
+export type SuperpositionState = 'OBSERVED' | 'ENTANGLED' | 'DECAYING';
+
+export interface QuantumAllele {
+  geneId: string;
+  baseValue: number;
+  quantumVariance: number; // Potential variance range when in superposition
+  state: SuperpositionState;
+  entanglementPartnerId?: string; // ID of another microbot this gene is entangled with
+  observationProbability: number; // Chance to collapse to a beneficial state
+}
+
+export interface QuantumGenome {
+  speedAllele: QuantumAllele;
+  visionAllele: QuantumAllele;
+  efficiencyAllele: QuantumAllele;
+  mutationTendency: QuantumAllele;
+}
+
 export interface PheromonePoint {
   x: number;
   y: number;
