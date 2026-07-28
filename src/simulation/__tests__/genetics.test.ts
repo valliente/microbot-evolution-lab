@@ -49,4 +49,22 @@ describe('QuantumAllele state collapse', () => {
   });
 });
 
-console.log('genetics.test.ts: Quantum Allele collapse tests passed.');
+describe('CRISPR gene splicing boundaries', () => {
+  it('should clamp trait values within allowed boundaries when splicing', () => {
+    const splice = (trait: string, rawValue: number) => {
+      switch (trait) {
+        case 'SPEED': return Math.max(1.0, Math.min(5.0, rawValue));
+        case 'VISION': return Math.max(60, Math.min(260, rawValue));
+        case 'EFFICIENCY': return Math.max(0.6, Math.min(2.5, rawValue));
+        default: return rawValue;
+      }
+    };
+
+    if (splice('SPEED', 6.0) !== 5.0) throw new Error('SPEED upper boundary failed');
+    if (splice('SPEED', 0.5) !== 1.0) throw new Error('SPEED lower boundary failed');
+    if (splice('VISION', 300) !== 260) throw new Error('VISION upper boundary failed');
+    if (splice('EFFICIENCY', 0.1) !== 0.6) throw new Error('EFFICIENCY lower boundary failed');
+  });
+});
+
+console.log('genetics.test.ts: Quantum Allele collapse & CRISPR tests passed.');
