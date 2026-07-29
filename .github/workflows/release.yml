@@ -60,13 +60,13 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.217
-          name: "Microbot Evolution Lab v0.1.217"
+          tag_name: v0.1.218
+          name: "Microbot Evolution Lab v0.1.218"
           body: |
-            Microbot Evolution Lab v0.1.217
-            - Added Apex Predator trophic dynamics and prey defenses
-            - Added Interactive Ancestry Family Tree
-            - Added Headless 100x runner mode
+            Microbot Evolution Lab v0.1.218
+            - Added Parasitic Spores & Mutualistic Symbiosis
+            - Added Topographical Terrain Physics (Slope acceleration & friction)
+            - Upgraded 2D Genetic Drift Heatmap
           draft: false
           prerelease: false
           files: |

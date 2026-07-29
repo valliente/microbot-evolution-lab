@@ -35,7 +35,7 @@ export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats,
 
       ctx.globalCompositeOperation = 'screen';
       
-      // Plot bots: X = Speed (1..5), Y = Efficiency (0.6..2.5)
+      // Plot bots: X = Speed (1..5), Y = Efficiency (0.6..2.5), Radius = Vision (40..150)
       bots.forEach(bot => {
         // Map speed [1, 5] to X [10, canvas.width - 10]
         const speedNorm = Math.max(0, Math.min(1, (bot.speed - 1) / 4));
@@ -45,14 +45,18 @@ export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats,
         const effNorm = Math.max(0, Math.min(1, (bot.energyEfficiency - 0.6) / 1.9));
         const py = canvas.height - 10 - effNorm * (canvas.height - 20);
 
+        // Map vision [40, 150] to Radius [3, 10]
+        const visNorm = Math.max(0, Math.min(1, (bot.visionRadius - 40) / 110));
+        const r = 3 + visNorm * 7;
+
         // Draw soft glowing dot
-        const grad = ctx.createRadialGradient(px, py, 0, px, py, 6);
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, r);
         grad.addColorStop(0, bot.color);
         grad.addColorStop(1, 'rgba(0,0,0,0)');
         
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.arc(px, py, r, 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -98,10 +102,10 @@ export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats,
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <Activity style={{ width: 13, height: 13 }} /> 2D GENETIC DRIFT
         </span>
-        <span style={{ color: '#8B949E', fontSize: '0.65rem' }}>Speed vs Efficiency</span>
+        <span style={{ color: '#8B949E', fontSize: '0.65rem' }}>Speed / Eff / Vis</span>
       </div>
 
-      <canvas ref={canvasRef} width={180} height={140} style={{ borderRadius: 8, border: '1px solid rgba(0,229,255,0.1)' }} />
+      <canvas ref={canvasRef} width={220} height={150} style={{ borderRadius: 8, border: '1px solid rgba(0,229,255,0.1)', width: '100%' }} />
     </div>
   );
 };

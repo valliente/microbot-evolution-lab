@@ -146,6 +146,21 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
        }
     }
 
+    // Terrain Contours Overlay
+    if (engine && engine.config.showTerrainContour) {
+      bctx.fillStyle = 'rgba(0, 229, 255, 0.05)';
+      const contourRes = 10;
+      for (let y = 0; y < height; y += contourRes) {
+        for (let x = 0; x < width; x += contourRes) {
+          const e = engine.getElevation(x, y);
+          // Draw bands
+          if (e > 0.3 && e < 0.32) bctx.fillRect(x, y, contourRes, contourRes);
+          if (e > 0.6 && e < 0.62) bctx.fillRect(x, y, contourRes, contourRes);
+          if (e > 0.8 && e < 0.82) bctx.fillRect(x, y, contourRes, contourRes);
+        }
+      }
+    }
+
     bgDirtyRef.current = false;
     return bg;
   };
@@ -296,6 +311,23 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.beginPath();
             ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
             ctx.stroke();
+          }
+
+          // Render Spores
+          if (engine.spores) {
+            ctx.fillStyle = '#E040FB'; // Magenta for spores
+            for (const spore of engine.spores) {
+              if (!spore.hostId) {
+                ctx.beginPath();
+                ctx.arc(spore.x, spore.y, spore.radius, 0, Math.PI * 2);
+                ctx.fill();
+                // Glow
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#E040FB';
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+              }
+            }
           }
 
           // Render Portals

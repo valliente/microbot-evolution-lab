@@ -22,6 +22,7 @@ export class MicrobotEngine {
   public voidRifts: VoidRift[] = [];
   public portals: PortalNode[] = [];
   public biomes: SectorBiome[] = [];
+  public spores: ParasiticSpore[] = [];
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
@@ -657,6 +658,46 @@ export class MicrobotEngine {
       }
     }
 
+    // Spore Update Loop
+    for (let i = this.spores.length - 1; i >= 0; i--) {
+      const spore = this.spores[i];
+      spore.life -= speedMult;
+      
+      if (!spore.hostId) {
+        // Drift in wind
+        spore.x += spore.vx * speedMult;
+        spore.y += spore.vy * speedMult;
+        
+        // Wrap
+        if (spore.x < 0) spore.x += this.width;
+        if (spore.x > this.width) spore.x -= this.width;
+        if (spore.y < 0) spore.y += this.height;
+        if (spore.y > this.height) spore.y -= this.height;
+
+        // Try to attach
+        for (const bot of this.microbots) {
+          if (!bot.isInfected && !bot.hasAntibodies) {
+            const dist = Math.hypot(bot.x - spore.x, bot.y - spore.y);
+            if (dist < bot.visionRadius * 0.5) {
+               // Seeking
+               spore.vx += (bot.x - spore.x) * 0.01;
+               spore.vy += (bot.y - spore.y) * 0.01;
+            }
+            if (dist < 15) {
+              spore.hostId = bot.id;
+              bot.isInfected = true;
+              bot.infectionTimer = 800;
+              break;
+            }
+          }
+        }
+      }
+      
+      if (spore.life <= 0) {
+        this.spores.splice(i, 1);
+      }
+    }
+
     // Rebuild Spatial Grid & Quadtree for food lookup
     this.spatialGrid.clear();
     const quadtree = new Quadtree<EnergyParticle>({ x: 0, y: 0, width: this.width, height: this.height }, 8);
@@ -726,6 +767,20 @@ export class MicrobotEngine {
       if (bot.inkCooldown && bot.inkCooldown > 0) {
          bot.inkCooldown -= speedMult;
       }
+
+      // Apply Topographical Terrain Physics (Slope acceleration & Friction)
+      const elevation = this.getElevation(bot.x, bot.y);
+      const gradX = (this.getElevation(bot.x + 1, bot.y) - elevation);
+      const gradY = (this.getElevation(bot.x, bot.y + 1) - elevation);
+      
+      // Slope acceleration (bots slide downhill)
+      bot.vx -= gradX * 15 * speedMult;
+      bot.vy -= gradY * 15 * speedMult;
+      
+      // Terrain Friction (higher elevation = less friction, lower = more viscous)
+      const terrainFriction = 0.85 + (elevation * 0.1); 
+      bot.vx *= terrainFriction;
+      bot.vy *= terrainFriction;
 
       // Apply Biome Effects
       const currentBiome = this.getBiomeAt(bot.x, bot.y);
@@ -849,7 +904,45 @@ export class MicrobotEngine {
       let diff = steering.desiredHeading - bot.heading;
       while (diff < -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
-      bot.heading += diff * bot.turnRate * speedMult;
+      bot.heading += clamp(diff, -bot.turnRate * speedMult, bot.turnRate * speedMult);
+
+      // Symbiosis: Mutualistic Energy Sharing
+      if (bot.symbiontPartnerId) {
+        const partner = this.microbots.find(b => b.id === bot.symbiontPartnerId);
+        if (partner) {
+          const dist = Math.hypot(bot.x - partner.x, bot.y - partner.y);
+          if (dist < 100) {
+            // Average their batteries
+            const total = bot.battery + partner.battery;
+            bot.battery = total / 2;
+            partner.battery = total / 2;
+            
+            // Shared vision boost
+            bot.visionRadius = Math.max(bot.visionRadius, partner.visionRadius);
+            
+            // Draw bonding line
+            if (this.config.showSensoryRaycasts) {
+               this.pheromones.push({ x: (bot.x + partner.x)/2, y: (bot.y + partner.y)/2, intensity: 0.1, color: '#00E676' });
+            }
+          }
+        }
+      }
+
+      // Parasitism: Immune Response & Energy Drain
+      if (bot.isInfected) {
+        bot.battery -= this.config.batteryDrainMultiplier * 2.0 * speedMult; // 2x drain
+        if (bot.infectionTimer !== undefined) {
+           bot.infectionTimer -= speedMult;
+           if (bot.infectionTimer <= 0) {
+             bot.isInfected = false;
+             // Chance to develop antibodies through survivor mutation
+             if (Math.random() > 0.5) {
+               bot.hasAntibodies = true;
+               bot.hue = 130; // Turn green (immune)
+             }
+           }
+        }
+      }
 
       // Velocity & Position
       bot.vx = Math.cos(bot.heading) * currentSpeed;

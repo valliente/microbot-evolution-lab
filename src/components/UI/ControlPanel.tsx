@@ -6,11 +6,13 @@ interface ControlPanelProps {
   config: SimulationConfig;
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
   onExportStateSync?: () => void;
+  onExportStateSync?: () => void;
   onImportStateSync?: () => void;
   onRunBenchmark?: () => void;
+  onSpawnSpore?: () => void;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark }) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark, onSpawnSpore }) => {
   const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'sync' | 'all'>('all');
 
   return (
@@ -225,6 +227,17 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
                   <path d="M 0 14 L 10 10 L 20 12 L 30 4 L 40 10 L 50 6" fill="none" stroke="#FF6B00" strokeWidth="1.5" />
                 </svg>
               </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E', marginTop: 8 }}>
+                <span>Show Terrain Contour</span>
+                <button
+                  onClick={() => onUpdateConfig({ showTerrainContour: !config.showTerrainContour })}
+                  className={config.showTerrainContour ? 'btn-holo btn-holo-cyan' : 'btn-holo btn-holo-dark'}
+                  style={{ padding: '2px 8px' }}
+                >
+                  {config.showTerrainContour ? 'ON' : 'OFF'}
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -255,6 +268,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
               <button className="btn-holo btn-holo-orange" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onRunBenchmark}>
                 Run Diagnostic Benchmark (3000 bots)
               </button>
+              
+              {onSpawnSpore && (
+                <button className="btn-holo btn-holo-magenta" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onSpawnSpore}>
+                  Spawn Parasitic Spores
+                </button>
+              )}
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E', marginTop: 4 }}>
                 <span>Headless Mode (100x Speed)</span>

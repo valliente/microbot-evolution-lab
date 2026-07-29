@@ -158,6 +158,17 @@ export interface SpeedField {
   multiplier: number;
 }
 
+export interface ParasiticSpore {
+  id: string;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  radius: number;
+  hostId?: string;
+  life: number;
+}
+
 export interface SimulationConfig {
   startPopulation: number;
   maxPopulation: number;
@@ -183,6 +194,7 @@ export interface SimulationConfig {
   autoSeasonCycle: boolean;
   enableFrameInterpolation: boolean;
   headlessMode: boolean;
+  showTerrainContour: boolean;
 }
 
 export interface SimulationStats {

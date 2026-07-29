@@ -161,6 +161,14 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleSpawnSpore = () => {
+    if (engine) {
+      for (let i = 0; i < 5; i++) {
+        engine.spawnSpore(Math.random() * engine.width, Math.random() * engine.height);
+      }
+    }
+  };
+
   const handleSpawnBlueprint = (blueprint: Partial<Microbot>, count: number) => {
     if (!engine) return;
     for (let i = 0; i < count; i++) {
@@ -317,6 +325,7 @@ export const App: React.FC = () => {
             onExportStateSync={handleExportStateSync}
             onImportStateSync={handleImportStateSync}
             onRunBenchmark={() => engine?.runBenchmark()}
+            onSpawnSpore={handleSpawnSpore}
           />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />

@@ -24,8 +24,10 @@ export const defaultConfig: SimulationConfig = {
   brushMode: 'NONE',
   heatmapMode: 'OFF',
   currentSeason: 'SPRING',
-  autoSeasonCycle: true,
-  enableFrameInterpolation: true
+  autoSeasonCycle: false,
+  enableFrameInterpolation: true,
+  headlessMode: false,
+  showTerrainContour: false
 };
 
 export function loadConfigFromStorage(): SimulationConfig {
