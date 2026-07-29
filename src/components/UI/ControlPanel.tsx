@@ -24,7 +24,18 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
         gap: 6
       }}>
         <span style={{ color: '#00E5FF' }}>●</span> PARAMETERS & CONTROLS
-        <span style={{ fontSize: '0.62rem', color: '#00E676', marginLeft: 'auto' }}>⚡ WORKER ON</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <select 
+            value={config.targetFPS || 60} 
+            onChange={(e) => onUpdateConfig({ targetFPS: parseInt(e.target.value, 10) })}
+            style={{ background: '#080E14', color: '#00E676', fontWeight: 800, border: '1px solid rgba(0, 230, 118, 0.4)', borderRadius: 6, padding: '2px 6px', fontSize: '0.62rem', cursor: 'pointer' }}
+          >
+            <option value="60">60 FPS (Smooth)</option>
+            <option value="30">30 FPS (Balanced)</option>
+            <option value="15">15 FPS (Battery Saver)</option>
+          </select>
+          <span style={{ fontSize: '0.62rem', color: '#00E676' }}>⚡ WORKER ON</span>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

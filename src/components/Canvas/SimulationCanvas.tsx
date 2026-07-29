@@ -591,6 +591,74 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             clickY + (Math.random() - 0.5) * 20
           );
         }
+    }
+  };
+
+  const pinchDistRef = useRef<number | null>(null);
+  const handleTouchInteraction = (e: React.TouchEvent<HTMLCanvasElement>, isMove: boolean = false) => {
+    e.preventDefault();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    if (e.touches.length === 2) {
+      // Two-finger pinch to zoom & pan
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+      if (pinchDistRef.current && isMove) {
+        const delta = dist - pinchDistRef.current;
+        if (Math.abs(delta) > 5) {
+          // Adjust resolution scale as a simulated zoom
+          resolutionScaleRef.current = Math.max(0.2, Math.min(2.0, resolutionScaleRef.current + delta * 0.005));
+        }
+      }
+      pinchDistRef.current = dist;
+      return;
+    }
+
+    pinchDistRef.current = null;
+    
+    // Single finger touch - delegate to painting/interaction
+    if (e.touches.length === 1) {
+      const rect = canvas.getBoundingClientRect();
+      const clickX = e.touches[0].clientX - rect.left;
+      const clickY = e.touches[0].clientY - rect.top;
+
+      const mode: BrushMode = engine.config.brushMode || 'NONE';
+
+      if (mode === 'PAINT_FOOD') {
+        engine.spawnFood(clickX, clickY);
+        if (!isMove && navigator.vibrate) navigator.vibrate(10);
+      } else if (mode === 'PAINT_HAZARD') {
+        engine.spawnHazard(clickX, clickY);
+        if (!isMove && navigator.vibrate) navigator.vibrate([15, 30, 15]);
+      } else if (mode === 'PAINT_SPEED_FIELD') {
+        engine.spawnSpeedField(clickX, clickY);
+        if (!isMove && navigator.vibrate) navigator.vibrate(15);
+      } else if (!isMove) {
+        let clickedBot = null;
+        let minDist = 35; // Larger hit radius for touch
+
+        for (const bot of engine.microbots) {
+          const dist = Math.hypot(bot.x - clickX, bot.y - clickY);
+          if (dist < minDist) {
+            minDist = dist;
+            clickedBot = bot;
+          }
+        }
+
+        if (clickedBot) {
+          onSelectBot(clickedBot.id);
+          if (navigator.vibrate) navigator.vibrate(20);
+        } else {
+          for (let i = 0; i < 5; i++) {
+            engine.spawnFood(
+              clickX + (Math.random() - 0.5) * 20,
+              clickY + (Math.random() - 0.5) * 20
+            );
+          }
+          if (navigator.vibrate) navigator.vibrate(10);
+        }
       }
     }
   };
@@ -807,7 +875,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         onMouseDown={(e) => { isMouseDownRef.current = true; handleCanvasInteraction(e); }}
         onMouseMove={(e) => { if (isMouseDownRef.current) handleCanvasInteraction(e); }}
         onMouseUp={() => { isMouseDownRef.current = false; }}
-        style={{ display: 'block', width: '100%', height: '100%', cursor: currentBrush !== 'NONE' ? 'cell' : 'crosshair' }}
+        onTouchStart={(e) => handleTouchInteraction(e, false)}
+        onTouchMove={(e) => handleTouchInteraction(e, true)}
+        onTouchEnd={() => { pinchDistRef.current = null; }}
+        style={{ display: 'block', width: '100%', height: '100%', cursor: currentBrush !== 'NONE' ? 'cell' : 'crosshair', touchAction: 'none' }}
       />
 
       {/* Click Tip Overlay */}

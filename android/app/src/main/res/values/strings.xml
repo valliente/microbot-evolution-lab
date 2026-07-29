@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MicrobotEvolutionLab</string>
+    <string name="title_activity_main">MicrobotEvolutionLab</string>
+    <string name="package_name">com.valliente.microbotevolutionlab</string>
+    <string name="custom_url_scheme">com.valliente.microbotevolutionlab</string>
+</resources>

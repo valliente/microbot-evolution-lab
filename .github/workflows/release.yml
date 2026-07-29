@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.213
+name: Publish Release - 0.1.214
 
 on:
   push:
@@ -20,8 +20,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Install dependencies
         run: npm ci
@@ -36,28 +42,39 @@ jobs:
         run: |
           Compress-Archive -Path "PLAY.bat", "MicrobotEvolutionLab.hta", "dist-standalone\index.html", "README.md", "LICENSE" -DestinationPath "Microbot-Evolution-Lab-Windows.zip" -Force
 
+      - name: Build Android APK
+        run: |
+          npx cap sync android
+          cd android
+          .\gradlew assembleDebug
+          cd ..
+          Copy-Item "android\app\build\outputs\apk\debug\app-debug.apk" -Destination "MicrobotEvolutionLab.apk" -Force
+
       - name: Generate Checksums
         run: |
           Get-FileHash -Path MicrobotEvolutionLab.exe -Algorithm SHA256 > checksums.txt
+          Get-FileHash -Path MicrobotEvolutionLab.apk -Algorithm SHA256 >> checksums.txt
           Get-FileHash -Path Microbot-Evolution-Lab-Windows.zip -Algorithm SHA256 >> checksums.txt
 
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.213"
+          name: "0.1.214"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🧬 Microbot Evolution Lab - 0.1.213 Performance Release
-
+            ## 🧬 Microbot Evolution Lab - 0.1.214 Mobile Port
+            
             ### 🚀 Highlights
-            - Quantum Genetic Engine
-            - Radiation Storm & Magnetic Inversion Disasters
-            - SharedArrayBuffer Threading Overhaul
-            - Dynamic JSON/CSV Export
+            - Android APK Support & Build Pipeline
+            - Multi-Touch Gestures (Pinch to Zoom, Pan)
+            - Haptic Feedback Engine
+            - Mobile Responsive UI (Bottom Drawer layout)
+            - FPS Limiter / Battery Saver Mode
           draft: false
           prerelease: false
           files: |
             MicrobotEvolutionLab.exe
+            MicrobotEvolutionLab.apk
             MicrobotEvolutionLab.hta
             PLAY.bat
             Microbot-Evolution-Lab-Windows.zip

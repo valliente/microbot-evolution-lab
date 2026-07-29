@@ -324,3 +324,48 @@ input[type="range"] {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 229, 255, 0.5);
 }
+
+/* Mobile Responsive Glass Drawer Overlay */
+@media (max-width: 768px) {
+  .workspace-grid {
+    display: flex;
+    flex-direction: column;
+    padding: 0 4px 4px 4px;
+    gap: 8px;
+  }
+  
+  .sidebar-col {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 45vh;
+    z-index: 50;
+    background: rgba(8, 14, 20, 0.95);
+    border-top: 2px solid rgba(0, 229, 255, 0.5);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 12px;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9), inset 0 2px 10px rgba(0, 229, 255, 0.2);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  
+  .main-viewport-col {
+    flex: 1;
+    margin-bottom: 40vh; /* Space for drawer */
+  }
+
+  .analytics-cube-container {
+    transform: scale(0.7);
+    bottom: 45vh;
+    right: 8px;
+  }
+  
+  .top-nav-bar {
+    padding: 6px 10px;
+  }
+  
+  .brand-title {
+    font-size: 0.85rem;
+  }
+}
