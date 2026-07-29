@@ -295,6 +295,7 @@ export const App: React.FC = () => {
         onTriggerOutbreak={() => engine?.triggerOutbreak()}
         onTriggerRadiationStorm={() => engine?.triggerRadiationStorm()}
         onTriggerMagneticInversion={() => engine?.triggerMagneticInversion()}
+        onTriggerPortal={() => engine?.spawnPortalPair()}
         onExportTelemetryCSV={handleExportTelemetryCSV}
         onExportConfigJSON={handleExportConfigJSON}
         onImportConfigJSON={handleImportConfigJSON}
@@ -316,10 +317,11 @@ export const App: React.FC = () => {
             onUpdateConfig={handleUpdateConfig} 
             onExportStateSync={handleExportStateSync}
             onImportStateSync={handleImportStateSync}
+            onRunBenchmark={() => engine?.runBenchmark()}
           />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />
-          <GeneticDriftHeatmap stats={stats} />
+          <GeneticDriftHeatmap stats={stats} bots={engine?.microbots || []} />
         </div>
 
         {/* Right Viewport: Dual-Canvas Split View or Single Viewport */}

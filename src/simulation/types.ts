@@ -72,6 +72,14 @@ export interface VoidRift {
   pullForce: number;
 }
 
+export interface PortalNode {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  linkedId: string;
+}
+
 export interface Microbot {
   id: string;
   x: number;
@@ -114,6 +122,7 @@ export interface Microbot {
   pheromoneLevel?: number;
   symbiosisGene?: number;
   biomeAdaptation?: BiomeType;
+  teleportCooldown?: number;
 }
 
 export interface EnergyParticle {

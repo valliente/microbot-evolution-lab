@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -20,6 +20,7 @@ export class MicrobotEngine {
   public pheromones: PheromonePoint[] = [];
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
+  public portals: PortalNode[] = [];
   public biomes: SectorBiome[] = [];
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
@@ -140,6 +141,7 @@ export class MicrobotEngine {
     this.hazards = [];
     this.speedFields = [];
     this.pheromones = [];
+    this.portals = [];
     this.activeDisasters = [];
     this.selectedMicrobotId = null;
     this.totalBirths = 0;
@@ -299,6 +301,7 @@ export class MicrobotEngine {
       behaviorState: 'WANDERING',
       energyCollected: 0,
       isPredator,
+      teleportCooldown: 0,
       trail: [],
       batteryHistory: new Array(30).fill(maxBattery)
     };
@@ -434,6 +437,38 @@ export class MicrobotEngine {
 
   public clearHazards(): void {
     this.hazards = [];
+  }
+
+  public spawnPortalPair(): void {
+    const idA = `PORTAL-${Date.now()}-A`;
+    const idB = `PORTAL-${Date.now()}-B`;
+    
+    // Spawn A on the left side
+    const xA = Math.random() * (this.width / 2 - 100) + 50;
+    const yA = Math.random() * (this.height - 100) + 50;
+    
+    // Spawn B on the right side
+    const xB = Math.random() * (this.width / 2 - 100) + (this.width / 2 + 50);
+    const yB = Math.random() * (this.height - 100) + 50;
+
+    this.portals.push({ id: idA, x: xA, y: yA, radius: 45, linkedId: idB });
+    this.portals.push({ id: idB, x: xB, y: yB, radius: 45, linkedId: idA });
+  }
+
+  public runBenchmark(): void {
+    console.log('--- STARTING DIAGNOSTIC BENCHMARK ---');
+    this.resetSimulation();
+    this.config.isPaused = false;
+    
+    // Spawn 3000 bots instantly
+    this.spawnMultipleBots(3000);
+    this.spawnMultipleFood(200);
+    this.updateHazardsCount();
+    
+    setTimeout(() => {
+       console.log(`Benchmark Complete. Actual TPS: ${this.actualTPS.toFixed(1)}`);
+       alert(`Diagnostic Benchmark Complete!\nAverage Simulation TPS with 3000 bots: ${this.actualTPS.toFixed(1)}`);
+    }, 5000);
   }
 
   public updateHazardsCount(): void {
@@ -644,6 +679,25 @@ export class MicrobotEngine {
       if (!bot.isPredator && bot.speed > 3.4 && bot.energyEfficiency > 1.4) {
         bot.isPredator = true;
         bot.color = '#f43f5e';
+      }
+
+      if (bot.teleportCooldown && bot.teleportCooldown > 0) {
+        bot.teleportCooldown -= speedMult;
+      } else {
+        // Check Portal Collisions
+        for (const portal of this.portals) {
+          const pDist = Math.hypot(bot.x - portal.x, bot.y - portal.y);
+          if (pDist < portal.radius) {
+            // Find linked portal
+            const linked = this.portals.find(p => p.id === portal.linkedId);
+            if (linked) {
+              bot.x = linked.x + (Math.random() - 0.5) * 20;
+              bot.y = linked.y + (Math.random() - 0.5) * 20;
+              bot.teleportCooldown = 60; // cooldown in frames
+              break;
+            }
+          }
+        }
       }
 
       // Check speed fields

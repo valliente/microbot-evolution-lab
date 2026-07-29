@@ -1,17 +1,81 @@
-import React from 'react';
-import { SimulationStats } from '../../simulation/types';
+import React, { useRef, useEffect } from 'react';
+import { SimulationStats, Microbot } from '../../simulation/types';
 import { Activity } from 'lucide-react';
 
 interface GeneticDriftHeatmapProps {
   stats: SimulationStats;
+  bots: Microbot[];
 }
 
-export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats }) => {
-  const speedH = stats.speedHistogram || new Array(10).fill(0);
-  const visionH = stats.visionHistogram || new Array(10).fill(0);
-  const effH = stats.efficiencyHistogram || new Array(10).fill(0);
+export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats, bots }) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  const maxVal = Math.max(1, ...speedH, ...visionH, ...effH);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+
+    const render = () => {
+      // Clear background
+      ctx.fillStyle = '#060A10';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Grid
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.1)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 20) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 20) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      ctx.globalCompositeOperation = 'screen';
+      
+      // Plot bots: X = Speed (1..5), Y = Efficiency (0.6..2.5)
+      bots.forEach(bot => {
+        // Map speed [1, 5] to X [10, canvas.width - 10]
+        const speedNorm = Math.max(0, Math.min(1, (bot.speed - 1) / 4));
+        const px = 10 + speedNorm * (canvas.width - 20);
+
+        // Map efficiency [0.6, 2.5] to Y [canvas.height - 10, 10] (inverted)
+        const effNorm = Math.max(0, Math.min(1, (bot.energyEfficiency - 0.6) / 1.9));
+        const py = canvas.height - 10 - effNorm * (canvas.height - 20);
+
+        // Draw soft glowing dot
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, 6);
+        grad.addColorStop(0, bot.color);
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(px, py, 6, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.globalCompositeOperation = 'source-over';
+
+      // Axis Labels
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = "8px 'JetBrains Mono'";
+      ctx.fillText('SPEED →', canvas.width / 2 - 15, canvas.height - 4);
+      
+      ctx.save();
+      ctx.translate(8, canvas.height / 2 + 25);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('EFFICIENCY →', 0, 0);
+      ctx.restore();
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => cancelAnimationFrame(animId);
+  }, [bots]);
 
   return (
     <div style={{
@@ -32,79 +96,12 @@ export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats 
         marginBottom: 8
       }}>
         <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <Activity style={{ width: 13, height: 13 }} /> GENETIC DRIFT HEATMAP
+          <Activity style={{ width: 13, height: 13 }} /> 2D GENETIC DRIFT
         </span>
-        <span style={{ color: '#8B949E', fontSize: '0.65rem' }}>10 Trait Buckets</span>
+        <span style={{ color: '#8B949E', fontSize: '0.65rem' }}>Speed vs Efficiency</span>
       </div>
 
-      {/* Trait Drift Heatmap Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {/* Speed Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '50px 1fr', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: '0.6rem', fontFamily: "'JetBrains Mono', monospace", color: '#E040FB' }}>SPEED</span>
-          <div style={{ display: 'flex', gap: 2, height: 12 }}>
-            {speedH.map((val, i) => {
-              const alpha = Math.max(0.1, (val / maxVal));
-              return (
-                <div
-                  key={i}
-                  title={`Speed Bucket ${i + 1}: ${val} bots`}
-                  style={{
-                    flex: 1,
-                    backgroundColor: `rgba(224, 64, 251, ${alpha})`,
-                    borderRadius: 2,
-                    border: '1px solid rgba(224, 64, 251, 0.3)'
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Vision Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '50px 1fr', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: '0.6rem', fontFamily: "'JetBrains Mono', monospace", color: '#00E5FF' }}>VISION</span>
-          <div style={{ display: 'flex', gap: 2, height: 12 }}>
-            {visionH.map((val, i) => {
-              const alpha = Math.max(0.1, (val / maxVal));
-              return (
-                <div
-                  key={i}
-                  title={`Vision Bucket ${i + 1}: ${val} bots`}
-                  style={{
-                    flex: 1,
-                    backgroundColor: `rgba(0, 229, 255, ${alpha})`,
-                    borderRadius: 2,
-                    border: '1px solid rgba(0, 229, 255, 0.3)'
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Efficiency Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '50px 1fr', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: '0.6rem', fontFamily: "'JetBrains Mono', monospace", color: '#00E676' }}>EFFICIENCY</span>
-          <div style={{ display: 'flex', gap: 2, height: 12 }}>
-            {effH.map((val, i) => {
-              const alpha = Math.max(0.1, (val / maxVal));
-              return (
-                <div
-                  key={i}
-                  title={`Efficiency Bucket ${i + 1}: ${val} bots`}
-                  style={{
-                    flex: 1,
-                    backgroundColor: `rgba(0, 230, 118, ${alpha})`,
-                    borderRadius: 2,
-                    border: '1px solid rgba(0, 230, 118, 0.3)'
-                  }}
-                />
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <canvas ref={canvasRef} width={180} height={140} style={{ borderRadius: 8, border: '1px solid rgba(0,229,255,0.1)' }} />
     </div>
   );
 };

@@ -275,7 +275,37 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.beginPath();
             ctx.arc(field.x, field.y, field.radius, 0, Math.PI * 2);
             ctx.stroke();
-            ctx.restore();
+          }
+
+          // Render Portals
+          for (const portal of engine.portals) {
+            const rot = Date.now() / 300;
+            const grad = ctx.createRadialGradient(portal.x, portal.y, 2, portal.x, portal.y, portal.radius);
+            grad.addColorStop(0, 'rgba(217, 70, 239, 0.8)');
+            grad.addColorStop(0.5, 'rgba(139, 92, 246, 0.4)');
+            grad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+            
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(portal.x, portal.y, portal.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Swirl effect
+            ctx.strokeStyle = 'rgba(217, 70, 239, 0.9)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(portal.x, portal.y, portal.radius * 0.8, rot, rot + Math.PI);
+            ctx.stroke();
+            
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.9)';
+            ctx.beginPath();
+            ctx.arc(portal.x, portal.y, portal.radius * 0.6, -rot, -rot + Math.PI);
+            ctx.stroke();
+
+            ctx.font = "800 10px 'JetBrains Mono', monospace";
+            ctx.fillStyle = '#d946ef';
+            ctx.textAlign = 'center';
+            ctx.fillText('PORTAL', portal.x, portal.y - portal.radius - 5);
           }
 
           // Copy current frame to trail buffer for the next frame's interpolation

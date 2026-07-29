@@ -7,9 +7,10 @@ interface ControlPanelProps {
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
   onExportStateSync?: () => void;
   onImportStateSync?: () => void;
+  onRunBenchmark?: () => void;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync }) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark }) => {
   const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'sync' | 'all'>('all');
 
   return (
@@ -242,12 +243,17 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
           </div>
 
           {(openSection === 'sync' || openSection === 'all') && (
-            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-              <button className="btn-holo btn-holo-cyan" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onExportStateSync}>
-                Export State
-              </button>
-              <button className="btn-holo btn-holo-magenta" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onImportStateSync}>
-                Import State
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn-holo btn-holo-cyan" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onExportStateSync}>
+                  Export State
+                </button>
+                <button className="btn-holo btn-holo-magenta" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onImportStateSync}>
+                  Import State
+                </button>
+              </div>
+              <button className="btn-holo btn-holo-orange" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onRunBenchmark}>
+                Run Diagnostic Benchmark (3000 bots)
               </button>
             </div>
           )}

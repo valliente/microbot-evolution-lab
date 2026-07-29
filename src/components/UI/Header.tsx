@@ -21,6 +21,7 @@ interface HeaderProps {
   onTriggerOutbreak: () => void;
   onTriggerRadiationStorm: () => void;
   onTriggerMagneticInversion: () => void;
+  onTriggerPortal: () => void;
   onExportTelemetryCSV: () => void;
   onExportConfigJSON: () => void;
   onImportConfigJSON: (jsonConfig: Partial<SimulationConfig>) => void;
@@ -43,6 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
   onTriggerOutbreak,
   onTriggerRadiationStorm,
   onTriggerMagneticInversion,
+  onTriggerPortal,
   onExportTelemetryCSV,
   onExportConfigJSON,
   onImportConfigJSON
@@ -271,6 +273,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button onClick={onTriggerMeteor} className="btn-holo btn-holo-orange" title="Invoke Meteor Strike">
           <span>☄️ METEOR</span>
+        </button>
+
+        <button onClick={onTriggerPortal} className="btn-holo btn-holo-magenta" title="Spawn Linked Portals">
+          <span>🌀 PORTAL</span>
         </button>
 
         <button onClick={onTriggerVoidRift} className="btn-holo btn-holo-magenta" title="Invoke Gravitational Void Rift">
