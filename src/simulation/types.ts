@@ -123,6 +123,11 @@ export interface Microbot {
   symbiosisGene?: number;
   biomeAdaptation?: BiomeType;
   teleportCooldown?: number;
+  armorGene?: number;
+  inkGlandGene?: number;
+  inkCooldown?: number;
+  panicGene?: number;
+  panicTimer?: number;
 }
 
 export interface EnergyParticle {
@@ -177,6 +182,7 @@ export interface SimulationConfig {
   currentSeason: Season;
   autoSeasonCycle: boolean;
   enableFrameInterpolation: boolean;
+  headlessMode: boolean;
 }
 
 export interface SimulationStats {

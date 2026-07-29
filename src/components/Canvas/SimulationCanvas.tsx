@@ -174,6 +174,27 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           if (dt > 3.0) dt = 3.0; // clamp max 3 frames of time
           lastTime = now;
 
+          if (engine.config.headlessMode) {
+            // Headless Mode: Run physics updates in a tight loop and skip all drawing
+            for(let i=0; i<100; i++) {
+               engine.update(dt);
+            }
+            
+            ctx.fillStyle = '#080E14';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.font = "800 16px 'JetBrains Mono', monospace";
+            ctx.fillStyle = '#00E5FF';
+            ctx.textAlign = 'center';
+            ctx.fillText('HEADLESS MODE ACTIVE (100x SPEED)', canvas.width / 2, canvas.height / 2);
+            ctx.font = "800 10px 'JetBrains Mono', monospace";
+            ctx.fillStyle = '#8B949E';
+            ctx.fillText(`Generation ${engine.generationCount} | Pop: ${engine.microbots.length}`, canvas.width / 2, canvas.height / 2 + 20);
+
+            animationFrameId = requestAnimationFrame(render);
+            return;
+          }
+
           engine.update(dt);
 
           // Blit cached background layer (only rebuild on resize)

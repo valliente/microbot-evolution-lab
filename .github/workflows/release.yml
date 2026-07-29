@@ -56,21 +56,17 @@ jobs:
           Get-FileHash -Path MicrobotEvolutionLab.apk -Algorithm SHA256 >> checksums.txt
           Get-FileHash -Path Microbot-Evolution-Lab-Windows.zip -Algorithm SHA256 >> checksums.txt
 
-      - name: Release to GitHub
-        uses: softprops/action-gh-release@v1
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
         with:
-          name: v0.1.216
-          tag_name: v0.1.216
+          tag_name: v0.1.217
+          name: "Microbot Evolution Lab v0.1.217"
           body: |
-            ## 🧬 Microbot Evolution Lab - 0.1.216 Portals & Heatmaps
-            
-            ### 🚀 Highlights
-            - Sub-World Teleportation Portals
-            - Interactive 2D Density Genetic Drift Heatmaps
-            - Native Diagnostic Benchmark Tool
-            - Cross-Platform Ecosystem State Sync (Cloud Save format)
-            - Standardized Touch & Mouse Wheel Gesture Handling
-            - iPhone/Android Safe-Area padding for Mobile Nav Bars
+            Microbot Evolution Lab v0.1.217
+            - Added Apex Predator trophic dynamics and prey defenses
+            - Added Interactive Ancestry Family Tree
+            - Added Headless 100x runner mode
           draft: false
           prerelease: false
           files: |

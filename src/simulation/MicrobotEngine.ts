@@ -252,6 +252,9 @@ export class MicrobotEngine {
     let hue = 185; // Cyan default
     let generation = 1;
     let parentId: string | null = null;
+    let armorGene = Math.random() * 0.5; // 0 to 0.5 (up to 50% reduction)
+    let inkGlandGene = Math.random() > 0.8 ? 1 : 0; // 20% chance to have ink
+    let panicGene = Math.random() * 0.8 + 1.0; // 1.0 to 1.8x speed burst
 
     if (parent) {
       x = parent.x + (Math.random() - 0.5) * 20;
@@ -273,6 +276,12 @@ export class MicrobotEngine {
       visionRadius = clamp(sanitizeVector(parent.visionRadius + (Math.random() - 0.5) * mut * 50), 60, 260);
       energyEfficiency = clamp(sanitizeVector(parent.energyEfficiency + (Math.random() - 0.5) * mut * 0.4), 0.6, 2.5);
       hue = sanitizeVector((parent.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360);
+      
+      armorGene = clamp((parent.armorGene || 0) + (Math.random() - 0.5) * mut * 0.2, 0, 0.8);
+      inkGlandGene = (parent.inkGlandGene || 0) > 0.5 ? 
+         (Math.random() < mut * 2 ? 0 : 1) : 
+         (Math.random() < mut * 2 ? 1 : 0);
+      panicGene = clamp((parent.panicGene || 1.0) + (Math.random() - 0.5) * mut * 0.5, 1.0, 2.5);
     }
 
     const isPredator = speed > 3.4 && energyEfficiency > 1.4;
@@ -302,6 +311,11 @@ export class MicrobotEngine {
       energyCollected: 0,
       isPredator,
       teleportCooldown: 0,
+      armorGene,
+      inkGlandGene,
+      inkCooldown: 0,
+      panicGene,
+      panicTimer: 0,
       trail: [],
       batteryHistory: new Array(30).fill(maxBattery)
     };
@@ -703,6 +717,16 @@ export class MicrobotEngine {
       // Check speed fields
       let currentSpeed = bot.speed * seasonSpeedMult;
 
+      // Handle panic timer burst
+      if (bot.panicTimer && bot.panicTimer > 0) {
+         currentSpeed *= bot.panicGene || 1.5;
+         bot.panicTimer -= speedMult;
+      }
+      
+      if (bot.inkCooldown && bot.inkCooldown > 0) {
+         bot.inkCooldown -= speedMult;
+      }
+
       // Apply Biome Effects
       const currentBiome = this.getBiomeAt(bot.x, bot.y);
       if (currentBiome) {
@@ -789,12 +813,34 @@ export class MicrobotEngine {
           bot.behaviorState = 'HUNTING_PREY';
           const desiredHeading = Math.atan2(nearestPrey.y - bot.y, nearestPrey.x - bot.x);
           steering.desiredHeading = desiredHeading;
+          
+          // Trigger Prey Defenses
+          if (nearestPrey.panicGene && (!nearestPrey.panicTimer || nearestPrey.panicTimer <= 0)) {
+            nearestPrey.panicTimer = 60; // panic for 60 frames
+            nearestPrey.behaviorState = 'EVADING_HAZARD';
+          }
+          if (nearestPrey.inkGlandGene && nearestPrey.inkGlandGene > 0.5 && (!nearestPrey.inkCooldown || nearestPrey.inkCooldown <= 0)) {
+            nearestPrey.inkCooldown = 300; // 300 frames cooldown
+            // Spawn ink hazard
+            this.hazards.push({
+              id: `INK-${Date.now()}`,
+              x: nearestPrey.x,
+              y: nearestPrey.y,
+              radius: 40,
+              damageRate: 0.5,
+              vx: 0,
+              vy: 0
+            });
+          }
 
           // Harvest Energy upon Predator Contact
           if (minPreyDist < 16) {
-            bot.battery = Math.min(bot.maxBattery, bot.battery + 35);
-            bot.energyCollected += 35;
-            nearestPrey.battery -= 35;
+            const damageReduction = nearestPrey.armorGene ? (1.0 - nearestPrey.armorGene) : 1.0;
+            const energyDrained = 35 * damageReduction;
+            
+            bot.battery = Math.min(bot.maxBattery, bot.battery + energyDrained);
+            bot.energyCollected += energyDrained;
+            nearestPrey.battery -= energyDrained; // Armor protects prey from total loss
           }
         }
       }

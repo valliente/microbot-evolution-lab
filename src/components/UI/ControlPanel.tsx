@@ -255,6 +255,17 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
               <button className="btn-holo btn-holo-orange" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onRunBenchmark}>
                 Run Diagnostic Benchmark (3000 bots)
               </button>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E', marginTop: 4 }}>
+                <span>Headless Mode (100x Speed)</span>
+                <button
+                  onClick={() => onUpdateConfig({ headlessMode: !config.headlessMode })}
+                  className={config.headlessMode ? 'btn-holo btn-holo-cyan' : 'btn-holo btn-holo-dark'}
+                  style={{ padding: '2px 8px' }}
+                >
+                  {config.headlessMode ? 'ON' : 'OFF'}
+                </button>
+              </div>
             </div>
           )}
         </div>

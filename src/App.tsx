@@ -265,8 +265,7 @@ export const App: React.FC = () => {
       <LineageModal
         isOpen={isLineageOpen}
         selectedBot={lineageData.current}
-        parentBot={lineageData.parent}
-        childBots={lineageData.children}
+        engine={engine}
         onSelectBot={(id) => { handleSelectBotById(id); }}
         onClose={() => setIsLineageOpen(false)}
       />
