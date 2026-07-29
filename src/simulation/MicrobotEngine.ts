@@ -25,6 +25,7 @@ export class MicrobotEngine {
   public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
   public threadManager: ThreadManager;
+  public wasmModule: any = null;
   public energyPositionsX: Float32Array = new Float32Array(5000);
   public energyPositionsY: Float32Array = new Float32Array(5000);
   public raycastBuffer: Float32Array = new Float32Array(100);
@@ -70,8 +71,25 @@ export class MicrobotEngine {
     this.positionsView = new Float32Array(this.positionBuffer);
     
     this.generateBiomes();
+    this.initWASM();
 
     this.resetSimulation();
+  }
+
+  public async initWASM(): Promise<void> {
+    try {
+      const response = await fetch('./physics.wasm');
+      const buffer = await response.arrayBuffer();
+      const module = await WebAssembly.instantiate(buffer, {
+        env: {
+          abort: () => console.log('WASM abort')
+        }
+      });
+      this.wasmModule = module.instance.exports;
+      console.log('WASM Physics Module initialized successfully.');
+    } catch (e) {
+      console.error('Failed to initialize WASM module:', e);
+    }
   }
 
   public generateBiomes(): void {
@@ -163,6 +181,52 @@ export class MicrobotEngine {
     // Auto select first bot
     if (this.microbots.length > 0) {
       this.selectedMicrobotId = this.microbots[0].id;
+    }
+  }
+
+  public exportState(): string {
+    const state = {
+      microbots: this.microbots,
+      energyParticles: this.energyParticles,
+      hazards: this.hazards,
+      speedFields: this.speedFields,
+      pheromones: this.pheromones,
+      activeDisasters: this.activeDisasters,
+      config: this.config,
+      stats: {
+        totalBirths: this.totalBirths,
+        totalDeaths: this.totalDeaths,
+        generationCount: this.generationCount,
+        frameCount: this.frameCount
+      }
+    };
+    return btoa(JSON.stringify(state));
+  }
+
+  public importState(hash: string): void {
+    try {
+      const state = JSON.parse(atob(hash));
+      this.microbots = state.microbots || [];
+      this.energyParticles = state.energyParticles || [];
+      this.hazards = state.hazards || [];
+      this.speedFields = state.speedFields || [];
+      this.pheromones = state.pheromones || [];
+      this.activeDisasters = state.activeDisasters || [];
+      this.config = { ...this.config, ...state.config };
+      
+      if (state.stats) {
+        this.totalBirths = state.stats.totalBirths;
+        this.totalDeaths = state.stats.totalDeaths;
+        this.generationCount = state.stats.generationCount;
+        this.frameCount = state.stats.frameCount;
+      }
+      
+      this.nextBotIdNum = this.microbots.length + 1;
+      this.nextFoodIdNum = this.energyParticles.length + 1;
+      
+      console.log('Successfully imported ecosystem state');
+    } catch (e) {
+      console.error('Failed to import state hash:', e);
     }
   }
 

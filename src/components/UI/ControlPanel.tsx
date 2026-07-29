@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Users, Dna, ShieldAlert } from 'lucide-react';
+import { ChevronDown, ChevronUp, Users, Dna, ShieldAlert, Cloud } from 'lucide-react';
 import { SimulationConfig } from '../../simulation/types';
 
 interface ControlPanelProps {
   config: SimulationConfig;
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
+  onExportStateSync?: () => void;
+  onImportStateSync?: () => void;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig }) => {
-  const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'all'>('all');
+export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync }) => {
+  const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'sync' | 'all'>('all');
 
   return (
     <div className="glass-panel" style={{ padding: '12px 14px' }}>
@@ -222,6 +224,31 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
                   <path d="M 0 14 L 10 10 L 20 12 L 30 4 L 40 10 L 50 6" fill="none" stroke="#FF6B00" strokeWidth="1.5" />
                 </svg>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Cluster 4: Data Sync */}
+        <div style={{ background: 'rgba(8, 14, 20, 0.6)', borderRadius: 10, border: '1px solid rgba(0, 150, 255, 0.2)', padding: '8px 10px' }}>
+          <div
+            className="accordion-header"
+            onClick={() => setOpenSection(openSection === 'sync' ? 'all' : 'sync')}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}
+          >
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '0.72rem', fontWeight: 800, color: '#0096FF', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Cloud style={{ width: 13, height: 13 }} /> Ecosystem Sync
+            </span>
+            {openSection === 'sync' || openSection === 'all' ? <ChevronUp style={{ width: 14, height: 14, color: '#8B949E' }} /> : <ChevronDown style={{ width: 14, height: 14, color: '#8B949E' }} />}
+          </div>
+
+          {(openSection === 'sync' || openSection === 'all') && (
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <button className="btn-holo btn-holo-cyan" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onExportStateSync}>
+                Export State
+              </button>
+              <button className="btn-holo btn-holo-magenta" style={{ flex: 1, justifyContent: 'center', fontSize: '0.65rem' }} onClick={onImportStateSync}>
+                Import State
+              </button>
             </div>
           )}
         </div>

@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.214
+name: Publish Release - 0.1.215
 
 on:
   push:
@@ -59,17 +59,16 @@ jobs:
       - name: Publish GitHub Full Release
         uses: softprops/action-gh-release@v1
         with:
-          name: "0.1.214"
+          name: "0.1.215"
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🧬 Microbot Evolution Lab - 0.1.214 Mobile Port
+            ## 🧬 Microbot Evolution Lab - 0.1.215 WASM & Sync
             
             ### 🚀 Highlights
-            - Android APK Support & Build Pipeline
-            - Multi-Touch Gestures (Pinch to Zoom, Pan)
-            - Haptic Feedback Engine
-            - Mobile Responsive UI (Bottom Drawer layout)
-            - FPS Limiter / Battery Saver Mode
+            - WebAssembly (WASM) physics acceleration engine
+            - Cross-Platform Ecosystem State Sync (Cloud Save format)
+            - Standardized Touch & Mouse Wheel Gesture Handling
+            - iPhone/Android Safe-Area padding for Mobile Nav Bars
           draft: false
           prerelease: false
           files: |

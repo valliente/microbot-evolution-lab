@@ -206,6 +206,27 @@ export const App: React.FC = () => {
     alert('Simulation Preset Loaded Successfully!');
   };
 
+  const handleExportStateSync = () => {
+    if (!engine) return;
+    const hash = engine.exportState();
+    navigator.clipboard.writeText(hash).then(() => {
+      alert('Ecosystem state copied to clipboard as sync hash!');
+    }).catch(err => {
+      console.error('Failed to copy', err);
+      alert('Failed to copy to clipboard.');
+    });
+  };
+
+  const handleImportStateSync = () => {
+    if (!engine) return;
+    const hash = prompt('Paste your sync hash here:');
+    if (hash) {
+      engine.importState(hash);
+      setStats(engine.getStats());
+      alert('Ecosystem synced successfully!');
+    }
+  };
+
   const lineageData = selectedBot && engine ? engine.getLineageTree(selectedBot.id) : { parent: null, current: null, children: [] };
 
   // Determine dynamic biome/season tint
@@ -290,7 +311,12 @@ export const App: React.FC = () => {
             onOverrideGenes={handleOverrideGenes}
             onOpenLineageModal={() => setIsLineageOpen(true)}
           />
-          <ControlPanel config={config} onUpdateConfig={handleUpdateConfig} />
+          <ControlPanel 
+            config={config} 
+            onUpdateConfig={handleUpdateConfig} 
+            onExportStateSync={handleExportStateSync}
+            onImportStateSync={handleImportStateSync}
+          />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />
           <GeneticDriftHeatmap stats={stats} />

@@ -596,7 +596,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
   const pinchDistRef = useRef<number | null>(null);
   const handleTouchInteraction = (e: React.TouchEvent<HTMLCanvasElement>, isMove: boolean = false) => {
-    e.preventDefault();
+    // We do NOT call preventDefault on touchStart unconditionally, otherwise we break scrolling if needed
+    // But for the canvas, we generally want to prevent default to avoid pull-to-refresh
+    if (e.cancelable) e.preventDefault();
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -607,9 +610,9 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       const dist = Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
       if (pinchDistRef.current && isMove) {
         const delta = dist - pinchDistRef.current;
-        if (Math.abs(delta) > 5) {
+        if (Math.abs(delta) > 2) {
           // Adjust resolution scale as a simulated zoom
-          resolutionScaleRef.current = Math.max(0.2, Math.min(2.0, resolutionScaleRef.current + delta * 0.005));
+          resolutionScaleRef.current = Math.max(0.1, Math.min(3.0, resolutionScaleRef.current + delta * 0.008));
         }
       }
       pinchDistRef.current = dist;
@@ -878,6 +881,11 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         onTouchStart={(e) => handleTouchInteraction(e, false)}
         onTouchMove={(e) => handleTouchInteraction(e, true)}
         onTouchEnd={() => { pinchDistRef.current = null; }}
+        onWheel={(e) => {
+          if (e.cancelable) e.preventDefault();
+          const delta = -e.deltaY;
+          resolutionScaleRef.current = Math.max(0.1, Math.min(3.0, resolutionScaleRef.current + delta * 0.001));
+        }}
         style={{ display: 'block', width: '100%', height: '100%', cursor: currentBrush !== 'NONE' ? 'cell' : 'crosshair', touchAction: 'none' }}
       />
 

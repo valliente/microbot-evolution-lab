@@ -1,12 +1,13 @@
 {
   "name": "microbot-evolution-lab",
   "private": true,
-  "version": "0.1.214",
+  "version": "0.1.215",
   "type": "module",
   "scripts": {
+    "asbuild": "asc src/wasm/physics.ts -b public/physics.wasm -t public/physics.wat --optimize",
     "dev": "vite",
-    "build": "tsc && vite build --emptyOutDir",
-    "build:single": "tsc && vite build --emptyOutDir --config vite.singlefile.config.ts",
+    "build": "npm run asbuild && tsc && vite build --emptyOutDir",
+    "build:single": "npm run asbuild && tsc && vite build --emptyOutDir --config vite.singlefile.config.ts",
     "build:package": "npm run build:single && node build-hta.js",
     "build:exe": "npm run build:single && node build-exe.js",
     "build:electron": "tsc && vite build --emptyOutDir && electron-builder --win",
@@ -24,6 +25,7 @@
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",
+    "assemblyscript": "^0.28.20",
     "typescript": "^5.2.2",
     "vite": "^5.1.6",
     "vite-plugin-singlefile": "^2.0.1"
