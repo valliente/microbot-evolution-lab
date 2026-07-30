@@ -161,7 +161,7 @@ export class SpatialAudioSynth {
     return this.isMuted;
   }
 
-  public playDisasterSound(type: 'METEOR' | 'VOID' | 'VIRUS' | 'STORM' | 'INVERSION'): void {
+  public playDisasterSound(type: 'METEOR' | 'VOID' | 'VIRUS' | 'STORM' | 'INVERSION' | 'FLARE'): void {
     if (this.isMuted) return;
     if (this.activeOscCount >= this.maxConcurrentOsc) return;
 

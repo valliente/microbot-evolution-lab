@@ -1,13 +1,12 @@
 import React, { useRef, useEffect } from 'react';
-import { SimulationStats, Microbot } from '../../simulation/types';
+import { Microbot } from '../../simulation/types';
 import { Activity } from 'lucide-react';
 
 interface GeneticDriftHeatmapProps {
-  stats: SimulationStats;
   bots: Microbot[];
 }
 
-export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ stats, bots }) => {
+export const GeneticDriftHeatmap: React.FC<GeneticDriftHeatmapProps> = ({ bots }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {

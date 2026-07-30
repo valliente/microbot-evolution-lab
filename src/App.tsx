@@ -12,6 +12,7 @@ import { GuideModal } from './components/UI/GuideModal';
 import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
 import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
+import { CrisprModal } from './components/UI/CrisprModal';
 import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
 import { ErrorOverlay } from './components/UI/ErrorOverlay';
 import { telemetryManager } from './utils/telemetryManager';
@@ -34,6 +35,7 @@ export const App: React.FC = () => {
   const [isRosterOpen, setIsRosterOpen] = useState<boolean>(false);
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
+  const [isCrisprOpen, setIsCrisprOpen] = useState<boolean>(false);
   const [simulationError, setSimulationError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -161,10 +163,18 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleTriggerSolarFlare = () => {
+    if (engine) engine.triggerSolarFlare();
+  };
+
+  const handleTriggerPortal = () => {
+    if (engine) engine.spawnPortalPair();
+  };
+
   const handleSpawnSpore = () => {
-    if (engine) {
+    if (engine && typeof engine.spawnSpore === 'function') {
       for (let i = 0; i < 5; i++) {
-        engine.spawnSpore(Math.random() * engine.width, Math.random() * engine.height);
+        engine.spawnSpore();
       }
     }
   };
@@ -277,12 +287,23 @@ export const App: React.FC = () => {
         onSelectBot={(id) => { handleSelectBotById(id); }}
         onClose={() => setIsLineageOpen(false)}
       />
+      {isBlueprintOpen && (
+        <BlueprintStudioModal 
+          isOpen={true}
+          onClose={() => setIsBlueprintOpen(false)}
+          onSpawnBlueprint={handleSpawnBlueprint}
+        />
+      )}
+      
+      {isCrisprOpen && (
+        <CrisprModal
+          bot={selectedBot}
+          onClose={() => setIsCrisprOpen(false)}
+          onUpdateTraits={handleOverrideGenes}
+        />
+      )}
 
-      <BlueprintStudioModal
-        isOpen={isBlueprintOpen}
-        onSpawnBlueprint={handleSpawnBlueprint}
-        onClose={() => setIsBlueprintOpen(false)}
-      />
+      {simulationError && <ErrorOverlay error={simulationError} onRecover={() => setSimulationError(null)} />}
 
       {/* Header Bar */}
       <Header
@@ -302,7 +323,8 @@ export const App: React.FC = () => {
         onTriggerOutbreak={() => engine?.triggerOutbreak()}
         onTriggerRadiationStorm={() => engine?.triggerRadiationStorm()}
         onTriggerMagneticInversion={() => engine?.triggerMagneticInversion()}
-        onTriggerPortal={() => engine?.spawnPortalPair()}
+        onTriggerSolarFlare={handleTriggerSolarFlare}
+        onTriggerPortal={handleTriggerPortal}
         onExportTelemetryCSV={handleExportTelemetryCSV}
         onExportConfigJSON={handleExportConfigJSON}
         onImportConfigJSON={handleImportConfigJSON}
@@ -312,13 +334,16 @@ export const App: React.FC = () => {
       <main className="workspace-grid">
         {/* Left Column: Data Hub & Parameters */}
         <div className="sidebar-col">
-          <InspectorPanel
-            bot={selectedBot}
-            stats={stats}
-            onClose={() => handleSelectBotById(null)}
-            onOverrideGenes={handleOverrideGenes}
-            onOpenLineageModal={() => setIsLineageOpen(true)}
-          />
+          <div className="inspector-panel-container">
+            <InspectorPanel
+              bot={selectedBot}
+              stats={stats}
+              onClose={() => handleSelectBotById(null)}
+              onOverrideGenes={handleOverrideGenes}
+              onOpenLineageModal={() => setIsLineageOpen(true)}
+              onOpenCrisprModal={() => setIsCrisprOpen(true)}
+            />
+          </div>
           <ControlPanel 
             config={config} 
             onUpdateConfig={handleUpdateConfig} 
@@ -329,7 +354,7 @@ export const App: React.FC = () => {
           />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />
-          <GeneticDriftHeatmap stats={stats} bots={engine?.microbots || []} />
+          <GeneticDriftHeatmap bots={engine ? engine.microbots : []} />
         </div>
 
         {/* Right Viewport: Dual-Canvas Split View or Single Viewport */}

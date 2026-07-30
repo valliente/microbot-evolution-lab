@@ -1,6 +1,6 @@
 export type BehaviorState = 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY' | 'INFECTED';
 export type WeatherEvent = 'CLEAR' | 'SOLAR_FLARE' | 'TOXIC_DRIFT' | 'RESOURCE_BLOOM';
-export type CatastropheType = 'NONE' | 'METEOR_STRIKE' | 'VOID_RIFT' | 'RADIATION_STORM' | 'MAGNETIC_INVERSION';
+export type CatastropheType = 'NONE' | 'METEOR_STRIKE' | 'VOID_RIFT' | 'RADIATION_STORM' | 'MAGNETIC_INVERSION' | 'SOLAR_FLARE';
 export type BrushMode = 'NONE' | 'PAINT_FOOD' | 'PAINT_HAZARD' | 'PAINT_SPEED_FIELD';
 export type Season = 'SPRING' | 'SUMMER' | 'AUTUMN' | 'WINTER';
 export type ResourceType = 'NUTRIENT_DOT' | 'SUPER_CHARGER' | 'MUTAGEN_ORB';
@@ -165,7 +165,7 @@ export interface ParasiticSpore {
   vx: number;
   vy: number;
   radius: number;
-  hostId?: string;
+  hostId: string | null;
   life: number;
 }
 
@@ -195,6 +195,8 @@ export interface SimulationConfig {
   enableFrameInterpolation: boolean;
   headlessMode: boolean;
   showTerrainContour: boolean;
+  autoDisastersEnabled: boolean;
+  disasterScheduleInterval: number; // Interval in frames
 }
 
 export interface SimulationStats {

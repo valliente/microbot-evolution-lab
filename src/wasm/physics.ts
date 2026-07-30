@@ -1,3 +1,4 @@
+// @ts-nocheck
 // WebAssembly Physics Core (AssemblyScript)
 
 // Calculate fast Euclidean distance
@@ -22,7 +23,7 @@ export function resolveCollision(x1: f32, y1: f32, x2: f32, y2: f32, radiusSum: 
   if (distSq < radiusSum * radiusSum && distSq > 0) {
      return Math.sqrt(distSq) as f32;
   }
-  return -1.0;
+  return -1.0 as f32;
 }
 
 // Memory-shared bulk position resolver

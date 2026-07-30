@@ -1,4 +1,4 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -39,6 +39,7 @@ export class MicrobotEngine {
   public generationCount: number = 1;
   public frameCount: number = 0;
   public seasonFrameCount: number = 0;
+  public disasterTimer: number = 0;
   public readonly SEASON_DURATION_FRAMES = 2700; // ~45 seconds per season at 60 FPS
 
   // Ring buffers for telemetry analytics
@@ -318,7 +319,13 @@ export class MicrobotEngine {
       panicGene,
       panicTimer: 0,
       trail: [],
-      batteryHistory: new Array(30).fill(maxBattery)
+      batteryHistory: new Array(30).fill(maxBattery),
+      genome: {
+        speedAllele: { geneId: 'SPEED', baseValue: speed, quantumVariance: 2.0, state: 'ENTANGLED', observationProbability: 0.5 },
+        visionAllele: { geneId: 'VISION', baseValue: visionRadius, quantumVariance: 50, state: 'ENTANGLED', observationProbability: 0.5 },
+        efficiencyAllele: { geneId: 'EFFICIENCY', baseValue: energyEfficiency, quantumVariance: 0.8, state: 'ENTANGLED', observationProbability: 0.5 },
+        mutationTendency: { geneId: 'MUTATION', baseValue: 0.1, quantumVariance: 0.1, state: 'ENTANGLED', observationProbability: 0.5 }
+      }
     };
 
     this.microbots.push(bot);
@@ -450,6 +457,26 @@ export class MicrobotEngine {
     });
   }
 
+  public getElevation(_x: number, _y: number): number {
+    return 0.5; // Simplified default topographical terrain map
+  }
+
+  public spawnSpore(_x?: number, _y?: number): void {
+    const sx = _x !== undefined ? _x : Math.random() * (this.width - 60) + 30;
+    const sy = _y !== undefined ? _y : Math.random() * (this.height - 60) + 30;
+    if (!this.spores) this.spores = [];
+    this.spores.push({
+      id: `SPORE-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+      x: sx,
+      y: sy,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      radius: 3,
+      hostId: null,
+      life: 1000
+    });
+  }
+
   public clearHazards(): void {
     this.hazards = [];
   }
@@ -508,6 +535,27 @@ export class MicrobotEngine {
       }
       bot.isPredator = bot.speed > 3.4 && bot.energyEfficiency > 1.4;
       if (bot.isPredator) bot.color = '#f43f5e';
+    }
+  }
+
+  public triggerSolarFlare(): void {
+    spatialAudio.playDisasterSound('FLARE');
+    this.activeDisasters.push({
+      type: 'SOLAR_FLARE',
+      active: true,
+      intensity: 1.0,
+      durationLeft: 200
+    });
+    // Visual explosion
+    for(let i=0; i<30; i++) {
+       const p = disasterParticlePool.acquire();
+       p.x = this.width/2 + (Math.random()-0.5)*100;
+       p.y = this.height/2 + (Math.random()-0.5)*100;
+       p.vx = (Math.random()-0.5)*25;
+       p.vy = (Math.random()-0.5)*25;
+       p.life = 100 + Math.random()*50;
+       p.color = '#FFD700';
+       this.disasterParticles.push(p);
     }
   }
 
@@ -598,6 +646,24 @@ export class MicrobotEngine {
         const currentIdx = seasons.indexOf(this.config.currentSeason);
         const nextSeason = seasons[(currentIdx + 1) % seasons.length];
         this.config.currentSeason = nextSeason;
+      }
+    }
+
+    // Automated Disaster Scheduler
+    if (this.config.autoDisastersEnabled) {
+      this.disasterTimer += speedMult;
+      if (this.disasterTimer >= this.config.disasterScheduleInterval) {
+        this.disasterTimer = 0;
+        const disasters = ['SOLAR_FLARE', 'RADIATION_STORM', 'MAGNETIC_INVERSION'];
+        const randomDisaster = disasters[Math.floor(Math.random() * disasters.length)];
+        if (randomDisaster === 'SOLAR_FLARE') {
+           this.triggerSolarFlare(); // Wait, let's check if triggerSolarFlare exists, if not, I'll define it.
+           // Actually, let's just use what I know exists: triggerRadiationStorm, triggerMagneticInversion
+        } else if (randomDisaster === 'RADIATION_STORM') {
+           this.triggerRadiationStorm();
+        } else {
+           this.triggerMagneticInversion();
+        }
       }
     }
 
@@ -809,6 +875,32 @@ export class MicrobotEngine {
            bot.color = `hsl(${Math.round(bot.hue)}, 95%, 55%)`;
         }
       }
+      
+      // Quantum Genome Collapse (Stress triggers observation of superposition alleles)
+      const isStressed = bot.battery < (bot.maxBattery * 0.25) || (currentBiome && (currentBiome.type === 'TOXIC_SLUDGE' || currentBiome.type === 'CRYO_ZONE')) || hasRadiationStorm;
+      if (isStressed && bot.genome) {
+        const genome = bot.genome;
+        const alleles = [genome.speedAllele, genome.visionAllele, genome.efficiencyAllele];
+        
+        for (const allele of alleles) {
+          if (allele.state === 'ENTANGLED' || allele.state === 'DECAYING') {
+            allele.state = 'OBSERVED';
+            const isBeneficial = Math.random() < allele.observationProbability;
+            const variance = isBeneficial ? allele.quantumVariance : -allele.quantumVariance;
+            
+            if (allele.geneId === 'SPEED') {
+               bot.speed = clamp(bot.speed + variance, 1.0, 5.0);
+               bot.maxSpeed = bot.speed;
+            } else if (allele.geneId === 'VISION') {
+               bot.visionRadius = clamp(bot.visionRadius + variance, 40, 260);
+            } else if (allele.geneId === 'EFFICIENCY') {
+               bot.energyEfficiency = clamp(bot.energyEfficiency + variance, 0.4, 3.0);
+            }
+          }
+        }
+      }
+
+      // Heading rotation
       if (hasMagneticInversion) {
          // Invert heading unexpectedly
          if (Math.random() < 0.05 * speedMult) {

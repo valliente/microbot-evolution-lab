@@ -21,6 +21,7 @@ interface HeaderProps {
   onTriggerOutbreak: () => void;
   onTriggerRadiationStorm: () => void;
   onTriggerMagneticInversion: () => void;
+  onTriggerSolarFlare: () => void;
   onTriggerPortal: () => void;
   onExportTelemetryCSV: () => void;
   onExportConfigJSON: () => void;
@@ -44,6 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   onTriggerOutbreak,
   onTriggerRadiationStorm,
   onTriggerMagneticInversion,
+  onTriggerSolarFlare,
   onTriggerPortal,
   onExportTelemetryCSV,
   onExportConfigJSON,
@@ -228,6 +230,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Menu Shortcuts Deck */}
       <div className="glass-deck-pill">
+        <button
+          onClick={() => onUpdateConfig({ autoDisastersEnabled: !config.autoDisastersEnabled })}
+          className={config.autoDisastersEnabled ? 'btn-holo btn-holo-orange' : 'btn-holo btn-holo-dark'}
+          style={{ fontSize: '0.65rem' }}
+          title="Toggle Automated Periodic Disasters"
+        >
+          <span>{config.autoDisastersEnabled ? '🔥 AUTO-DISASTERS ON' : '🔥 AUTO-DISASTERS OFF'}</span>
+        </button>
+
         <button onClick={onExportConfigJSON} className="btn-holo btn-holo-cyan" title="Save preset .json">
           <Download style={{ width: 12, height: 12 }} />
         </button>
@@ -289,6 +300,10 @@ export const Header: React.FC<HeaderProps> = ({
 
         <button onClick={onTriggerRadiationStorm} className="btn-holo btn-holo-orange" title="Trigger Radiation Storm">
           <span>☢️ STORM</span>
+        </button>
+
+        <button onClick={onTriggerSolarFlare} className="btn-holo btn-holo-orange" title="Trigger Solar Flare">
+          <span>☀️ FLARE</span>
         </button>
 
         <button onClick={onTriggerMagneticInversion} className="btn-holo btn-holo-magenta" title="Trigger Magnetic Inversion">

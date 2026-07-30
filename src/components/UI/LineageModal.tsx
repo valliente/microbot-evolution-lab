@@ -1,7 +1,7 @@
 import React from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
 import { Microbot } from '../../simulation/types';
-import { X, GitBranch, ArrowRight, Skull } from 'lucide-react';
+import { X, GitBranch, Skull } from 'lucide-react';
 
 interface LineageModalProps {
   isOpen: boolean;
@@ -120,7 +120,7 @@ export const LineageModal: React.FC<LineageModalProps> = ({
              </div>
           )}
 
-          {ancestors.map((ancestor, i) => (
+          {ancestors.map((ancestor) => (
             <div key={ancestor.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
               <div
                 onClick={() => onSelectBot(ancestor.id)}

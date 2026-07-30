@@ -27,7 +27,9 @@ export const defaultConfig: SimulationConfig = {
   autoSeasonCycle: false,
   enableFrameInterpolation: true,
   headlessMode: false,
-  showTerrainContour: false
+  showTerrainContour: false,
+  autoDisastersEnabled: false,
+  disasterScheduleInterval: 3600 // Roughly 1 minute at 60fps
 };
 
 export function loadConfigFromStorage(): SimulationConfig {

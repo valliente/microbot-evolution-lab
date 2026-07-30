@@ -527,14 +527,16 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                   ctx.lineWidth = 1 + (i / trailLen) * 1.5;
                   ctx.setLineDash([]);
                 }
-                
                 ctx.globalAlpha = alpha;
+                ctx.shadowBlur = 12;
+                ctx.shadowColor = ctx.strokeStyle as string;
                 ctx.beginPath();
                 ctx.moveTo(bot.trail[i - 1].x, bot.trail[i - 1].y);
                 ctx.lineTo(bot.trail[i].x, bot.trail[i].y);
                 ctx.stroke();
               }
               ctx.setLineDash([]);
+              ctx.shadowBlur = 0;
               ctx.globalAlpha = 1.0;
             }
 
@@ -674,6 +676,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             clickY + (Math.random() - 0.5) * 20
           );
         }
+      }
     }
   };
 

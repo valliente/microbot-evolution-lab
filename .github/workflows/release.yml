@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.216
+name: Publish Release - 0.1.219
 
 on:
   push:
@@ -60,13 +60,14 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.218
-          name: "Microbot Evolution Lab v0.1.218"
+          tag_name: v0.1.219
+          name: "Microbot Evolution Lab v0.1.219"
           body: |
-            Microbot Evolution Lab v0.1.218
-            - Added Parasitic Spores & Mutualistic Symbiosis
-            - Added Topographical Terrain Physics (Slope acceleration & friction)
-            - Upgraded 2D Genetic Drift Heatmap
+            Microbot Evolution Lab v0.1.219
+            - Quantum Genetic Splicing (Superposition states)
+            - CRISPR DNA Editor Modal
+            - Automated Disaster Scheduler (Solar Flares, etc)
+            - Bioluminescent Trail Shaders
           draft: false
           prerelease: false
           files: |

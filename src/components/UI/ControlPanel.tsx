@@ -5,8 +5,7 @@ import { SimulationConfig } from '../../simulation/types';
 interface ControlPanelProps {
   config: SimulationConfig;
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
-  onExportStateSync?: () => void;
-  onExportStateSync?: () => void;
+  onExportStateSync: () => void;
   onImportStateSync?: () => void;
   onRunBenchmark?: () => void;
   onSpawnSpore?: () => void;

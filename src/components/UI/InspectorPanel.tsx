@@ -8,6 +8,7 @@ interface InspectorPanelProps {
   onClose: () => void;
   onOverrideGenes: (id: string, traits: Partial<Microbot>) => void;
   onOpenLineageModal: () => void;
+  onOpenCrisprModal?: () => void;
 }
 
 export const InspectorPanel: React.FC<InspectorPanelProps> = ({
@@ -15,7 +16,8 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
   stats,
   onClose,
   onOverrideGenes,
-  onOpenLineageModal
+  onOpenLineageModal,
+  onOpenCrisprModal
 }) => {
   const [activeTab, setActiveTab] = useState<'telemetry' | 'dna'>('telemetry');
 
@@ -74,6 +76,18 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             <GitBranch style={{ width: 12, height: 12 }} />
             <span>TREE</span>
           </button>
+          
+          {onOpenCrisprModal && (
+            <button
+              onClick={onOpenCrisprModal}
+              className="btn-holo btn-holo-cyan"
+              style={{ padding: '4px 8px', fontSize: '0.65rem' }}
+              title="Open CRISPR Editor"
+            >
+              <Dna style={{ width: 12, height: 12 }} />
+              <span>CRISPR</span>
+            </button>
+          )}
 
           <button
             onClick={onClose}

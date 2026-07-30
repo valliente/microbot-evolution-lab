@@ -11,19 +11,23 @@ const BaseConfig: SimulationConfig = {
   simSpeed: 1,
   targetFPS: 60,
   isPaused: false,
-  showSensoryRings: false,
   showMovementTrails: true,
   showTargetVectors: false,
   showEnergyForceLines: false,
   showSensoryRaycasts: false,
   showPheromoneTrails: false,
+  showSensoryRings: false,
   isSplitView: false,
-  weatherEvent: 'CLEAR',
+  showTerrainContour: true,
+  enableFrameInterpolation: true,
+  headlessMode: false,
   brushMode: 'NONE',
   heatmapMode: 'OFF',
+  weatherEvent: 'CLEAR',
   currentSeason: 'SPRING',
   autoSeasonCycle: true,
-  enableFrameInterpolation: true,
+  autoDisastersEnabled: false,
+  disasterScheduleInterval: 1800
 };
 
 export const QuantumApexPreset: SimulationConfig = {
