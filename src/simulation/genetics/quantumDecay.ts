@@ -47,7 +47,7 @@ export function processGenomeDecay(genome: QuantumGenome, generation: number, st
   const keys = Object.keys(genome) as Array<keyof QuantumGenome>;
   for (const key of keys) {
     const allele = genome[key];
-    if (rollQuantumDecay(allele, generation, stress)) {
+    if (allele && rollQuantumDecay(allele, generation, stress)) {
       allele.state = 'DECAYING';
       allele.observationProbability = Math.max(0.1, allele.observationProbability - 0.2);
     }

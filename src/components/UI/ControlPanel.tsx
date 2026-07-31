@@ -9,9 +9,10 @@ interface ControlPanelProps {
   onImportStateSync?: () => void;
   onRunBenchmark?: () => void;
   onSpawnSpore?: () => void;
+  onExportRunData?: () => void;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark, onSpawnSpore }) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark, onSpawnSpore, onExportRunData }) => {
   const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'sync' | 'all'>('all');
 
   return (
@@ -271,6 +272,12 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
               {onSpawnSpore && (
                 <button className="btn-holo btn-holo-magenta" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onSpawnSpore}>
                   Spawn Parasitic Spores
+                </button>
+              )}
+
+              {onExportRunData && (
+                <button className="btn-holo btn-holo-cyan" style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem' }} onClick={onExportRunData}>
+                  Export Full Run Data (JSON)
                 </button>
               )}
               

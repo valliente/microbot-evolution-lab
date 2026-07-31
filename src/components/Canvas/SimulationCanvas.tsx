@@ -460,6 +460,24 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           for (const bot of engine.microbots) {
             const isSelected = selectedBot && selectedBot.id === bot.id;
 
+            // Multicellular Bonds
+            if (bot.boundTo && bot.boundTo.length > 0) {
+               ctx.save();
+               ctx.lineWidth = 3;
+               ctx.strokeStyle = 'rgba(0, 255, 128, 0.6)';
+               ctx.lineCap = 'round';
+               ctx.beginPath();
+               for (const targetId of bot.boundTo) {
+                  const target = engine.microbots.find((b) => b.id === targetId);
+                  if (target && target.id > bot.id) { // draw once per pair
+                     ctx.moveTo(bot.x, bot.y);
+                     ctx.lineTo(target.x, target.y);
+                  }
+               }
+               ctx.stroke();
+               ctx.restore();
+            }
+
             // Sensory Raycasting Lines
             if (engine.config.showSensoryRaycasts || isSelected) {
               const numRays = 8;

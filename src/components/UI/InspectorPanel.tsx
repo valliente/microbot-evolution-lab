@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Crosshair, BatteryCharging, X, AlertCircle, Dna, GitBranch, Sliders, Gauge, Eye, Zap } from 'lucide-react';
+import { Crosshair, BatteryCharging, X, AlertCircle, Dna, GitBranch, Sliders, Gauge, Eye, Zap, Activity } from 'lucide-react';
 import { Microbot, SimulationStats } from '../../simulation/types';
 
 interface InspectorPanelProps {
@@ -9,6 +9,7 @@ interface InspectorPanelProps {
   onOverrideGenes: (id: string, traits: Partial<Microbot>) => void;
   onOpenLineageModal: () => void;
   onOpenCrisprModal?: () => void;
+  onOpenNeuralModal?: () => void;
 }
 
 export const InspectorPanel: React.FC<InspectorPanelProps> = ({
@@ -17,7 +18,8 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
   onClose,
   onOverrideGenes,
   onOpenLineageModal,
-  onOpenCrisprModal
+  onOpenCrisprModal,
+  onOpenNeuralModal
 }) => {
   const [activeTab, setActiveTab] = useState<'telemetry' | 'dna'>('telemetry');
 
@@ -86,6 +88,18 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             >
               <Dna style={{ width: 12, height: 12 }} />
               <span>CRISPR</span>
+            </button>
+          )}
+
+          {onOpenNeuralModal && (
+            <button
+              onClick={onOpenNeuralModal}
+              className="btn-holo btn-holo-cyan"
+              style={{ padding: '4px 8px', fontSize: '0.65rem' }}
+              title="View Neural Brain"
+            >
+              <Activity style={{ width: 12, height: 12 }} />
+              <span>NEURAL</span>
             </button>
           )}
 

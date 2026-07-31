@@ -46,6 +46,7 @@ export interface QuantumGenome {
   visionAllele: QuantumAllele;
   efficiencyAllele: QuantumAllele;
   mutationTendency: QuantumAllele;
+  adhesionGene?: QuantumAllele;
 }
 
 export interface PheromonePoint {
@@ -128,6 +129,9 @@ export interface Microbot {
   inkCooldown?: number;
   panicGene?: number;
   panicTimer?: number;
+  clusterId?: string;
+  boundTo?: string[];
+  clusterOffset?: { x: number; y: number };
 }
 
 export interface EnergyParticle {

@@ -324,7 +324,8 @@ export class MicrobotEngine {
         speedAllele: { geneId: 'SPEED', baseValue: speed, quantumVariance: 2.0, state: 'ENTANGLED', observationProbability: 0.5 },
         visionAllele: { geneId: 'VISION', baseValue: visionRadius, quantumVariance: 50, state: 'ENTANGLED', observationProbability: 0.5 },
         efficiencyAllele: { geneId: 'EFFICIENCY', baseValue: energyEfficiency, quantumVariance: 0.8, state: 'ENTANGLED', observationProbability: 0.5 },
-        mutationTendency: { geneId: 'MUTATION', baseValue: 0.1, quantumVariance: 0.1, state: 'ENTANGLED', observationProbability: 0.5 }
+        mutationTendency: { geneId: 'MUTATION', baseValue: 0.1, quantumVariance: 0.1, state: 'ENTANGLED', observationProbability: 0.5 },
+        adhesionGene: { geneId: 'ADHESION', baseValue: Math.random() < 0.2 ? 0.8 : 0.2, quantumVariance: 0.5, state: 'ENTANGLED', observationProbability: 0.1 }
       }
     };
 
@@ -1117,6 +1118,32 @@ export class MicrobotEngine {
             const dist = Math.sqrt(distSq);
             const nx = dx / dist;
             const ny = dy / dist;
+
+            // Multicellular Adhesion
+            if (bot.genome?.adhesionGene && other.genome?.adhesionGene) {
+               if (bot.genome.adhesionGene.baseValue > 0.6 && other.genome.adhesionGene.baseValue > 0.6) {
+                  if (!bot.clusterId && !other.clusterId) {
+                     const cid = `C-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+                     bot.clusterId = cid; other.clusterId = cid;
+                     bot.boundTo = [other.id]; other.boundTo = [bot.id];
+                  } else if (bot.clusterId && !other.clusterId) {
+                     other.clusterId = bot.clusterId;
+                     bot.boundTo?.push(other.id); other.boundTo = [bot.id];
+                  } else if (!bot.clusterId && other.clusterId) {
+                     bot.clusterId = other.clusterId;
+                     other.boundTo?.push(bot.id); bot.boundTo = [other.id];
+                  }
+               }
+            }
+
+            if (bot.clusterId && bot.clusterId === other.clusterId) {
+               const overlap = 10 - dist;
+               const spring = overlap * 0.1;
+               bot.x -= nx * spring; bot.y -= ny * spring;
+               other.x += nx * spring; other.y += ny * spring;
+               continue;
+            }
+
             // Separate overlapping bots
             bot.x -= nx * 1.5;
             bot.y -= ny * 1.5;
@@ -1198,6 +1225,24 @@ export class MicrobotEngine {
     if (deadBotIds.size > 0) {
       this.microbots = this.microbots.filter((b) => !deadBotIds.has(b.id));
     }
+
+    // Sync Multicellular Clusters
+    const clusters = new Map<string, Microbot[]>();
+    for (const b of this.microbots) {
+      if (b.clusterId) {
+        if (!clusters.has(b.clusterId)) clusters.set(b.clusterId, []);
+        clusters.get(b.clusterId)!.push(b);
+      }
+    }
+    clusters.forEach(members => {
+      if (members.length < 2) return;
+      let tvx = 0; let tvy = 0; let te = 0;
+      members.forEach(m => { tvx += m.vx; tvy += m.vy; te += m.battery; });
+      const avgVx = tvx / members.length;
+      const avgVy = tvy / members.length;
+      const avgE = te / members.length;
+      members.forEach(m => { m.vx = avgVx; m.vy = avgVy; m.battery = avgE; });
+    });
 
       // Safety Net: Keep population alive infinitely so simulation never ends!
     while (this.microbots.length < 12) {

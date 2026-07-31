@@ -13,6 +13,7 @@ import { RosterModal } from './components/UI/RosterModal';
 import { LineageModal } from './components/UI/LineageModal';
 import { BlueprintStudioModal } from './components/UI/BlueprintStudioModal';
 import { CrisprModal } from './components/UI/CrisprModal';
+import { NeuralBrainVisualizer } from './components/UI/NeuralBrainVisualizer';
 import { GeneticConstellation3D } from './components/UI/GeneticConstellation3D';
 import { ErrorOverlay } from './components/UI/ErrorOverlay';
 import { telemetryManager } from './utils/telemetryManager';
@@ -36,6 +37,7 @@ export const App: React.FC = () => {
   const [isLineageOpen, setIsLineageOpen] = useState<boolean>(false);
   const [isBlueprintOpen, setIsBlueprintOpen] = useState<boolean>(false);
   const [isCrisprOpen, setIsCrisprOpen] = useState<boolean>(false);
+  const [isNeuralOpen, setIsNeuralOpen] = useState<boolean>(false);
   const [simulationError, setSimulationError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -211,6 +213,27 @@ export const App: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportRunData = () => {
+    if (!engine) return;
+    const runData = {
+      timestamp: new Date().toISOString(),
+      config,
+      stats,
+      populationHistory: engine.populationHistory,
+      birthHistory: engine.birthHistory,
+      deathHistory: engine.deathHistory,
+      generationCount: engine.generationCount,
+      totalDeaths: engine.totalDeaths
+    };
+    const blob = new Blob([JSON.stringify(runData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `microbot_telemetry_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleExportConfigJSON = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(config, null, 2));
     const a = document.createElement('a');
@@ -303,6 +326,13 @@ export const App: React.FC = () => {
         />
       )}
 
+      {isNeuralOpen && selectedBot && (
+        <NeuralBrainVisualizer
+          bot={selectedBot}
+          onClose={() => setIsNeuralOpen(false)}
+        />
+      )}
+
       {simulationError && <ErrorOverlay error={simulationError} onRecover={() => setSimulationError(null)} />}
 
       {/* Header Bar */}
@@ -342,6 +372,7 @@ export const App: React.FC = () => {
               onOverrideGenes={handleOverrideGenes}
               onOpenLineageModal={() => setIsLineageOpen(true)}
               onOpenCrisprModal={() => setIsCrisprOpen(true)}
+              onOpenNeuralModal={() => setIsNeuralOpen(true)}
             />
           </div>
           <ControlPanel 
@@ -351,6 +382,7 @@ export const App: React.FC = () => {
             onImportStateSync={handleImportStateSync}
             onRunBenchmark={() => engine?.runBenchmark()}
             onSpawnSpore={handleSpawnSpore}
+            onExportRunData={handleExportRunData}
           />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />
