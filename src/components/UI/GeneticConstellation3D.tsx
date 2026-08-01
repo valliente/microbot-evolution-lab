@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Microbot } from '../../simulation/types';
 
 interface GeneticConstellation3DProps {
@@ -7,6 +7,11 @@ interface GeneticConstellation3DProps {
 
 export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ bots }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const lastMousePos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -15,27 +20,27 @@ export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ 
     if (!ctx) return;
 
     let animId: number;
-    let angle = 0;
+    let autoRotate = 0;
 
     const render = () => {
-      angle += 0.015;
+      autoRotate += 0.005;
       ctx.fillStyle = '#060A10';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      const cx = canvas.width / 2;
-      const cy = canvas.height / 2;
-      const rad = 80;
+      const cx = canvas.width / 2 + pan.x;
+      const cy = canvas.height / 2 + pan.y;
+      const rad = 80 * zoom;
 
       ctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
       ctx.lineWidth = 1;
 
       // Project 3D constellation nodes
       bots.slice(0, 40).forEach((bot, i) => {
-        const theta = (i / Math.min(40, bots.length)) * Math.PI * 2 + angle;
-        const phi = (bot.hue / 360) * Math.PI;
+        const theta = (i / Math.min(40, bots.length)) * Math.PI * 2 + autoRotate + rotation.y;
+        const phi = (bot.hue / 360) * Math.PI + rotation.x;
         const x3d = rad * Math.sin(phi) * Math.cos(theta);
-        const y3d = rad * Math.sin(phi) * Math.sin(theta);
-        const z3d = rad * Math.cos(phi);
+        const y3d = rad * Math.cos(phi);
+        const z3d = rad * Math.sin(phi) * Math.sin(theta);
 
         const scale = 180 / (180 + z3d);
         const px = cx + x3d * scale;
