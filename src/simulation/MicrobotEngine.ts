@@ -4,6 +4,8 @@ import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
+import { QuantumGenome, QuantumAllele, rollQuantumDecay, processGenomeDecay } from './genetics/quantumDecay';
+import { EpigeneticEngine } from './genetics/EpigeneticEngine';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 import { ccdSubstep, sanitizeVector, clamp } from './physics';
 import { ThreadManager } from './workers/ThreadManager';
@@ -1062,14 +1064,27 @@ export class MicrobotEngine {
       if (this.config.weatherEvent === 'TOXIC_DRIFT') {
         bot.radiationExposure = (bot.radiationExposure || 0) + 0.1 * speedMult;
       }
-      if (bot.battery < 30) {
+      // Epigenetic Stress Memory Trigger
+      if (bot.battery < bot.maxBattery * 0.3 || (bot.radiationExposure && bot.radiationExposure > 5)) {
         bot.epigeneticStress = (bot.epigeneticStress || 0) + 0.05 * speedMult;
+        EpigeneticEngine.getInstance().updateGlobalStress(Math.max(EpigeneticEngine.getInstance().getGlobalStress(), bot.epigeneticStress));
+      } else {
+        bot.epigeneticStress = Math.max(0, (bot.epigeneticStress || 0) - 0.01 * speedMult);
       }
-      if ((bot.epigeneticStress || 0) > 10.0) {
-        // Trigger Epigenetic Trait Mutation Adaptation (speed & vision boost)
-        bot.speed = Math.min(5.0, bot.speed * 1.15);
-        bot.visionRadius = Math.min(260, bot.visionRadius * 1.2);
-        bot.epigeneticStress = 0; // Reset after expression
+
+      // Process Epigenetic Markers
+      if (bot.epigenome && bot.epigeneticStress && bot.epigeneticStress > 0) {
+        bot.epigenome.forEach(marker => {
+          if (bot.epigeneticStress! > marker.stressThreshold && marker.activationLevel < 1.0) {
+            marker.activationLevel = Math.min(1.0, marker.activationLevel + 0.02 * speedMult);
+            // Apply phenotypic change
+            if (marker.geneId === 'SPEED_BOOST') {
+               bot.speed = Math.min(bot.maxSpeed * 1.5, bot.speed * (1 + 0.01 * marker.activationLevel));
+            } else if (marker.geneId === 'VISION_BOOST') {
+               bot.visionRadius = Math.min(300, bot.visionRadius * (1 + 0.02 * marker.activationLevel));
+            }
+          }
+        });
       }
       const speedCost = Math.pow(bot.speed, 1.3) * (bot.mass || 1.0);
       const netDrain = (0.08 * (speedCost / (bot.energyEfficiency || 1.0))) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
