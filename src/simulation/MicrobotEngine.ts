@@ -6,6 +6,7 @@ import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
 import { QuantumGenome, QuantumAllele, rollQuantumDecay, processGenomeDecay } from './genetics/quantumDecay';
 import { EpigeneticEngine } from './genetics/EpigeneticEngine';
+import { EpigeneticMarker } from './types';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 import { ccdSubstep, sanitizeVector, clamp } from './physics';
 import { ThreadManager } from './workers/ThreadManager';
@@ -259,6 +260,10 @@ export class MicrobotEngine {
     let armorGene = Math.random() * 0.5; // 0 to 0.5 (up to 50% reduction)
     let inkGlandGene = Math.random() > 0.8 ? 1 : 0; // 20% chance to have ink
     let panicGene = Math.random() * 0.8 + 1.0; // 1.0 to 1.8x speed burst
+    let inheritedEpigenome: EpigeneticMarker[] = [
+      { geneId: 'SPEED_BOOST', activationLevel: 0, heritability: 0.3, stressThreshold: 8.0 },
+      { geneId: 'VISION_BOOST', activationLevel: 0, heritability: 0.2, stressThreshold: 6.0 }
+    ];
 
     if (parent) {
       x = parent.x + (Math.random() - 0.5) * 20;
@@ -286,6 +291,16 @@ export class MicrobotEngine {
          (Math.random() < mut * 2 ? 0 : 1) : 
          (Math.random() < mut * 2 ? 1 : 0);
       panicGene = clamp((parent.panicGene || 1.0) + (Math.random() - 0.5) * mut * 0.5, 1.0, 2.5);
+
+      if (parent.epigenome) {
+        inheritedEpigenome = parent.epigenome.map(marker => {
+          const passedOn = Math.random() < marker.heritability;
+          return {
+            ...marker,
+            activationLevel: passedOn ? marker.activationLevel * 0.8 : 0
+          };
+        });
+      }
     }
 
     const isPredator = speed > 3.4 && energyEfficiency > 1.4;
@@ -328,7 +343,8 @@ export class MicrobotEngine {
         efficiencyAllele: { geneId: 'EFFICIENCY', baseValue: energyEfficiency, quantumVariance: 0.8, state: 'ENTANGLED', observationProbability: 0.5 },
         mutationTendency: { geneId: 'MUTATION', baseValue: 0.1, quantumVariance: 0.1, state: 'ENTANGLED', observationProbability: 0.5 },
         adhesionGene: { geneId: 'ADHESION', baseValue: Math.random() < 0.2 ? 0.8 : 0.2, quantumVariance: 0.5, state: 'ENTANGLED', observationProbability: 0.1 }
-      }
+      },
+      epigenome: inheritedEpigenome
     };
 
     this.microbots.push(bot);
