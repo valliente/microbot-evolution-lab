@@ -1338,6 +1338,8 @@ export class MicrobotEngine {
   }
 
   private updateTelemetryBuffers(): void {
+    EpigeneticEngine.getInstance().recordStressFrame();
+    
     this.populationHistory.push(this.microbots.length);
     if (this.populationHistory.length > 30) this.populationHistory.shift();
 
@@ -1455,6 +1457,7 @@ export class MicrobotEngine {
       populationHistory: [...this.populationHistory],
       birthHistory: [...this.birthHistory],
       deathHistory: [...this.deathHistory],
+      stressHistory: EpigeneticEngine.getInstance().getStressHistory(),
       speedHistogram,
       visionHistogram,
       efficiencyHistogram,

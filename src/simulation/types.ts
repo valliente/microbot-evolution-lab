@@ -229,6 +229,7 @@ export interface SimulationStats {
   populationHistory: number[];
   birthHistory: number[];
   deathHistory: number[];
+  stressHistory: Float32Array;
   speedHistogram: number[];
   visionHistogram: number[];
   efficiencyHistogram: number[];
