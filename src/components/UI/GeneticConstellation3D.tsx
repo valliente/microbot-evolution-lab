@@ -34,10 +34,20 @@ export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ 
       ctx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
       ctx.lineWidth = 1;
 
+      // Group bots by color (species approximation)
+      const clusters: Record<string, { count: number, hue: number }> = {};
+      bots.forEach(bot => {
+         if (!clusters[bot.color]) {
+            clusters[bot.color] = { count: 0, hue: bot.hue };
+         }
+         clusters[bot.color].count++;
+      });
+
       // Project 3D constellation nodes
-      bots.slice(0, 40).forEach((bot, i) => {
-        const theta = (i / Math.min(40, bots.length)) * Math.PI * 2 + autoRotate + rotation.y;
-        const phi = (bot.hue / 360) * Math.PI + rotation.x;
+      Object.keys(clusters).forEach((color, i) => {
+        const cluster = clusters[color];
+        const theta = (i / Object.keys(clusters).length) * Math.PI * 2 + autoRotate + rotation.y;
+        const phi = (cluster.hue / 360) * Math.PI + rotation.x;
         const x3d = rad * Math.sin(phi) * Math.cos(theta);
         const y3d = rad * Math.cos(phi);
         const z3d = rad * Math.sin(phi) * Math.sin(theta);
@@ -46,10 +56,16 @@ export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ 
         const px = cx + x3d * scale;
         const py = cy + y3d * scale;
 
-        ctx.fillStyle = bot.color || '#00E5FF';
+        ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(px, py, Math.max(2, 4 * scale), 0, Math.PI * 2);
+        ctx.arc(px, py, Math.max(2, (2 + Math.log2(cluster.count)) * scale), 0, Math.PI * 2);
         ctx.fill();
+
+        if (cluster.count > 5) {
+          ctx.font = "600 8px 'JetBrains Mono'";
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          ctx.fillText(`n:${cluster.count}`, px + 5, py);
+        }
       });
 
       animId = requestAnimationFrame(render);
