@@ -234,6 +234,25 @@ export const App: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportEpigenetics = () => {
+    if (!engine) return;
+    const profiles = engine.microbots
+      .filter(bot => bot.epigenome && bot.epigenome.length > 0)
+      .map(bot => ({
+        id: bot.id,
+        generation: bot.generation,
+        stress: bot.epigeneticStress,
+        epigenome: bot.epigenome
+      }));
+    const blob = new Blob([JSON.stringify({ timestamp: new Date().toISOString(), profiles }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `microbot_epigenetics_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleExportConfigJSON = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(config, null, 2));
     const a = document.createElement('a');
@@ -383,6 +402,7 @@ export const App: React.FC = () => {
             onRunBenchmark={() => engine?.runBenchmark()}
             onSpawnSpore={handleSpawnSpore}
             onExportRunData={handleExportRunData}
+            onExportEpigenetics={handleExportEpigenetics}
           />
           {/* Dynamic Genetic Drift Heatmap & 3D Constellation */}
           <GeneticConstellation3D bots={engine?.microbots || []} />
