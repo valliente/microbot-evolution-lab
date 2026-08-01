@@ -288,6 +288,20 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             }
           }
 
+          // Render Chemical Pheromone Grid
+          if (engine.config.showPheromoneTrails && engine.chemicalGrid) {
+             const grid = engine.chemicalGrid;
+             for(let r=0; r<grid.rows; r++){
+                for(let c=0; c<grid.cols; c++){
+                   const val = grid.buffer[r*grid.cols + c];
+                   if(val > 0.05) {
+                      ctx.fillStyle = `rgba(0, 230, 118, ${val * 0.8})`;
+                      ctx.fillRect(c * grid.resolution, r * grid.resolution, grid.resolution, grid.resolution);
+                   }
+                }
+             }
+          }
+
           // Render Fluid Resistance Water Currents & Viscous Hazard Fields
           ctx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
           ctx.lineWidth = 1.5;
