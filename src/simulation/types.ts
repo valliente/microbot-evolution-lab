@@ -49,6 +49,13 @@ export interface QuantumGenome {
   adhesionGene?: QuantumAllele;
 }
 
+export interface EpigeneticMarker {
+  geneId: string;
+  activationLevel: number; // 0.0 to 1.0 (modulation scale)
+  heritability: number; // 0.0 to 1.0 (chance to pass to offspring)
+  stressThreshold: number; // Environmental stress index required to trigger
+}
+
 export interface PheromonePoint {
   x: number;
   y: number;
@@ -118,6 +125,7 @@ export interface Microbot {
   trail: Vector2D[];
   batteryHistory: number[];
   genome?: QuantumGenome;
+  epigenome?: EpigeneticMarker[];
   carnivoreGene?: number;
   huntingSkill?: number;
   pheromoneLevel?: number;
