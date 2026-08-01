@@ -51,3 +51,17 @@ export const DisasterSandboxPreset: SimulationConfig = {
   hazardCount: 25, // Extreme hazards
   batteryDrainMultiplier: 1.5, // Harsh environment
 };
+
+export const EpigeneticSwarmPreset: SimulationConfig = {
+  ...BaseConfig,
+  startPopulation: 120,
+  maxPopulation: 500,
+  mutationRate: 0.2, 
+  energySpawnRate: 15,
+  maxEnergyParticles: 300,
+  hazardCount: 15, 
+  batteryDrainMultiplier: 1.2,
+  showPheromoneTrails: true,
+  autoDisastersEnabled: true,
+  disasterScheduleInterval: 1200
+};
