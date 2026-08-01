@@ -1,10 +1,9 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, PheromonePoint, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore } from './types';
+import { Microbot, EnergyParticle, HazardZone, SpeedField, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
-import { QuantumGenome, QuantumAllele, rollQuantumDecay, processGenomeDecay } from './genetics/quantumDecay';
 import { EpigeneticEngine } from './genetics/EpigeneticEngine';
 import { EpigeneticMarker } from './types';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
