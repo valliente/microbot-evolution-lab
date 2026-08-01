@@ -20,6 +20,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
   const trailLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const chemLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
   const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
@@ -290,15 +291,28 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
 
           // Render Chemical Pheromone Grid
           if (engine.config.showPheromoneTrails && engine.chemicalGrid) {
-             const grid = engine.chemicalGrid;
-             for(let r=0; r<grid.rows; r++){
-                for(let c=0; c<grid.cols; c++){
-                   const val = grid.buffer[r*grid.cols + c];
-                   if(val > 0.05) {
-                      ctx.fillStyle = `rgba(0, 230, 118, ${val * 0.8})`;
-                      ctx.fillRect(c * grid.resolution, r * grid.resolution, grid.resolution, grid.resolution);
+             if (!chemLayerRef.current) {
+                chemLayerRef.current = document.createElement('canvas');
+             }
+             if (chemLayerRef.current.width !== canvas.width || chemLayerRef.current.height !== canvas.height) {
+                chemLayerRef.current.width = canvas.width;
+                chemLayerRef.current.height = canvas.height;
+             }
+             
+             const cCtx = chemLayerRef.current.getContext('2d');
+             if (cCtx) {
+                cCtx.clearRect(0, 0, canvas.width, canvas.height);
+                const grid = engine.chemicalGrid;
+                for(let r=0; r<grid.rows; r++){
+                   for(let c=0; c<grid.cols; c++){
+                      const val = grid.buffer[r*grid.cols + c];
+                      if(val > 0.05) {
+                         cCtx.fillStyle = `rgba(0, 230, 118, ${val * 0.8})`;
+                         cCtx.fillRect(c * grid.resolution, r * grid.resolution, grid.resolution, grid.resolution);
+                      }
                    }
                 }
+                ctx.drawImage(chemLayerRef.current, 0, 0);
              }
           }
 
