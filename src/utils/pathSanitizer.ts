@@ -3,7 +3,8 @@ export function sanitizePath(relativePath: string): string {
   const isPackaged = 
     window.location.protocol === 'file:' || 
     window.location.href.includes('app.asar') ||
-    window.location.protocol === 'tauri:';
+    window.location.protocol === 'tauri:' ||
+    window.location.href.includes('android_asset');
 
   // Fix(build): implement dynamic import.meta.env pathing for packaged assets
   let cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
@@ -11,6 +12,12 @@ export function sanitizePath(relativePath: string): string {
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
     const base = import.meta.env.BASE_URL;
     let resolved = base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+    
+    // Android file protocol fix
+    if (window.location.href.includes('android_asset')) {
+       return window.location.href.split('index.html')[0] + cleanPath;
+    }
+
     if (resolved.startsWith('/')) resolved = '.' + resolved;
     return resolved;
   }
