@@ -10,7 +10,9 @@ export function sanitizePath(relativePath: string): string {
 
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
     const base = import.meta.env.BASE_URL;
-    return base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+    let resolved = base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
+    if (resolved.startsWith('/')) resolved = '.' + resolved;
+    return resolved;
   }
 
   if (!isPackaged) {
@@ -26,9 +28,13 @@ export function sanitizePath(relativePath: string): string {
 }
 
 export function resolveWorkerUrl(workerPath: string): string {
-  const sanitizedPath = sanitizePath(workerPath);
+  let sanitizedPath = sanitizePath(workerPath);
+  if (sanitizedPath.startsWith('/')) {
+    sanitizedPath = '.' + sanitizedPath;
+  }
   try {
-    return new URL(sanitizedPath, import.meta.url).href;
+    const base = typeof window !== 'undefined' ? window.location.href : 'http://localhost';
+    return new URL(sanitizedPath, base).href;
   } catch (e) {
     // Fallback if URL resolution fails in bundled context
     return sanitizedPath;
