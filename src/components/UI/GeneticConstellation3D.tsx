@@ -60,6 +60,33 @@ export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ 
     return () => cancelAnimationFrame(animId);
   }, [bots]);
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    isDragging.current = true;
+    lastMousePos.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - lastMousePos.current.x;
+    const dy = e.clientY - lastMousePos.current.y;
+    lastMousePos.current = { x: e.clientX, y: e.clientY };
+    
+    if (e.shiftKey) {
+      setPan(p => ({ x: p.x + dx, y: p.y + dy }));
+    } else {
+      setRotation(r => ({ x: r.x - dy * 0.01, y: r.y + dx * 0.01 }));
+    }
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    setZoom(z => Math.max(0.1, Math.min(5, z - e.deltaY * 0.001)));
+  };
+
   const handleExportPNG = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -80,7 +107,17 @@ export const GeneticConstellation3D: React.FC<GeneticConstellation3DProps> = ({ 
           📸 PNG
         </button>
       </div>
-      <canvas ref={canvasRef} width={180} height={130} style={{ borderRadius: 8 }} />
+      <canvas 
+        ref={canvasRef} 
+        width={180} 
+        height={130} 
+        style={{ borderRadius: 8, cursor: 'grab' }} 
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
+      />
     </div>
   );
 };
