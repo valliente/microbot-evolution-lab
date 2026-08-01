@@ -955,6 +955,29 @@ export class MicrobotEngine {
       const steering = calculateSteering(bot, nearbyFood, this.hazards, this.width, this.height);
       bot.behaviorState = steering.state;
 
+      // Chemotaxis (Steer towards higher pheromone concentrations if wandering or seeking)
+      if (bot.behaviorState === 'WANDERING' || bot.behaviorState === 'SEEKING_ENERGY') {
+        const pLeft = this.chemicalGrid.getPheromone(
+          bot.x + Math.cos(bot.heading - 0.5) * 15,
+          bot.y + Math.sin(bot.heading - 0.5) * 15
+        );
+        const pRight = this.chemicalGrid.getPheromone(
+          bot.x + Math.cos(bot.heading + 0.5) * 15,
+          bot.y + Math.sin(bot.heading + 0.5) * 15
+        );
+        const pCenter = this.chemicalGrid.getPheromone(
+          bot.x + Math.cos(bot.heading) * 15,
+          bot.y + Math.sin(bot.heading) * 15
+        );
+        if (pLeft > 0 || pRight > 0 || pCenter > 0) {
+          if (pLeft > pRight && pLeft > pCenter) {
+             steering.desiredHeading -= 0.2;
+          } else if (pRight > pLeft && pRight > pCenter) {
+             steering.desiredHeading += 0.2;
+          }
+        }
+      }
+
       // Predator Hunting Behavior Override
       if (bot.isPredator) {
         let nearestPrey: Microbot | null = null;
