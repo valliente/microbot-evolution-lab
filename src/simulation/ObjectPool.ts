@@ -98,3 +98,16 @@ export const trailParticlePool = new ObjectPool<PooledTrailParticle>(
   (p) => { p.x = 0; p.y = 0; p.life = 1.0; p.color = '#ffffff'; },
   500
 );
+
+export interface PooledChemicalParticle {
+  x: number;
+  y: number;
+  intensity: number;
+  color: string;
+}
+
+export const chemicalParticlePool = new ObjectPool<PooledChemicalParticle>(
+  () => ({ x: 0, y: 0, intensity: 1.0, color: '#00E676' }),
+  (p) => { p.x = 0; p.y = 0; p.intensity = 1.0; p.color = '#00E676'; },
+  1000
+);
