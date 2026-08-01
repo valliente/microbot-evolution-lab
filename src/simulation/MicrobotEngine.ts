@@ -10,6 +10,7 @@ import { EpigeneticMarker } from './types';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 import { ccdSubstep, sanitizeVector, clamp } from './physics';
 import { ThreadManager } from './workers/ThreadManager';
+import { ChemicalGrid } from './pheromones/ChemicalGrid';
 
 export class MicrobotEngine {
   public width: number;
@@ -20,7 +21,7 @@ export class MicrobotEngine {
   public energyParticles: EnergyParticle[] = [];
   public hazards: HazardZone[] = [];
   public speedFields: SpeedField[] = [];
-  public pheromones: PheromonePoint[] = [];
+  public chemicalGrid: ChemicalGrid;
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
   public portals: PortalNode[] = [];
@@ -71,6 +72,7 @@ export class MicrobotEngine {
     // Initialize Web Worker for physics collisions if configured
     this.threadManager.initWorker('/workers/simulationWorker.ts');
     this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
+    this.chemicalGrid = new ChemicalGrid(width, height, 20);
     
     // Allocate 1000 bots * 2 coords (x,y) * 4 bytes
     this.positionBuffer = new SharedArrayBuffer(1000 * 2 * 4);
@@ -145,7 +147,7 @@ export class MicrobotEngine {
     this.energyParticles = [];
     this.hazards = [];
     this.speedFields = [];
-    this.pheromones = [];
+    this.chemicalGrid.reset();
     this.portals = [];
     this.activeDisasters = [];
     this.selectedMicrobotId = null;
@@ -197,7 +199,8 @@ export class MicrobotEngine {
       energyParticles: this.energyParticles,
       hazards: this.hazards,
       speedFields: this.speedFields,
-      pheromones: this.pheromones,
+      chemicalGridBuffer: Array.from(this.chemicalGrid.buffer),
+      meteors: this.meteors,
       activeDisasters: this.activeDisasters,
       config: this.config,
       stats: {
@@ -217,7 +220,10 @@ export class MicrobotEngine {
       this.energyParticles = state.energyParticles || [];
       this.hazards = state.hazards || [];
       this.speedFields = state.speedFields || [];
-      this.pheromones = state.pheromones || [];
+      if (state.chemicalGridBuffer) {
+        this.chemicalGrid.buffer.set(state.chemicalGridBuffer);
+      }
+      this.meteors = state.meteors || [];
       this.activeDisasters = state.activeDisasters || [];
       this.config = { ...this.config, ...state.config };
       
@@ -676,8 +682,7 @@ export class MicrobotEngine {
         const disasters = ['SOLAR_FLARE', 'RADIATION_STORM', 'MAGNETIC_INVERSION'];
         const randomDisaster = disasters[Math.floor(Math.random() * disasters.length)];
         if (randomDisaster === 'SOLAR_FLARE') {
-           this.triggerSolarFlare(); // Wait, let's check if triggerSolarFlare exists, if not, I'll define it.
-           // Actually, let's just use what I know exists: triggerRadiationStorm, triggerMagneticInversion
+           this.triggerSolarFlare();
         } else if (randomDisaster === 'RADIATION_STORM') {
            this.triggerRadiationStorm();
         } else {
@@ -734,13 +739,8 @@ export class MicrobotEngine {
     const hasMagneticInversion = this.activeDisasters.some(d => d.type === 'MAGNETIC_INVERSION');
 
     // Decay Pheromone Trails
-    if (this.frameCount % 5 === 0 && this.pheromones.length > 0) {
-      for (let i = this.pheromones.length - 1; i >= 0; i--) {
-        this.pheromones[i].intensity -= 0.04;
-        if (this.pheromones[i].intensity <= 0) {
-          this.pheromones.splice(i, 1);
-        }
-      }
+    if (this.frameCount % 5 === 0) {
+      this.chemicalGrid.decay(0.04 * speedMult);
     }
 
     // Spore Update Loop
@@ -943,13 +943,8 @@ export class MicrobotEngine {
           bot.trail.shift();
         }
 
-        if (this.config.showPheromoneTrails && this.pheromones.length < 220) {
-          this.pheromones.push({
-            x: bot.x,
-            y: bot.y,
-            intensity: 1.0,
-            color: bot.color
-          });
+        if (this.config.showPheromoneTrails) {
+          this.chemicalGrid.addPheromone(bot.x, bot.y, 0.1 * speedMult);
         }
       }
 
@@ -1031,9 +1026,13 @@ export class MicrobotEngine {
             // Shared vision boost
             bot.visionRadius = Math.max(bot.visionRadius, partner.visionRadius);
             
-            // Draw bonding line
-            if (this.config.showSensoryRaycasts) {
-               this.pheromones.push({ x: (bot.x + partner.x)/2, y: (bot.y + partner.y)/2, intensity: 0.1, color: '#00E676' });
+            const avgVx = (bot.vx + partner.vx) / 2;
+            const avgVy = (bot.vy + partner.vy) / 2;
+            bot.vx = avgVx; bot.vy = avgVy;
+            partner.vx = avgVx; partner.vy = avgVy;
+            
+            if (this.config.showPheromoneTrails) {
+               this.chemicalGrid.addPheromone((bot.x + partner.x)/2, (bot.y + partner.y)/2, 0.2);
             }
           }
         }
