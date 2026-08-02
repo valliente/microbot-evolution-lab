@@ -1,4 +1,8 @@
-import { Microbot, EnergyParticle, HazardZone, SpeedField, MeteorStrike, VoidRift, Season, ResourceType, SimulationConfig, SimulationStats, SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore } from './types';
+import { 
+  Microbot, EnergyParticle, HazardZone, SimulationConfig, 
+  BehaviorState, SimulationStats, Vector2D, SpeedField, GravityWell, FluidZone, CatalystZone,
+  SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore, MeteorStrike, VoidRift, Season, ResourceType
+} from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { SpatialHashGrid } from './SpatialHashGrid';
@@ -20,6 +24,9 @@ export class MicrobotEngine {
   public energyParticles: EnergyParticle[] = [];
   public hazards: HazardZone[] = [];
   public speedFields: SpeedField[] = [];
+  public fluidZones: FluidZone[] = [];
+  public gravityWells: GravityWell[] = [];
+  public catalystZones: CatalystZone[] = [];
   public chemicalGrid: ChemicalGrid;
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
@@ -146,6 +153,9 @@ export class MicrobotEngine {
     this.energyParticles = [];
     this.hazards = [];
     this.speedFields = [];
+    this.fluidZones = [];
+    this.gravityWells = [];
+    this.catalystZones = [];
     this.chemicalGrid.reset();
     this.portals = [];
     this.activeDisasters = [];
@@ -198,6 +208,9 @@ export class MicrobotEngine {
       energyParticles: this.energyParticles,
       hazards: this.hazards,
       speedFields: this.speedFields,
+      fluidZones: this.fluidZones,
+      gravityWells: this.gravityWells,
+      catalystZones: this.catalystZones,
       chemicalGridBuffer: Array.from(this.chemicalGrid.buffer),
       meteors: this.meteors,
       activeDisasters: this.activeDisasters,
@@ -219,6 +232,9 @@ export class MicrobotEngine {
       this.energyParticles = state.energyParticles || [];
       this.hazards = state.hazards || [];
       this.speedFields = state.speedFields || [];
+      this.fluidZones = state.fluidZones || [];
+      this.gravityWells = state.gravityWells || [];
+      this.catalystZones = state.catalystZones || [];
       if (state.chemicalGridBuffer) {
         this.chemicalGrid.buffer.set(state.chemicalGridBuffer);
       }
@@ -932,6 +948,25 @@ export class MicrobotEngine {
         const dist = Math.hypot(bot.x - field.x, bot.y - field.y);
         if (dist < field.radius) {
           currentSpeed *= field.multiplier;
+        }
+      }
+
+      // Non-Newtonian Fluid Drag
+      for (const zone of this.fluidZones) {
+        const dist = Math.hypot(bot.x - zone.x, bot.y - zone.y);
+        if (dist < zone.radius) {
+          if (zone.isNonNewtonian) {
+            // Drag increases exponentially with velocity
+            const velSq = (bot.vx * bot.vx + bot.vy * bot.vy);
+            const dragFactor = Math.max(0.1, 1.0 - (zone.baseDrag * velSq * 0.05));
+            bot.vx *= dragFactor;
+            bot.vy *= dragFactor;
+            currentSpeed *= dragFactor;
+          } else {
+            bot.vx *= zone.baseDrag;
+            bot.vy *= zone.baseDrag;
+            currentSpeed *= zone.baseDrag;
+          }
         }
       }
 
