@@ -970,6 +970,19 @@ export class MicrobotEngine {
         }
       }
 
+      // Gravity Wells
+      for (const well of this.gravityWells) {
+        const dx = well.x - bot.x;
+        const dy = well.y - bot.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist > 0 && dist < well.radius) {
+          // Force decreases with distance
+          const forceStrength = well.force * (1 - (dist / well.radius));
+          bot.vx += (dx / dist) * forceStrength * speedMult;
+          bot.vy += (dy / dist) * forceStrength * speedMult;
+        }
+      }
+
       // Deposit Pheromones periodically
       if (this.frameCount % 15 === 0) {
         bot.trail.push({ x: bot.x, y: bot.y });
