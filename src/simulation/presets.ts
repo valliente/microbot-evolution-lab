@@ -65,3 +65,14 @@ export const EpigeneticSwarmPreset: SimulationConfig = {
   autoDisastersEnabled: true,
   disasterScheduleInterval: 1200
 };
+
+export const SyntheticChaosPreset: SimulationConfig = {
+  ...BaseConfig,
+  startPopulation: 200,
+  maxPopulation: 500,
+  mutationRate: 0.25,
+  energySpawnRate: 20,
+  maxEnergyParticles: 400,
+  hazardCount: 15,
+  batteryDrainMultiplier: 1.2,
+};
