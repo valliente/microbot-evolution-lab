@@ -8,6 +8,12 @@ export class SpatialAudioSynth {
   private activeOscCount: number = 0;
   private maxConcurrentOsc: number = 6; // Increased for spatial events
   private spatialPanners: Map<number, StereoPannerNode> = new Map();
+  
+  // Ring buffers for acoustic telemetry (avoids GC pauses)
+  private telemetryBufferIdx: number = 0;
+  private readonly telemetrySize: number = 256;
+  public velocityMetrics: Float32Array = new Float32Array(256);
+  public stressMetrics: Float32Array = new Float32Array(256);
 
   constructor() {
     // Lazy AudioContext initialization on first user interaction
@@ -121,6 +127,11 @@ export class SpatialAudioSynth {
   private droneGain: GainNode | null = null;
 
   public playAmbientDrone(velocity: number, stress: number): void {
+    // Record telemetry in ring buffers
+    this.velocityMetrics[this.telemetryBufferIdx] = velocity;
+    this.stressMetrics[this.telemetryBufferIdx] = stress;
+    this.telemetryBufferIdx = (this.telemetryBufferIdx + 1) % this.telemetrySize;
+
     if (this.isMuted) {
       this.stopAmbientDrone();
       return;
