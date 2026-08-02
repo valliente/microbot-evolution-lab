@@ -170,6 +170,32 @@ export interface SpeedField {
   multiplier: number;
 }
 
+export interface GravityWell {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  force: number;
+}
+
+export interface FluidZone {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  baseDrag: number;
+  isNonNewtonian: boolean;
+}
+
+export interface CatalystZone {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  targetGene: string;
+  mutationDirection: number;
+}
+
 export interface ParasiticSpore {
   id: string;
   x: number;
