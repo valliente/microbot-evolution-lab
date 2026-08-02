@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { Microbot } from '../../simulation/types';
 
-export const GenomicTopology3D: React.FC<{ activeBotId: string | null }> = ({ activeBotId }) => {
+export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ activeBot }) => {
   const mountRef = useRef<HTMLDivElement>(null);
+
   
   useEffect(() => {
     if (!mountRef.current) return;
@@ -26,16 +28,58 @@ export const GenomicTopology3D: React.FC<{ activeBotId: string | null }> = ({ ac
     directionalLight.position.set(5, 5, 5);
     scene.add(directionalLight);
 
-    // Initial placeholder mesh
-    const geometry = new THREE.CylinderGeometry(0.2, 0.2, 10, 32);
-    const material = new THREE.MeshPhongMaterial({ color: 0x3b82f6, wireframe: true });
-    const spine = new THREE.Mesh(geometry, material);
-    scene.add(spine);
+    const helixGroup = new THREE.Group();
+    scene.add(helixGroup);
+
+    // Build DNA Helix
+    const numPairs = 10;
+    const radius = 1.5;
+    const heightSpacing = 0.8;
+    const angleStep = Math.PI / 4;
+
+    const createNode = (color: number, emissive: number, intensity: number) => {
+      const geo = new THREE.SphereGeometry(0.3, 16, 16);
+      const mat = new THREE.MeshPhongMaterial({ 
+        color, 
+        emissive,
+        emissiveIntensity: intensity
+      });
+      return new THREE.Mesh(geo, mat);
+    };
+
+    const speedVal = activeBot?.genome?.speedAllele.baseValue || 1.0;
+    const visionVal = activeBot?.genome?.visionAllele.baseValue || 40.0;
+    const effVal = activeBot?.genome?.efficiencyAllele.baseValue || 1.0;
+
+    for (let i = 0; i < numPairs; i++) {
+      const y = (i - numPairs / 2) * heightSpacing;
+      const angle = i * angleStep;
+
+      // Map values to node intensity
+      const nodeA = createNode(0x3b82f6, 0x1d4ed8, speedVal / 5.0);
+      const nodeB = createNode(0xf43f5e, 0xbe123c, visionVal / 260.0);
+      
+      nodeA.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+      nodeB.position.set(Math.cos(angle + Math.PI) * radius, y, Math.sin(angle + Math.PI) * radius);
+
+      // Connecting bridge
+      const bridgeGeo = new THREE.CylinderGeometry(0.05, 0.05, radius * 2, 8);
+      const bridgeMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.5 });
+      const bridge = new THREE.Mesh(bridgeGeo, bridgeMat);
+      
+      bridge.position.set(0, y, 0);
+      bridge.rotation.x = Math.PI / 2;
+      bridge.rotation.z = -angle;
+
+      helixGroup.add(nodeA);
+      helixGroup.add(nodeB);
+      helixGroup.add(bridge);
+    }
 
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      spine.rotation.y += 0.01;
+      helixGroup.rotation.y += 0.01;
       renderer.render(scene, camera);
     };
 
@@ -56,11 +100,9 @@ export const GenomicTopology3D: React.FC<{ activeBotId: string | null }> = ({ ac
       if (mountRef.current) {
         mountRef.current.removeChild(renderer.domElement);
       }
-      geometry.dispose();
-      material.dispose();
       renderer.dispose();
     };
-  }, [activeBotId]);
+  }, [activeBot]);
 
   return (
     <div 
