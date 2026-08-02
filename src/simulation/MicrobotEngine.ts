@@ -225,6 +225,15 @@ export class MicrobotEngine {
     return btoa(JSON.stringify(state));
   }
 
+  public exportSyntheticRulesets(): string {
+    const state = {
+      fluidZones: this.fluidZones,
+      gravityWells: this.gravityWells,
+      catalystZones: this.catalystZones,
+    };
+    return JSON.stringify(state, null, 2);
+  }
+
   public importState(hash: string): void {
     try {
       const state = JSON.parse(atob(hash));
