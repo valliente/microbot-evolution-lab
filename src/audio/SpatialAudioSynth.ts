@@ -268,6 +268,78 @@ export class SpatialAudioSynth {
        // Ignore autoplay policy errors
     }
   }
+
+  public playSpeciationEvent(xPos: number): void {
+    if (this.isMuted) return;
+    if (this.activeOscCount >= this.maxConcurrentOsc) return;
+
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const panner = this.getSpatialPanner(xPos);
+      if (!panner) return;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.1);
+
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+
+      osc.connect(gain);
+      gain.connect(panner); // Connect to spatial panner instead of master directly
+
+      this.activeOscCount++;
+      osc.onended = () => {
+        this.activeOscCount = Math.max(0, this.activeOscCount - 1);
+        try { gain.disconnect(); } catch (_) {}
+      };
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.3);
+    } catch (e) {}
+  }
+
+  public playExtinctionEvent(xPos: number): void {
+    if (this.isMuted) return;
+    if (this.activeOscCount >= this.maxConcurrentOsc) return;
+
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      const panner = this.getSpatialPanner(xPos);
+      if (!panner) return;
+
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.4);
+
+      gain.gain.setValueAtTime(0, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.1, this.ctx.currentTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+
+      osc.connect(gain);
+      gain.connect(panner);
+
+      this.activeOscCount++;
+      osc.onended = () => {
+        this.activeOscCount = Math.max(0, this.activeOscCount - 1);
+        try { gain.disconnect(); } catch (_) {}
+      };
+
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.5);
+    } catch (e) {}
+  }
 }
 
 export const spatialAudio = new SpatialAudioSynth();
