@@ -6,7 +6,8 @@ export class SpatialAudioSynth {
   private lastFeedTime: number = 0;
   private feedCooldownMs: number = 80; // Minimum ms between feed sounds to prevent buzzing
   private activeOscCount: number = 0;
-  private maxConcurrentOsc: number = 4; // Hard cap on simultaneous oscillators
+  private maxConcurrentOsc: number = 6; // Increased for spatial events
+  private spatialPanners: Map<number, StereoPannerNode> = new Map();
 
   constructor() {
     // Lazy AudioContext initialization on first user interaction
@@ -22,6 +23,7 @@ export class SpatialAudioSynth {
       try { this.ctx.close(); } catch (e) {}
       this.ctx = null;
     }
+    this.spatialPanners.clear();
     this.activeOscCount = 0;
   }
 
@@ -47,6 +49,23 @@ export class SpatialAudioSynth {
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
     }
+  }
+
+  // Gets or creates a spatial panner for a given x-coordinate (normalized -1 to 1)
+  private getSpatialPanner(xPos: number): StereoPannerNode | null {
+    if (!this.ctx) return null;
+    // Map x position (assumed 0 to 800 roughly) to -1.0 to +1.0
+    const panValue = Math.max(-1, Math.min(1, (xPos - 400) / 400));
+    
+    // Simple object pooling by rounding pan value to 1 decimal place
+    const pannerKey = Math.round(panValue * 10);
+    if (!this.spatialPanners.has(pannerKey)) {
+      const panner = this.ctx.createStereoPanner();
+      panner.pan.value = panValue;
+      panner.connect(this.masterGain!);
+      this.spatialPanners.set(pannerKey, panner);
+    }
+    return this.spatialPanners.get(pannerKey) || null;
   }
 
   public getVolume(): number {
