@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Microbot } from '../../simulation/types';
 
 export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ activeBot }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-
+  const [contextLost, setContextLost] = useState(false);
   
   useEffect(() => {
     if (!mountRef.current) return;
@@ -83,15 +83,31 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
       helixGroup.add(bridge);
     }
 
+    // Animation Loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      helixGroup.rotation.y += 0.01;
+      if (helixGroup) {
+        helixGroup.rotation.y += 0.01;
+      }
       controls.update(); // required if controls.enableDamping or controls.autoRotate are set
       renderer.render(scene, camera);
     };
 
     animate();
+
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      setContextLost(true);
+      cancelAnimationFrame(animationFrameId);
+    };
+    const handleContextRestored = () => {
+      setContextLost(false);
+      animate();
+    };
+    
+    renderer.domElement.addEventListener('webglcontextlost', handleContextLost, false);
+    renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);
 
     const handleResize = () => {
       if (!mountRef.current) return;
@@ -104,6 +120,8 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
       cancelAnimationFrame(animationFrameId);
       if (mountRef.current) {
         mountRef.current.removeChild(renderer.domElement);
@@ -114,9 +132,23 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
   }, [activeBot]);
 
   return (
-    <div 
-      ref={mountRef} 
-      className="w-full h-64 bg-slate-900/40 rounded-lg overflow-hidden border border-slate-700/50 backdrop-blur-sm"
-    />
+    <div style={{ position: 'relative' }}>
+      {contextLost && (
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/90 backdrop-blur-sm rounded-lg" style={{ top: '35px' }}>
+          <span style={{ color: '#ef4444', fontWeight: 'bold', marginBottom: '8px' }}>WebGL Context Lost</span>
+          <button 
+            className="btn-holo btn-holo-cyan" 
+            onClick={() => window.location.reload()}
+          >
+            Reload Interface
+          </button>
+        </div>
+      )}
+      <div 
+        ref={mountRef} 
+        className="w-full h-64 bg-slate-900/40 rounded-lg overflow-hidden border border-slate-700/50 backdrop-blur-sm"
+      />
+    </div>
   );
 };
+
