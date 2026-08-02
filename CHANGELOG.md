@@ -1,4 +1,19 @@
 # Changelog
+# Microbot Evolution Lab Changelog
+
+## [v0.1.222] - 2026-08-02
+### Added
+- **Synthetic Physics Rulesets**: Introduced directional gravity wells and non-Newtonian fluid drag zones for dynamic environmental traversal.
+- **Genetic Catalyst Zones**: Added zones that actively manipulate chromosome bounds and trigger real-time genomic mutations during traversal.
+- **Spatial Acoustic Sonification**: Integrated Web Audio API 3D spatial panners for real-time auditory feedback based on entity states and environmental triggers.
+- **3D Genomic Topology Visualizer**: Implemented WebGL/Three.js 3D inspection component for interactively rotating and examining DNA helices.
+- **Advanced Export Utilities**: Added dynamic JSON exporters for Synthetic Ruleset profiles.
+
+### Changed
+- Refactored rendering layers to isolate synthetic zone overlays on a dedicated canvas context.
+- Optimized rendering and acoustic performance via dynamic object pooling and Float32Array ring buffers.
+- Polished UI glassmorphism panel translucency across Desktop and Android viewports.
+- Hardened WebGL contexts with interactive recovery overlays for `webglcontextlost` events.
 
 ## [v0.1.221] - 2026-08-01
 ### Added
