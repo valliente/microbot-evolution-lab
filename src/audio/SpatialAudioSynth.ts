@@ -20,6 +20,7 @@ export class SpatialAudioSynth {
       this.masterGain = null;
     }
     if (this.ctx) {
+      this.stopAmbientDrone();
       try { this.ctx.close(); } catch (e) {}
       this.ctx = null;
     }
@@ -116,9 +117,53 @@ export class SpatialAudioSynth {
     }
   }
 
-  public playAmbientDrone(_avgEnergyPct: number = 0.5): void {
-    // Ambient drone removed — it was a source of persistent background buzzing
-    // Kept as no-op for API compatibility
+  private droneOsc: OscillatorNode | null = null;
+  private droneGain: GainNode | null = null;
+
+  public playAmbientDrone(velocity: number, stress: number): void {
+    if (this.isMuted) {
+      this.stopAmbientDrone();
+      return;
+    }
+    this.initCtx();
+    if (!this.ctx || !this.masterGain) return;
+
+    try {
+      if (!this.droneOsc || !this.droneGain) {
+        this.droneOsc = this.ctx.createOscillator();
+        this.droneGain = this.ctx.createGain();
+        this.droneOsc.type = 'sine';
+        this.droneOsc.connect(this.droneGain);
+        this.droneGain.connect(this.masterGain);
+        
+        // Start very quietly
+        this.droneGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+        this.droneOsc.start();
+      }
+
+      // Map velocity to frequency (e.g., 50Hz to 150Hz)
+      const targetFreq = 50 + (velocity * 20);
+      // Map stress to volume
+      const targetVol = Math.max(0.001, Math.min(0.15, stress * 0.15));
+
+      // Smoothly transition parameters
+      this.droneOsc.frequency.setTargetAtTime(targetFreq, this.ctx.currentTime, 0.5);
+      this.droneGain.gain.setTargetAtTime(targetVol, this.ctx.currentTime, 1.0);
+    } catch (e) {
+      // Ignored
+    }
+  }
+
+  public stopAmbientDrone(): void {
+    if (this.droneOsc && this.droneGain) {
+      try {
+        this.droneOsc.stop();
+        this.droneOsc.disconnect();
+        this.droneGain.disconnect();
+      } catch (e) {}
+      this.droneOsc = null;
+      this.droneGain = null;
+    }
   }
 
   public playBiomeHum(biomeType: string): void {
