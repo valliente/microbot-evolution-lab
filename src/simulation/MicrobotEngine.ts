@@ -983,6 +983,25 @@ export class MicrobotEngine {
         }
       }
 
+      // Catalyst Zones (Genetic Manipulation)
+      for (const zone of this.catalystZones) {
+        const dist = Math.hypot(bot.x - zone.x, bot.y - zone.y);
+        if (dist < zone.radius && bot.genome) {
+          const mutationAmount = zone.mutationDirection * 0.02 * speedMult; // gradual mutation
+          if (zone.targetGene === 'SPEED') {
+            bot.genome.speedAllele.baseValue = clamp(bot.genome.speedAllele.baseValue + mutationAmount, 1.0, 5.0);
+            bot.speed = bot.genome.speedAllele.baseValue;
+            bot.maxSpeed = bot.speed;
+          } else if (zone.targetGene === 'VISION') {
+            bot.genome.visionAllele.baseValue = clamp(bot.genome.visionAllele.baseValue + (mutationAmount * 20), 40, 260);
+            bot.visionRadius = bot.genome.visionAllele.baseValue;
+          } else if (zone.targetGene === 'EFFICIENCY') {
+            bot.genome.efficiencyAllele.baseValue = clamp(bot.genome.efficiencyAllele.baseValue + (mutationAmount * 0.5), 0.4, 3.0);
+            bot.energyEfficiency = bot.genome.efficiencyAllele.baseValue;
+          }
+        }
+      }
+
       // Deposit Pheromones periodically
       if (this.frameCount % 15 === 0) {
         bot.trail.push({ x: bot.x, y: bot.y });
