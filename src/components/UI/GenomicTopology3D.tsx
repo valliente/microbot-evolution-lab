@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { Microbot } from '../../simulation/types';
 
 export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ activeBot }) => {
@@ -19,6 +20,12 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
     mountRef.current.appendChild(renderer.domElement);
 
     camera.position.z = 10;
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.enableZoom = true;
+    controls.enablePan = true;
 
     // Add ambient and directional lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
@@ -80,6 +87,7 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       helixGroup.rotation.y += 0.01;
+      controls.update(); // required if controls.enableDamping or controls.autoRotate are set
       renderer.render(scene, camera);
     };
 
@@ -100,6 +108,7 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
       if (mountRef.current) {
         mountRef.current.removeChild(renderer.domElement);
       }
+      controls.dispose();
       renderer.dispose();
     };
   }, [activeBot]);
