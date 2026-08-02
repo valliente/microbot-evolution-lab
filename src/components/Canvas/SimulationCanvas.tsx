@@ -21,6 +21,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
   const trailLayerRef = useRef<HTMLCanvasElement | null>(null);
   const chemLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const syntheticLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
   const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
@@ -92,6 +93,56 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, []);
+
+  // 2. Render Synthetic Zones on dedicated canvas layer
+  const renderSyntheticZones = (width: number, height: number): HTMLCanvasElement => {
+    if (!syntheticLayerRef.current) {
+      syntheticLayerRef.current = document.createElement('canvas');
+    }
+    const sCanvas = syntheticLayerRef.current;
+    if (sCanvas.width !== width || sCanvas.height !== height || bgDirtyRef.current) {
+      sCanvas.width = width;
+      sCanvas.height = height;
+      const sCtx = sCanvas.getContext('2d');
+      if (sCtx) {
+        sCtx.clearRect(0, 0, width, height);
+        
+        // Draw Gravity Wells
+        for (const well of engine.gravityWells || []) {
+          const grad = sCtx.createRadialGradient(well.x, well.y, 0, well.x, well.y, well.radius);
+          grad.addColorStop(0, 'rgba(139, 92, 246, 0.4)'); // Purple
+          grad.addColorStop(1, 'rgba(139, 92, 246, 0)');
+          sCtx.fillStyle = grad;
+          sCtx.beginPath();
+          sCtx.arc(well.x, well.y, well.radius, 0, Math.PI * 2);
+          sCtx.fill();
+        }
+
+        // Draw Fluid Zones
+        for (const zone of engine.fluidZones || []) {
+          const grad = sCtx.createRadialGradient(zone.x, zone.y, 0, zone.x, zone.y, zone.radius);
+          grad.addColorStop(0, zone.isNonNewtonian ? 'rgba(59, 130, 246, 0.3)' : 'rgba(14, 165, 233, 0.3)'); // Blue
+          grad.addColorStop(1, 'rgba(14, 165, 233, 0)');
+          sCtx.fillStyle = grad;
+          sCtx.beginPath();
+          sCtx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+          sCtx.fill();
+        }
+
+        // Draw Catalyst Zones
+        for (const zone of engine.catalystZones || []) {
+          const grad = sCtx.createRadialGradient(zone.x, zone.y, 0, zone.x, zone.y, zone.radius);
+          grad.addColorStop(0, zone.mutationDirection > 0 ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)'); // Green or Red
+          grad.addColorStop(1, 'rgba(34, 197, 94, 0)');
+          sCtx.fillStyle = grad;
+          sCtx.beginPath();
+          sCtx.arc(zone.x, zone.y, zone.radius, 0, Math.PI * 2);
+          sCtx.fill();
+        }
+      }
+    }
+    return sCanvas;
+  };
 
   // Render cached background grid layer (only on resize / first paint)
   const renderBgLayer = (width: number, height: number): HTMLCanvasElement => {
@@ -236,6 +287,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           // Fix(canvas): implement coordinate clearing rects to prevent multi-layer redraw flickering
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(bgLayerRef.current!, 0, 0);
+          
+          // Draw Synthetic Zones Layer
+          const synthCanvas = renderSyntheticZones(canvas.width, canvas.height);
+          ctx.drawImage(synthCanvas, 0, 0);
           
           if (engine.config.enableFrameInterpolation) {
              ctx.drawImage(trailLayerRef.current, 0, 0);
