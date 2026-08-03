@@ -19,4 +19,23 @@ describe('NASBrainManager Recurrent Evaluation', () => {
     expect(res.outputs).toBeDefined();
     expect(res.updatedBrain.nodes[1].recurrentMemory).not.toBe(0);
   });
+
+  it('should calculate passive battery drain scaling with node and connection count', () => {
+    const complexBrain: NASBrainGenome = {
+      nodes: [
+        { id: 'n1', value: 0, recurrentMemory: 0, activation: 'ReLU', layer: 0 },
+        { id: 'n2', value: 0, recurrentMemory: 0, activation: 'Sigmoid', layer: 1 },
+        { id: 'n3', value: 0, recurrentMemory: 0, activation: 'Tanh', layer: 2 }
+      ],
+      connections: [
+        { from: 'n1', to: 'n2', weight: 0.5, isRecurrent: false },
+        { from: 'n2', to: 'n3', weight: 1.0, isRecurrent: true }
+      ],
+      layerDepth: 2,
+      passiveEnergyCost: 0
+    };
+
+    const cost = NASBrainManager.calculatePassiveEnergyCost(complexBrain);
+    expect(cost).toBeGreaterThan(0.2);
+  });
 });
