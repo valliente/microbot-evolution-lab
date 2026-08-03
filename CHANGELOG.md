@@ -1,6 +1,20 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.223] - 2026-08-03
+### Added
+- **Neural Architecture Search (NAS)**: Implemented recurrent memory nodes, variable activation function mutations (ReLU, Sigmoid, Tanh, Linear), and dynamic layer depth evaluation.
+- **Host-Symbiont Organelle Integration**: Added organelle absorption physics, photosynthetic & energy boost modulation, and maternal/symbiont mitochondrial DNA transmission.
+- **3D Trophic Web Visualizer**: Interactive WebGL/Three.js 3D network space rendering Producer, Predator, and Decomposer nodes with camera controls (orbit, pan, zoom).
+- **NAS Brain Inspector Panel**: UI inspector displaying real-time recurrent memory states and passive energy consumption penalties.
+- **JSON Exporters**: Added dynamic exporters for NAS Brain architectures and organelle profiles.
+
+### Changed
+- Isolated 3D network overlays to dedicated render layers.
+- Optimized NAS forward-pass calculations using `Float32Array` buffers.
+- Polished glassmorphism panel translucency across mobile and high-DPI viewports.
+- Enhanced Android asset protocol sanitization and path resolution.
+
 ## [v0.1.222] - 2026-08-02
 ### Added
 - **Synthetic Physics Rulesets**: Introduced directional gravity wells and non-Newtonian fluid drag zones for dynamic environmental traversal.
