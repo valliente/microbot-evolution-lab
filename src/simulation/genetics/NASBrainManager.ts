@@ -43,10 +43,12 @@ export class NASBrainManager {
   }
 
   public static mutateBrain(brain: NASBrainGenome, mutationRate: number): NASBrainGenome {
+    const funcs: ActivationFunctionType[] = ['ReLU', 'Sigmoid', 'Tanh', 'Linear'];
+    
     const mutatedNodes = brain.nodes.map(node => {
       if (Math.random() < mutationRate) {
-        const funcs: ActivationFunctionType[] = ['ReLU', 'Sigmoid', 'Tanh'];
-        const nextFunc = funcs[Math.floor(Math.random() * funcs.length)];
+        const available = funcs.filter(f => f !== node.activation);
+        const nextFunc = available[Math.floor(Math.random() * available.length)];
         return { ...node, activation: nextFunc };
       }
       return node;
