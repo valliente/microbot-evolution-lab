@@ -113,4 +113,16 @@ export class NASBrainManager {
       }
     };
   }
+
+  public static evaluateForwardPassFast(brain: NASBrainGenome, inputs: Float32Array): Float32Array {
+    const nodeValues = new Float32Array(brain.nodes.length);
+    for (let i = 0; i < Math.min(inputs.length, brain.nodes.length); i++) {
+      nodeValues[i] = inputs[i];
+    }
+
+    const outputs = new Float32Array(2);
+    outputs[0] = Math.tanh(nodeValues[0] || 0);
+    outputs[1] = Math.tanh(nodeValues[1] || 0);
+    return outputs;
+  }
 }
