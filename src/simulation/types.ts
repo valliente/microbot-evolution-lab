@@ -140,6 +140,28 @@ export interface Microbot {
   clusterId?: string;
   boundTo?: string[];
   clusterOffset?: { x: number; y: number };
+  nasBrain?: import('./genetics/NASBrainManager').NASBrainGenome;
+  organelles?: Organelle[];
+  mitochondrialDNA?: MitochondrialDNA;
+}
+
+export type OrganelleType = 'MITOCHONDRIA' | 'CHLOROPLAST' | 'FLAGELLA_BOOSTER';
+
+export interface MitochondrialDNA {
+  sequence: string;
+  efficiencyBonus: number;
+  mutationRateMultiplier: number;
+  inheritedFromId: string | null;
+}
+
+export interface Organelle {
+  id: string;
+  type: OrganelleType;
+  x: number;
+  y: number;
+  energyOutput: number;
+  absorptionRadius: number;
+  mitochondrialDNA?: MitochondrialDNA;
 }
 
 export interface EnergyParticle {
