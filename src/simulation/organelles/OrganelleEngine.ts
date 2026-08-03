@@ -37,4 +37,26 @@ export class OrganelleEngine {
       inheritedFromId: parent.id
     };
   }
+
+  public static processOrganelleEffects(bot: Microbot): { energyMod: number; speedMod: number } {
+    let energyMod = 0;
+    let speedMod = 1.0;
+
+    if (!bot.organelles || bot.organelles.length === 0) {
+      return { energyMod, speedMod };
+    }
+
+    for (const organelle of bot.organelles) {
+      if (organelle.type === 'CHLOROPLAST') {
+        energyMod += organelle.energyOutput * 0.05; // Photosynthetic energy generation
+      } else if (organelle.type === 'MITOCHONDRIA') {
+        const mtBonus = bot.mitochondrialDNA ? bot.mitochondrialDNA.efficiencyBonus : 1.0;
+        energyMod += organelle.energyOutput * 0.08 * mtBonus;
+      } else if (organelle.type === 'FLAGELLA_BOOSTER') {
+        speedMod += 0.25; // Speed multiplier boost
+      }
+    }
+
+    return { energyMod, speedMod };
+  }
 }
