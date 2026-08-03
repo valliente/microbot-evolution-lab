@@ -76,3 +76,14 @@ export const SyntheticChaosPreset: SimulationConfig = {
   hazardCount: 15,
   batteryDrainMultiplier: 1.2,
 };
+
+export const NASOrganelleSwarmPreset: SimulationConfig = {
+  ...BaseConfig,
+  startPopulation: 180,
+  maxPopulation: 600,
+  mutationRate: 0.2,
+  energySpawnRate: 25,
+  maxEnergyParticles: 450,
+  hazardCount: 10,
+  batteryDrainMultiplier: 1.0,
+};
