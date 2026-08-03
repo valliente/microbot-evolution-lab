@@ -12,3 +12,11 @@ export const getAssetPath = (path: string): string => {
   }
   return `./${path}`; // Relative for standard web deployments
 };
+
+export const getWorkerPath = (workerFile: string): string => {
+  return getAssetPath(`workers/${workerFile}`);
+};
+
+export const getShaderPath = (shaderFile: string): string => {
+  return getAssetPath(`shaders/${shaderFile}`);
+};
