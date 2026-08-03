@@ -1200,7 +1200,8 @@ export class MicrobotEngine {
         });
       }
       const speedCost = Math.pow(bot.speed, 1.3) * (bot.mass || 1.0);
-      const netDrain = (0.08 * (speedCost / (bot.energyEfficiency || 1.0))) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
+      const nasPenalty = bot.nasBrain ? bot.nasBrain.passiveEnergyCost * 0.05 : 0;
+      const netDrain = ((0.08 * (speedCost / (bot.energyEfficiency || 1.0))) + nasPenalty) * this.config.batteryDrainMultiplier * weatherBatteryDrainMult * seasonDrainMult * speedMult;
       bot.battery -= netDrain;
 
       // Battery history ring buffer
