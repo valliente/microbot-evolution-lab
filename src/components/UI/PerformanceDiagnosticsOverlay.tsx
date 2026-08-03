@@ -42,6 +42,11 @@ export const PerformanceDiagnosticsOverlay: React.FC<PerformanceDiagnosticsOverl
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#E040FB' }}>
         <Zap style={{ width: 14, height: 14 }} />
+        <span>WEBGL: <strong style={{ color: '#00E676' }}>OK</strong></span>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#E040FB' }}>
+        <Zap style={{ width: 14, height: 14 }} />
         <span>FOOD: <strong style={{ color: '#fff' }}>{stats.energyParticleCount} ORBS</strong></span>
       </div>
     </div>
