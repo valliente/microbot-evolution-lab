@@ -20,3 +20,10 @@ export const getWorkerPath = (workerFile: string): string => {
 export const getShaderPath = (shaderFile: string): string => {
   return getAssetPath(`shaders/${shaderFile}`);
 };
+
+export const sanitizeAndroidPath = (uri: string): string => {
+  if (uri.startsWith('file:///android_asset/')) {
+    return uri.replace('file:///android_asset/', 'https://localhost/');
+  }
+  return uri;
+};
