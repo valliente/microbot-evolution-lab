@@ -278,6 +278,7 @@ export interface SimulationStats {
   birthHistory: number[];
   deathHistory: number[];
   stressHistory: Float32Array;
+  trophicEnergyRingBuffer?: Float32Array;
   speedHistogram: number[];
   visionHistogram: number[];
   efficiencyHistogram: number[];
