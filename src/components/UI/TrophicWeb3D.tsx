@@ -41,6 +41,51 @@ export const TrophicWeb3D: React.FC<TrophicWeb3DProps> = ({ microbots, onClose }
     const networkGroup = new THREE.Group();
     scene.add(networkGroup);
 
+    // Build 3D Trophic Nodes & Energy Transfer Lines
+    const nodeGeometry = new THREE.SphereGeometry(0.4, 16, 16);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.3 });
+
+    const renderedNodes: THREE.Mesh[] = [];
+
+    microbots.forEach((bot, index) => {
+      let color = 0x34d399; // Producer (emerald green)
+      if (bot.isPredator) {
+        color = 0xf43f5e; // Predator (crimson red)
+      } else if (bot.carnivoreGene && bot.carnivoreGene > 0.5) {
+        color = 0xa855f7; // Decomposer / Scavenger (purple)
+      }
+
+      const mat = new THREE.MeshPhongMaterial({ color, emissive: color, emissiveIntensity: 0.4 });
+      const mesh = new THREE.Mesh(nodeGeometry, mat);
+
+      const phi = Math.acos(-1 + (2 * index) / Math.max(1, microbots.length));
+      const theta = Math.sqrt(microbots.length * Math.PI) * phi;
+      const radius = 6;
+
+      mesh.position.set(
+        radius * Math.cos(theta) * Math.sin(phi),
+        radius * Math.sin(theta) * Math.sin(phi),
+        radius * Math.cos(phi)
+      );
+
+      networkGroup.add(mesh);
+      renderedNodes.push(mesh);
+    });
+
+    // Draw trophic connection lines
+    for (let i = 0; i < renderedNodes.length; i++) {
+      for (let j = i + 1; j < renderedNodes.length; j++) {
+        if (renderedNodes[i].position.distanceTo(renderedNodes[j].position) < 4.5) {
+          const geometry = new THREE.BufferGeometry().setFromPoints([
+            renderedNodes[i].position,
+            renderedNodes[j].position
+          ]);
+          const line = new THREE.Line(geometry, lineMaterial);
+          networkGroup.add(line);
+        }
+      }
+    }
+
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
