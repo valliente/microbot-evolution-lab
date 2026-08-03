@@ -69,4 +69,46 @@ export class NASBrainManager {
     updatedBrain.passiveEnergyCost = NASBrainManager.calculatePassiveEnergyCost(updatedBrain);
     return updatedBrain;
   }
+
+  public static evaluateForwardPass(brain: NASBrainGenome, inputs: number[]): { outputs: number[]; updatedBrain: NASBrainGenome } {
+    const nodes = brain.nodes.map(n => ({ ...n }));
+    // Feed inputs to layer 0 nodes
+    nodes.filter(n => n.layer === 0).forEach((n, idx) => {
+      if (idx < inputs.length) {
+        n.value = inputs[idx];
+      }
+    });
+
+    const maxLayer = Math.max(1, ...nodes.map(n => n.layer));
+    for (let l = 1; l <= maxLayer; l++) {
+      const layerNodes = nodes.filter(n => n.layer === l);
+      for (const node of layerNodes) {
+        let sum = 0;
+        const incoming = brain.connections.filter(c => c.to === node.id);
+        for (const conn of incoming) {
+          const sourceNode = nodes.find(n => n.id === conn.from);
+          if (sourceNode) {
+            const inputVal = conn.isRecurrent ? sourceNode.recurrentMemory : sourceNode.value;
+            sum += inputVal * conn.weight;
+          }
+        }
+        // LSTM recurrent cell update
+        const forgetGate = 1 / (1 + Math.exp(-sum));
+        node.recurrentMemory = (node.recurrentMemory * forgetGate) + (1 - forgetGate) * Math.tanh(sum);
+        node.value = NASBrainManager.evaluateActivation(sum + node.recurrentMemory, node.activation);
+      }
+    }
+
+    const outputNodes = nodes.filter(n => n.layer === maxLayer);
+    const outputs = outputNodes.map(n => n.value);
+
+    return {
+      outputs,
+      updatedBrain: {
+        ...brain,
+        nodes,
+        layerDepth: maxLayer
+      }
+    };
+  }
 }
