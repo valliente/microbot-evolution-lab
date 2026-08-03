@@ -15,10 +15,26 @@ export class OrganelleEngine {
     if (!bot.organelles) {
       bot.organelles = [];
     }
-    bot.organelles.push(organelle);
-
     if (organelle.mitochondrialDNA) {
       bot.mitochondrialDNA = { ...organelle.mitochondrialDNA };
     }
+  }
+
+  public static transmitMitochondrialDNA(parent: Microbot, mutationRate: number): import('../types').MitochondrialDNA | undefined {
+    if (!parent.mitochondrialDNA) return undefined;
+    
+    let seq = parent.mitochondrialDNA.sequence;
+    if (Math.random() < mutationRate * parent.mitochondrialDNA.mutationRateMultiplier) {
+      const bases = ['A', 'C', 'G', 'T'];
+      const pos = Math.floor(Math.random() * seq.length);
+      seq = seq.substring(0, pos) + bases[Math.floor(Math.random() * bases.length)] + seq.substring(pos + 1);
+    }
+
+    return {
+      sequence: seq,
+      efficiencyBonus: Math.min(2.0, parent.mitochondrialDNA.efficiencyBonus * (1 + (Math.random() - 0.5) * 0.05)),
+      mutationRateMultiplier: parent.mitochondrialDNA.mutationRateMultiplier,
+      inheritedFromId: parent.id
+    };
   }
 }
