@@ -111,3 +111,17 @@ export const chemicalParticlePool = new ObjectPool<PooledChemicalParticle>(
   (p) => { p.x = 0; p.y = 0; p.intensity = 1.0; p.color = '#00E676'; },
   1000
 );
+
+export interface OrganelleParticle {
+  id: string;
+  x: number;
+  y: number;
+  radius: number;
+  color: string;
+}
+
+export const organelleParticlePool = new ObjectPool<OrganelleParticle>(
+  () => ({ id: '', x: 0, y: 0, radius: 4, color: '#34d399' }),
+  (p) => { p.id = ''; p.x = 0; p.y = 0; p.radius = 4; p.color = '#34d399'; },
+  100
+);
