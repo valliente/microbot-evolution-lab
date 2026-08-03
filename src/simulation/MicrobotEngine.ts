@@ -202,6 +202,31 @@ export class MicrobotEngine {
     }
   }
 
+  public exportSyntheticRulesets(): string {
+    return JSON.stringify({
+      version: '0.1.223',
+      timestamp: Date.now(),
+      gravityWells: this.gravityWells,
+      speedFields: this.speedFields,
+      fluidZones: this.fluidZones,
+    }, null, 2);
+  }
+
+  public exportNASBrainArchitectures(): string {
+    const architectures = this.microbots.map(bot => ({
+      botId: bot.id,
+      nasBrain: bot.nasBrain,
+      organelles: bot.organelles,
+      mitochondrialDNA: bot.mitochondrialDNA
+    })).filter(b => b.nasBrain || (b.organelles && b.organelles.length > 0));
+
+    return JSON.stringify({
+      version: '0.1.223',
+      timestamp: Date.now(),
+      architectures
+    }, null, 2);
+  }
+
   public exportState(): string {
     const state = {
       microbots: this.microbots,
