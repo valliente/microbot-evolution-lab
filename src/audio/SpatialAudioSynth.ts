@@ -21,16 +21,23 @@ export class SpatialAudioSynth {
 
   // Fix(audio): sanitize audio node cleanup on app exit to prevent ghost hums
   public dispose(): void {
+    this.stopAmbientDrone();
+    this.spatialPanners.forEach(panner => {
+      try { panner.disconnect(); } catch (e) {}
+    });
+    this.spatialPanners.clear();
     if (this.masterGain) {
       try { this.masterGain.disconnect(); } catch (e) {}
       this.masterGain = null;
     }
     if (this.ctx) {
-      this.stopAmbientDrone();
-      try { this.ctx.close(); } catch (e) {}
+      try { 
+        if (this.ctx.state !== 'closed') {
+          this.ctx.close(); 
+        }
+      } catch (e) {}
       this.ctx = null;
     }
-    this.spatialPanners.clear();
     this.activeOscCount = 0;
   }
 
