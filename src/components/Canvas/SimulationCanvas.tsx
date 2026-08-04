@@ -21,6 +21,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const bgLayerRef = useRef<HTMLCanvasElement | null>(null);
   const trailLayerRef = useRef<HTMLCanvasElement | null>(null);
   const chemLayerRef = useRef<HTMLCanvasElement | null>(null);
+  const pheromoneLayerRef = useRef<HTMLCanvasElement | null>(null);
   const syntheticLayerRef = useRef<HTMLCanvasElement | null>(null);
   const trophicNetworkLayerRef = useRef<HTMLCanvasElement | null>(null);
   const bgDirtyRef = useRef<boolean>(true);
@@ -218,6 +219,39 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
     return bg;
   };
 
+  // Render Pheromone Grid on dedicated layer
+  const renderPheromoneGridLayer = (width: number, height: number): HTMLCanvasElement => {
+    if (!pheromoneLayerRef.current) {
+      pheromoneLayerRef.current = document.createElement('canvas');
+    }
+    const canvas = pheromoneLayerRef.current;
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width;
+      canvas.height = height;
+    }
+    const ctx = canvas.getContext('2d');
+    if (ctx && engine.pheromoneGrid) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = 'rgba(255, 107, 0, 0.8)'; // Orange mating pheromone
+      const grid = engine.pheromoneGrid;
+      const buf = grid.buffer;
+      const cols = grid.cols;
+      const res = 10; // resolution
+      
+      for (let i = 0; i < buf.length; i++) {
+        const val = buf[i];
+        if (val > 0.05) {
+          const r = Math.floor(i / cols);
+          const c = i % cols;
+          ctx.globalAlpha = Math.min(1.0, val * 0.5);
+          ctx.fillRect(c * res, r * res, res, res);
+        }
+      }
+      ctx.globalAlpha = 1.0;
+    }
+    return canvas;
+  };
+
   // Main Render Loop
   useEffect(() => {
     let animationFrameId: number;
@@ -373,12 +407,18 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                       cCtx.fillRect(c * res, r * res, res, res);
                    }
                 }
-                cCtx.globalAlpha = 1.0;
-                ctx.drawImage(chemLayerRef.current, 0, 0);
-             }
-          }
+                 cCtx.globalAlpha = 1.0;
+                 ctx.drawImage(chemLayerRef.current, 0, 0);
+              }
+           }
 
-          // Render Fluid Resistance Water Currents & Viscous Hazard Fields
+           // Render New Pheromone Grid (Mating/Speciation) Overlay
+           if (engine.config.showPheromoneTrails && engine.pheromoneGrid) {
+             const pCanvas = renderPheromoneGridLayer(canvas.width, canvas.height);
+             ctx.drawImage(pCanvas, 0, 0);
+           }
+
+           // Render Fluid Resistance Water Currents & Viscous Hazard Fields
           ctx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
           ctx.lineWidth = 1.5;
           for (let y = 50; y < canvas.height; y += 120) {
