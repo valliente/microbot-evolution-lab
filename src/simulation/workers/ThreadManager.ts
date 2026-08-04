@@ -11,15 +11,15 @@ export class ThreadManager {
     this.isSupported = typeof window !== 'undefined' && typeof window.Worker !== 'undefined';
   }
 
-  public initWorker(workerScriptUrl: string): void {
+  public initWorker(workerScriptUrl: string | URL): void {
     if (!this.isSupported || this.errorStrikes >= this.maxStrikes) return;
-    this.workerScriptUrl = workerScriptUrl;
+    this.workerScriptUrl = typeof workerScriptUrl === 'string' ? workerScriptUrl : workerScriptUrl.href;
     try {
-      const resolvedUrl = resolveWorkerUrl(workerScriptUrl);
+      const resolvedUrl = typeof workerScriptUrl === 'string' ? resolveWorkerUrl(workerScriptUrl) : workerScriptUrl;
       this.worker = new Worker(resolvedUrl, { type: 'module' });
     } catch (e) {
       try {
-        this.worker = new Worker(workerScriptUrl);
+        this.worker = new Worker(this.workerScriptUrl);
       } catch (e2) {
         console.warn('Worker initialization fallback:', e2);
       }

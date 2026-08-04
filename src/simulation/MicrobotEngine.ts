@@ -80,7 +80,7 @@ export class MicrobotEngine {
     this.spatialGrid = new SpatialGrid(width, height, 100);
     this.threadManager = new ThreadManager();
     // Initialize Web Worker for physics collisions if configured
-    this.threadManager.initWorker('/workers/simulationWorker.ts');
+    this.threadManager.initWorker(new URL('./workers/simulationWorker.ts', import.meta.url));
     this.spatialHash = new SpatialHashGrid<EnergyParticle>(60);
     this.chemicalGrid = new ChemicalGrid(width, height, 20);
     
@@ -175,9 +175,10 @@ export class MicrobotEngine {
     this.historyTimeline = [];
     
     // Fix(memory): dispose orphaned Web Worker contexts to prevent RAM growth over time
+    // Initialize Web Worker for background physics calculations
     this.threadManager.terminate();
     this.threadManager = new ThreadManager();
-    this.threadManager.initWorker('/workers/simulationWorker.ts');
+    this.threadManager.initWorker(new URL('./workers/simulationWorker.ts', import.meta.url));
 
     this.spatialGrid.clear();
     this.nextFieldIdNum = 1;
