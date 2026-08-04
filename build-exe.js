@@ -10,6 +10,9 @@ if (!fs.existsSync(htmlPath)) {
   process.exit(1);
 }
 
+const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf8'));
+const version = packageJson.version;
+
 const htmlBase64 = fs.readFileSync(htmlPath).toString('base64');
 
 const csharpCode = `
@@ -92,7 +95,7 @@ namespace MicrobotEvolutionLab
                 {
                     Form form = new Form
                     {
-                        Text = "Microbot Evolution Lab - 0.1.206",
+                        Text = "Microbot Evolution Lab - ${version}",
                         Width = 1280,
                         Height = 850,
                         StartPosition = FormStartPosition.CenterScreen,
