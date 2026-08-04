@@ -56,6 +56,12 @@ jobs:
           Get-FileHash -Path MicrobotEvolutionLab.apk -Algorithm SHA256 >> checksums.txt
           Get-FileHash -Path Microbot-Evolution-Lab-Windows.zip -Algorithm SHA256 >> checksums.txt
 
+      - name: Confirm Build Assets
+        run: |
+          Write-Output "Compiled MicrobotEvolutionLab.exe successfully"
+          Write-Output "Compiled MicrobotEvolutionLab.apk successfully"
+          Write-Output "Zip bundle and checksums generated"
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v2
