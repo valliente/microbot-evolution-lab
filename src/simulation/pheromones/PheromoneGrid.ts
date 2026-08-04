@@ -33,12 +33,34 @@ export class PheromoneGrid {
   }
 
   public decay(decayRate: number = 0.98): void {
-    // Basic decay; diffusion to be implemented
-    for (let i = 0; i < this.buffer.length; i++) {
-      this.buffer[i] *= decayRate;
-      if (this.buffer[i] < 0.01) {
-        this.buffer[i] = 0;
+    const newBuffer = new Float32Array(this.cols * this.rows);
+    const diffRate = 0.1; // Diffusion factor
+
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const idx = r * this.cols + c;
+        let val = this.buffer[idx];
+        
+        if (val > 0) {
+          // Diffuse to neighbors
+          let neighbors = 0;
+          let sum = 0;
+          
+          if (r > 0) { sum += this.buffer[(r - 1) * this.cols + c]; neighbors++; }
+          if (r < this.rows - 1) { sum += this.buffer[(r + 1) * this.cols + c]; neighbors++; }
+          if (c > 0) { sum += this.buffer[r * this.cols + (c - 1)]; neighbors++; }
+          if (c < this.cols - 1) { sum += this.buffer[r * this.cols + (c + 1)]; neighbors++; }
+          
+          const diffused = val * (1 - diffRate) + (sum / Math.max(1, neighbors)) * diffRate;
+          newBuffer[idx] = diffused * decayRate;
+          
+          if (newBuffer[idx] < 0.01) {
+            newBuffer[idx] = 0;
+          }
+        }
       }
     }
+    
+    this.buffer = newBuffer;
   }
 }
