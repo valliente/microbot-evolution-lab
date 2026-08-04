@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { SimulationStats } from '../simulation/types';
 
 interface Props {
@@ -40,11 +41,19 @@ export const FitnessLandscape3D: React.FC<Props> = ({ stats }) => {
     const material = new THREE.MeshPhongMaterial({ color: 0x44aa88, wireframe: true, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geometry, material);
     scene.add(mesh);
+    
+    // Add Orbit Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
 
     // Animation loop
     let animationId: number;
     const animate = () => {
       animationId = requestAnimationFrame(animate);
+      
+      // Update controls
+      controls.update();
       
       // Update mesh vertices based on stats (dummy density mapping for now)
       if (stats.speedHistogram.length > 0) {
@@ -67,6 +76,7 @@ export const FitnessLandscape3D: React.FC<Props> = ({ stats }) => {
     // Cleanup on unmount
     return () => {
       cancelAnimationFrame(animationId);
+      controls.dispose();
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
