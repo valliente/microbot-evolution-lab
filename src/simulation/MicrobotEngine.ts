@@ -73,6 +73,10 @@ export class MicrobotEngine {
   private nextFoodIdNum: number = 1;
   private nextFieldIdNum: number = 1;
 
+  // Telemetry buffer for speciation
+  private speciationDiversityBuffer = new Float32Array(100);
+  private speciationDiversityIndex = 0;
+
   constructor(width: number, height: number, config: SimulationConfig) {
     this.width = width;
     this.height = height;
@@ -1579,6 +1583,14 @@ export class MicrobotEngine {
       }
     }
 
+    this.speciationDiversityBuffer[this.speciationDiversityIndex] = shannonIndex;
+    this.speciationDiversityIndex = (this.speciationDiversityIndex + 1) % 100;
+    const speciationDiversityRingBuffer = new Float32Array(100);
+    for (let i = 0; i < 100; i++) {
+      const readIdx = (this.speciationDiversityIndex + i) % 100;
+      speciationDiversityRingBuffer[i] = this.speciationDiversityBuffer[readIdx];
+    }
+
     const seasonProgressPct = Math.min(100, Math.floor((this.seasonFrameCount / this.SEASON_DURATION_FRAMES) * 100));
 
     return {
@@ -1605,7 +1617,8 @@ export class MicrobotEngine {
       efficiencyHistogram,
       diversityBuckets,
       biomePopulation,
-      historyTimeline: this.historyTimeline
+      historyTimeline: this.historyTimeline,
+      speciationDiversityRingBuffer
     };
   }
 }
