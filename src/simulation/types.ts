@@ -143,6 +143,9 @@ export interface Microbot {
   nasBrain?: import('./genetics/NASBrainManager').NASBrainGenome;
   organelles?: Organelle[];
   mitochondrialDNA?: MitochondrialDNA;
+  speciesId?: number;
+  isHybrid?: boolean;
+  fertility?: number;
 }
 
 export type OrganelleType = 'MITOCHONDRIA' | 'CHLOROPLAST' | 'FLAGELLA_BOOSTER';
@@ -283,6 +286,7 @@ export interface SimulationStats {
   visionHistogram: number[];
   efficiencyHistogram: number[];
   diversityBuckets: number[];
+  speciationDiversityRingBuffer?: Float32Array;
   biomePopulation: Record<string, number>;
   historyTimeline: {
     time: number;
