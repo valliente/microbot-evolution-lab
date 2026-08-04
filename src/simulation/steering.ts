@@ -63,16 +63,16 @@ export function calculateSteering(
   if (pheromoneGrid && bot.battery > bot.maxBattery * 0.5) {
     const sensorDist = 20;
     const sensorAngle = 0.5; // radians
+    
+    // Use Float32Array to optimize multiple sensor raycasts
+    const sensorData = new Float32Array(4); // [leftX, leftY, rightX, rightY]
+    sensorData[0] = bot.x + Math.cos(bot.heading - sensorAngle) * sensorDist;
+    sensorData[1] = bot.y + Math.sin(bot.heading - sensorAngle) * sensorDist;
+    sensorData[2] = bot.x + Math.cos(bot.heading + sensorAngle) * sensorDist;
+    sensorData[3] = bot.y + Math.sin(bot.heading + sensorAngle) * sensorDist;
 
-    // Left sensor
-    const leftX = bot.x + Math.cos(bot.heading - sensorAngle) * sensorDist;
-    const leftY = bot.y + Math.sin(bot.heading - sensorAngle) * sensorDist;
-    const leftPheromone = pheromoneGrid.getPheromone(leftX, leftY);
-
-    // Right sensor
-    const rightX = bot.x + Math.cos(bot.heading + sensorAngle) * sensorDist;
-    const rightY = bot.y + Math.sin(bot.heading + sensorAngle) * sensorDist;
-    const rightPheromone = pheromoneGrid.getPheromone(rightX, rightY);
+    const leftPheromone = pheromoneGrid.getPheromone(sensorData[0], sensorData[1]);
+    const rightPheromone = pheromoneGrid.getPheromone(sensorData[2], sensorData[3]);
 
     if (leftPheromone > 0.1 || rightPheromone > 0.1) {
       // Steer towards higher pheromone
