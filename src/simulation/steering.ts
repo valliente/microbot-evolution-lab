@@ -1,12 +1,14 @@
 import { Microbot, EnergyParticle, HazardZone } from './types';
+import { PheromoneGrid } from './pheromones/PheromoneGrid';
 
 export function calculateSteering(
   bot: Microbot,
   nearbyEnergy: EnergyParticle[],
   hazards: HazardZone[],
   width: number,
-  height: number
-): { desiredHeading: number; state: 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' } {
+  height: number,
+  pheromoneGrid?: PheromoneGrid
+): { desiredHeading: number; state: 'WANDERING' | 'SEEKING_ENERGY' | 'EVADING_HAZARD' | 'REPRODUCING' | 'HUNTING_PREY' | 'INFECTED' } {
   let steerX = 0;
   let steerY = 0;
 
@@ -55,6 +57,31 @@ export function calculateSteering(
     const dy = closestEnergy.y - bot.y;
     const desiredHeading = Math.atan2(dy, dx);
     return { desiredHeading, state: 'SEEKING_ENERGY' };
+  }
+
+  // 2.5 Chemotaxis (Pheromone following)
+  if (pheromoneGrid && bot.battery > bot.maxBattery * 0.5) {
+    const sensorDist = 20;
+    const sensorAngle = 0.5; // radians
+
+    // Left sensor
+    const leftX = bot.x + Math.cos(bot.heading - sensorAngle) * sensorDist;
+    const leftY = bot.y + Math.sin(bot.heading - sensorAngle) * sensorDist;
+    const leftPheromone = pheromoneGrid.getPheromone(leftX, leftY);
+
+    // Right sensor
+    const rightX = bot.x + Math.cos(bot.heading + sensorAngle) * sensorDist;
+    const rightY = bot.y + Math.sin(bot.heading + sensorAngle) * sensorDist;
+    const rightPheromone = pheromoneGrid.getPheromone(rightX, rightY);
+
+    if (leftPheromone > 0.1 || rightPheromone > 0.1) {
+      // Steer towards higher pheromone
+      if (leftPheromone > rightPheromone) {
+        return { desiredHeading: bot.heading - 0.2, state: 'WANDERING' };
+      } else if (rightPheromone > leftPheromone) {
+        return { desiredHeading: bot.heading + 0.2, state: 'WANDERING' };
+      }
+    }
   }
 
   // 3. Boundary Avoidance & Random Wander

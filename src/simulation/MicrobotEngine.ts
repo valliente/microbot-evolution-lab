@@ -1070,7 +1070,7 @@ export class MicrobotEngine {
       const nearbyFood = this.spatialGrid.getNearby(bot.x, bot.y, bot.visionRadius);
 
       // Steering calculations
-      const steering = calculateSteering(bot, nearbyFood, this.hazards, this.width, this.height);
+      const steering = calculateSteering(bot, nearbyFood, this.hazards, this.width, this.height, this.pheromoneGrid);
       bot.behaviorState = steering.state;
 
       // Chemotaxis (Steer towards higher pheromone concentrations if wandering or seeking)
