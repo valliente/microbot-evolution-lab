@@ -87,3 +87,15 @@ export const NASOrganelleSwarmPreset: SimulationConfig = {
   hazardCount: 10,
   batteryDrainMultiplier: 1.0,
 };
+
+export const SpeciationSymbiosisPreset: SimulationConfig = {
+  ...BaseConfig,
+  startPopulation: 250,
+  maxPopulation: 800,
+  mutationRate: 0.25,
+  energySpawnRate: 30,
+  maxEnergyParticles: 500,
+  hazardCount: 12,
+  batteryDrainMultiplier: 1.1,
+  showPheromoneTrails: true,
+};
