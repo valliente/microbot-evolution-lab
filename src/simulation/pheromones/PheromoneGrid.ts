@@ -1,3 +1,13 @@
+import { ObjectPool } from '../ObjectPool';
+
+export interface ChemicalEmitter {
+  x: number;
+  y: number;
+  amount: number;
+  life: number;
+  active: boolean;
+}
+
 export class PheromoneGrid {
   private width: number;
   private height: number;
@@ -6,6 +16,9 @@ export class PheromoneGrid {
   public rows: number;
   public buffer: Float32Array;
 
+  public activeEmitters: ChemicalEmitter[] = [];
+  private emitterPool: ObjectPool<ChemicalEmitter>;
+
   constructor(width: number, height: number, resolution: number = 10) {
     this.width = width;
     this.height = height;
@@ -13,6 +26,35 @@ export class PheromoneGrid {
     this.cols = Math.ceil(width / resolution);
     this.rows = Math.ceil(height / resolution);
     this.buffer = new Float32Array(this.cols * this.rows);
+    
+    this.emitterPool = new ObjectPool<ChemicalEmitter>(
+      () => ({ x: 0, y: 0, amount: 0, life: 0, active: false }),
+      (emitter) => { emitter.active = false; },
+      100
+    );
+  }
+
+  public registerEmitter(x: number, y: number, amount: number, life: number = 60): void {
+    const emitter = this.emitterPool.acquire();
+    emitter.x = x;
+    emitter.y = y;
+    emitter.amount = amount;
+    emitter.life = life;
+    emitter.active = true;
+    this.activeEmitters.push(emitter);
+  }
+
+  public processEmitters(): void {
+    for (let i = this.activeEmitters.length - 1; i >= 0; i--) {
+      const emitter = this.activeEmitters[i];
+      if (emitter.life <= 0) {
+        this.emitterPool.release(emitter);
+        this.activeEmitters.splice(i, 1);
+      } else {
+        this.addPheromone(emitter.x, emitter.y, emitter.amount);
+        emitter.life--;
+      }
+    }
   }
 
   public addPheromone(x: number, y: number, amount: number): void {

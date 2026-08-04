@@ -806,7 +806,10 @@ export class MicrobotEngine {
     // Decay Pheromone Trails
     if (this.frameCount % 5 === 0) {
       this.chemicalGrid.decay(0.04 * speedMult);
-      this.pheromoneGrid.decay(0.02 * speedMult);
+      if (this.pheromoneGrid) {
+        this.pheromoneGrid.processEmitters();
+        this.pheromoneGrid.decay(0.02 * speedMult);
+      }
     }
 
     // Spore Update Loop

@@ -38,7 +38,7 @@ describe('calculateSteering - Chemotaxis', () => {
     const rightY = 50 + Math.sin(0.5) * sensorDist;
     const rightX = 50 + Math.cos(0.5) * sensorDist;
     
-    pheromoneGrid.emitPheromone(rightX, rightY, 1.0);
+    pheromoneGrid.addPheromone(rightX, rightY, 1.0);
 
     const emptySpatialGrid = new SpatialGrid(100, 100, 20);
 
