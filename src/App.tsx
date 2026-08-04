@@ -396,6 +396,7 @@ export const App: React.FC = () => {
           </div>
           <ControlPanel 
             config={config} 
+            engine={engineRef.current}
             onUpdateConfig={handleUpdateConfig} 
             onExportStateSync={handleExportStateSync}
             onImportStateSync={handleImportStateSync}

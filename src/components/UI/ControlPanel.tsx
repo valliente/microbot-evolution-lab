@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Users, Dna, ShieldAlert, Cloud } from 'lucide-react';
+import { ChevronDown, ChevronUp, Users, Dna, ShieldAlert, Cloud, Download } from 'lucide-react';
 import { SimulationConfig } from '../../simulation/types';
+import { exportSpeciationAndPheromoneProfiles } from '../../utils/exportUtils';
 
 interface ControlPanelProps {
   config: SimulationConfig;
+  engine: any;
   onUpdateConfig: (newConfig: Partial<SimulationConfig>) => void;
   onExportStateSync: () => void;
   onImportStateSync?: () => void;
@@ -13,7 +15,7 @@ interface ControlPanelProps {
   onExportEpigenetics?: () => void;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark, onSpawnSpore, onExportRunData, onExportEpigenetics }) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUpdateConfig, onExportStateSync, onImportStateSync, onRunBenchmark, onSpawnSpore, onExportRunData, onExportEpigenetics }) => {
   const [openSection, setOpenSection] = useState<'pop' | 'gen' | 'env' | 'sync' | 'all'>('all');
 
   return (
@@ -287,6 +289,15 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, onUpdateConf
                   Export Epigenetic Profiles (JSON)
                 </button>
               )}
+
+              <button
+                onClick={() => exportSpeciationAndPheromoneProfiles(engine)}
+                className="btn-holo btn-holo-cyan"
+                style={{ width: '100%', justifyContent: 'center', fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                <Download size={12} />
+                Export Speciation Profile
+              </button>
               
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E', marginTop: 4 }}>
                 <span>Headless Mode (100x Speed)</span>
