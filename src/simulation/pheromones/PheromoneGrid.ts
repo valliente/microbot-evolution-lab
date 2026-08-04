@@ -32,7 +32,7 @@ export class PheromoneGrid {
     return 0;
   }
 
-  public update(decayRate: number = 0.98): void {
+  public decay(decayRate: number = 0.98): void {
     // Basic decay; diffusion to be implemented
     for (let i = 0; i < this.buffer.length; i++) {
       this.buffer[i] *= decayRate;

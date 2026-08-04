@@ -31,6 +31,7 @@ export class MicrobotEngine {
   public gravityWells: GravityWell[] = [];
   public catalystZones: CatalystZone[] = [];
   public chemicalGrid: ChemicalGrid;
+  public pheromoneGrid: PheromoneGrid;
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
   public portals: PortalNode[] = [];
@@ -287,9 +288,12 @@ export class MicrobotEngine {
   }
 
   public resize(width: number, height: number): void {
-    this.width = Math.max(600, width);
+    this.width = Math.max(400, width);
     this.height = Math.max(400, height);
     this.spatialGrid = new SpatialGrid(this.width, this.height, 60);
+    this.chemicalGrid = new ChemicalGrid(this.width, this.height, 20);
+    this.pheromoneGrid = new PheromoneGrid(this.width, this.height, 10);
+    this.spatialHash = new SpatialHashGrid(this.width, this.height, 80);
     this.generateBiomes();
   }
 
@@ -797,6 +801,7 @@ export class MicrobotEngine {
     // Decay Pheromone Trails
     if (this.frameCount % 5 === 0) {
       this.chemicalGrid.decay(0.04 * speedMult);
+      this.pheromoneGrid.decay(0.02 * speedMult);
     }
 
     // Spore Update Loop
@@ -907,6 +912,12 @@ export class MicrobotEngine {
       
       if (bot.inkCooldown && bot.inkCooldown > 0) {
          bot.inkCooldown -= speedMult;
+      }
+      
+      // Pheromone emission based on velocity
+      if (bot.behaviorState === 'REPRODUCING' || bot.battery > bot.maxBattery * 0.8) {
+          const emissionRate = (Math.abs(bot.vx) + Math.abs(bot.vy)) * 0.1;
+          this.pheromoneGrid.addPheromone(bot.x - bot.vx, bot.y - bot.vy, emissionRate);
       }
 
       // Apply Topographical Terrain Physics (Slope acceleration & Friction)
