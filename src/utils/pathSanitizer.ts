@@ -9,15 +9,14 @@ export function sanitizePath(relativePath: string): string {
   // Fix(build): implement dynamic import.meta.env pathing for packaged assets
   let cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
 
+  // Android file protocol fix (needs to run regardless of import.meta.env)
+  if (window.location.href.includes('android_asset')) {
+    return window.location.href.split('index.html')[0] + cleanPath;
+  }
+
   if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.BASE_URL) {
     const base = import.meta.env.BASE_URL;
     let resolved = base.endsWith('/') ? `${base}${cleanPath}` : `${base}/${cleanPath}`;
-    
-    // Android file protocol fix
-    if (window.location.href.includes('android_asset')) {
-       return window.location.href.split('index.html')[0] + cleanPath;
-    }
-
     if (resolved.startsWith('/')) resolved = '.' + resolved;
     return resolved;
   }
