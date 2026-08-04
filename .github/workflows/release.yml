@@ -82,3 +82,10 @@ jobs:
             checksums.txt
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup Build Artifacts
+        run: |
+          Remove-Item -Path "MicrobotEvolutionLab.exe" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "MicrobotEvolutionLab.apk" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "Microbot-Evolution-Lab-Windows.zip" -Force -ErrorAction SilentlyContinue
+          Remove-Item -Path "checksums.txt" -Force -ErrorAction SilentlyContinue
