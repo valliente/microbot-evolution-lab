@@ -213,7 +213,7 @@ export class MicrobotEngine {
 
   public exportSyntheticRulesets(): string {
     return JSON.stringify({
-      version: '0.1.223',
+      version: '0.1.224',
       timestamp: Date.now(),
       gravityWells: this.gravityWells,
       speedFields: this.speedFields,
@@ -230,7 +230,7 @@ export class MicrobotEngine {
     })).filter(b => b.nasBrain || (b.organelles && b.organelles.length > 0));
 
     return JSON.stringify({
-      version: '0.1.223',
+      version: '0.1.224',
       timestamp: Date.now(),
       architectures
     }, null, 2);
