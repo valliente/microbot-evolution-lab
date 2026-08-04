@@ -87,11 +87,11 @@ export const FitnessLandscape3D: React.FC<Props> = ({ stats }) => {
   }, []);
   
   return (
-    <div className="bg-gray-800 p-4 rounded-lg flex flex-col h-full border border-gray-700">
-      <h3 className="text-sm font-semibold text-gray-300 mb-2">3D Fitness Landscape</h3>
-      <div ref={mountRef} className="w-full flex-grow relative rounded overflow-hidden bg-gray-900 border border-gray-700">
+    <div className="bg-gray-800/70 backdrop-blur-md p-4 rounded-xl flex flex-col h-full border border-gray-700/50 shadow-2xl">
+      <h3 className="text-sm font-semibold text-gray-300 mb-2 tracking-wide">3D Fitness Landscape</h3>
+      <div ref={mountRef} className="w-full flex-grow relative rounded overflow-hidden bg-gray-900/50 border border-gray-700/50">
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-          <span className="text-white text-xs">WebGL Initialized</span>
+          <span className="text-white text-xs font-mono">WebGL Initialized</span>
         </div>
       </div>
     </div>
