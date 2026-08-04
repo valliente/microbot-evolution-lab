@@ -1,4 +1,4 @@
-name: Publish Release - 0.1.223
+name: Publish Release - 0.1.224
 
 on:
   push:
@@ -60,14 +60,16 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.223
-          name: "Microbot Evolution Lab v0.1.223"
+          tag_name: v0.1.224
+          name: "Microbot Evolution Lab v0.1.224"
           body: |
-            Microbot Evolution Lab v0.1.223
-            - Neural Architecture Search (NAS) & Recurrent Memory Nodes
-            - Host-Symbiont Organelle Integration & Mitochondrial DNA Transmission
-            - 3D Trophic Web Visualizer (Producer, Predator, Decomposer nodes)
-            - NAS Brain Inspector Panel & Dynamic JSON Exporters
+            Microbot Evolution Lab v0.1.224
+            - Genetic Speciation Barriers & Allele Distance Thresholds
+            - Hybrid Infertility Penalties & Epigenetic Modifiers
+            - Pheromone Diffusion Gradients & Decay Grid
+            - Chemotaxis & Chemical Attraction Vectors
+            - 3D Fitness Landscape Visualizer
+            - Dynamic JSON Exporters for Speciation and Pheromone profiles
           draft: false
           prerelease: false
           files: |
