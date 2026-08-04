@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Microbot } from '../../simulation/types';
 
 export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ activeBot }) => {
@@ -56,7 +56,7 @@ export const GenomicTopology3D: React.FC<{ activeBot: Microbot | null }> = ({ ac
 
     const speedVal = activeBot?.genome?.speedAllele.baseValue || 1.0;
     const visionVal = activeBot?.genome?.visionAllele.baseValue || 40.0;
-    const effVal = activeBot?.genome?.efficiencyAllele.baseValue || 1.0;
+    
 
     for (let i = 0; i < numPairs; i++) {
       const y = (i - numPairs / 2) * heightSpacing;

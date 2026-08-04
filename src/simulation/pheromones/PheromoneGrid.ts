@@ -9,8 +9,8 @@ export interface ChemicalEmitter {
 }
 
 export class PheromoneGrid {
-  private width: number;
-  private height: number;
+  
+  
   private resolution: number;
   public cols: number;
   public rows: number;
@@ -20,8 +20,8 @@ export class PheromoneGrid {
   private emitterPool: ObjectPool<ChemicalEmitter>;
 
   constructor(width: number, height: number, resolution: number = 10) {
-    this.width = width;
-    this.height = height;
+    
+    
     this.resolution = resolution;
     this.cols = Math.ceil(width / resolution);
     this.rows = Math.ceil(height / resolution);

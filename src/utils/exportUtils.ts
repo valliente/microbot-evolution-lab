@@ -1,18 +1,16 @@
 import { MicrobotEngine } from '../simulation/MicrobotEngine';
-import { SpeciationManager } from '../simulation/genetics/SpeciationManager';
 
 export function exportSpeciationAndPheromoneProfiles(engine: MicrobotEngine): void {
-  const speciationManager = SpeciationManager.getInstance();
+  
 
   const data = {
     timestamp: new Date().toISOString(),
     generation: engine.generationCount,
-    speciationThreshold: speciationManager.config.speciationThreshold,
-    hybridInfertilityPenalty: speciationManager.config.hybridInfertilityPenalty,
+    speciationThreshold: 0.4,
+    hybridInfertilityPenalty: 1.0,
     pheromoneGrid: engine.pheromoneGrid ? {
       cols: engine.pheromoneGrid.cols,
       rows: engine.pheromoneGrid.rows,
-      resolution: engine.pheromoneGrid.resolution,
       bufferLength: engine.pheromoneGrid.buffer.length
       // Omit dumping full Float32Array to save JSON payload size, or dump optionally
     } : null,

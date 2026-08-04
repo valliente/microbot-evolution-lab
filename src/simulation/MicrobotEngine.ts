@@ -1,13 +1,12 @@
 import { 
   Microbot, EnergyParticle, HazardZone, SimulationConfig, 
-  BehaviorState, SimulationStats, Vector2D, SpeedField, GravityWell, FluidZone, CatalystZone,
+  SimulationStats, SpeedField, GravityWell, FluidZone, CatalystZone,
   SectorBiome, EnvironmentalDisaster, PortalNode, ParasiticSpore, MeteorStrike, VoidRift, Season, ResourceType
 } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
 import { PheromoneGrid } from './pheromones/PheromoneGrid';
 import { SpeciationManager } from './genetics/SpeciationManager';
-import { NASBrainManager, NASBrainGenome } from './genetics/NASBrainManager';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
@@ -30,8 +29,8 @@ export class MicrobotEngine {
   public fluidZones: FluidZone[] = [];
   public gravityWells: GravityWell[] = [];
   public catalystZones: CatalystZone[] = [];
-  public chemicalGrid: ChemicalGrid;
-  public pheromoneGrid: PheromoneGrid;
+  public chemicalGrid!: ChemicalGrid;
+  public pheromoneGrid!: PheromoneGrid;
   public meteors: MeteorStrike[] = [];
   public voidRifts: VoidRift[] = [];
   public portals: PortalNode[] = [];
@@ -298,7 +297,7 @@ export class MicrobotEngine {
     this.spatialGrid = new SpatialGrid(this.width, this.height, 60);
     this.chemicalGrid = new ChemicalGrid(this.width, this.height, 20);
     this.pheromoneGrid = new PheromoneGrid(this.width, this.height, 10);
-    this.spatialHash = new SpatialHashGrid(this.width, this.height, 80);
+    this.spatialHash = new SpatialHashGrid(80);
     this.generateBiomes();
   }
 
@@ -332,15 +331,15 @@ export class MicrobotEngine {
       parentA.offspringCount++;
 
       // Inherit species ID
-      const botSpeciesId = parentA.speciesId || SpeciationManager.getInstance().getSpeciesId();
-      let isHybrid = false;
-      let fertility = parentA.fertility ?? 1.0;
+      
+      
+      
       
       if (parentB) {
         parentB.offspringCount++;
-        const compat = SpeciationManager.getInstance().evaluateMatingCompatibility(parentA, parentB);
-        isHybrid = compat.isHybrid;
-        fertility = compat.fertilityFactor;
+        
+        
+        
       }
       
       if (generation > this.generationCount) {
@@ -351,20 +350,20 @@ export class MicrobotEngine {
       const mut = this.config.mutationRate * seasonMutMult;
       
       // Fix(genetics): strict boundaries and NaN prevention for chromosome values
-      speed = clamp(sanitizeVector(parent.speed + (Math.random() - 0.5) * mut * 1.5), 1.0, 5.0);
-      turnRate = clamp(sanitizeVector(parent.turnRate + (Math.random() - 0.5) * mut * 0.1), 0.04, 0.3);
-      visionRadius = clamp(sanitizeVector(parent.visionRadius + (Math.random() - 0.5) * mut * 50), 60, 260);
-      energyEfficiency = clamp(sanitizeVector(parent.energyEfficiency + (Math.random() - 0.5) * mut * 0.4), 0.6, 2.5);
-      hue = sanitizeVector((parent.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360);
+      speed = clamp(sanitizeVector(parentA.speed + (Math.random() - 0.5) * mut * 1.5), 1.0, 5.0);
+      turnRate = clamp(sanitizeVector(parentA.turnRate + (Math.random() - 0.5) * mut * 0.1), 0.04, 0.3);
+      visionRadius = clamp(sanitizeVector(parentA.visionRadius + (Math.random() - 0.5) * mut * 50), 60, 260);
+      energyEfficiency = clamp(sanitizeVector(parentA.energyEfficiency + (Math.random() - 0.5) * mut * 0.4), 0.6, 2.5);
+      hue = sanitizeVector((parentA.hue + (Math.random() - 0.5) * mut * 80 + 360) % 360);
       
-      armorGene = clamp((parent.armorGene || 0) + (Math.random() - 0.5) * mut * 0.2, 0, 0.8);
-      inkGlandGene = (parent.inkGlandGene || 0) > 0.5 ? 
+      armorGene = clamp((parentA.armorGene || 0) + (Math.random() - 0.5) * mut * 0.2, 0, 0.8);
+      inkGlandGene = (parentA.inkGlandGene || 0) > 0.5 ? 
          (Math.random() < mut * 2 ? 0 : 1) : 
          (Math.random() < mut * 2 ? 1 : 0);
-      panicGene = clamp((parent.panicGene || 1.0) + (Math.random() - 0.5) * mut * 0.5, 1.0, 2.5);
+      panicGene = clamp((parentA.panicGene || 1.0) + (Math.random() - 0.5) * mut * 0.5, 1.0, 2.5);
 
-      if (parent.epigenome) {
-        inheritedEpigenome = parent.epigenome.map(marker => {
+      if (parentA.epigenome) {
+        inheritedEpigenome = parentA.epigenome.map((marker: EpigeneticMarker) => {
           const passedOn = Math.random() < marker.heritability;
           return {
             ...marker,
@@ -379,6 +378,9 @@ export class MicrobotEngine {
 
     const bot: Microbot = {
       id,
+      speciesId: parentA?.speciesId || SpeciationManager.getInstance().getSpeciesId(),
+      isHybrid: parentA && parentB ? SpeciationManager.getInstance().evaluateMatingCompatibility(parentA, parentB).isHybrid : false,
+      fertility: parentA && parentB ? SpeciationManager.getInstance().evaluateMatingCompatibility(parentA, parentB).fertilityFactor : (parentA?.fertility ?? 1.0),
       x,
       y,
       vx: Math.cos(Math.random() * Math.PI * 2) * speed,
@@ -1391,9 +1393,20 @@ export class MicrobotEngine {
             
             // Try to find a mate nearby
             let mateFound = false;
-            const nearbyBots = this.spatialGrid.queryRadius(bot.x, bot.y, bot.visionRadius);
+            const nearbyBots: Microbot[] = [];
+            const radSq = bot.visionRadius * bot.visionRadius;
+            for (const otherBot of this.microbots) {
+              if (otherBot.id !== bot.id) {
+                const dx = otherBot.x - bot.x;
+                const dy = otherBot.y - bot.y;
+                if (dx * dx + dy * dy <= radSq) {
+                  nearbyBots.push(otherBot);
+                }
+              }
+            }
+            
             for (const otherBot of nearbyBots) {
-              if (otherBot.id !== bot.id && otherBot.battery >= otherBot.maxBattery * 0.8) {
+              if (otherBot.battery >= otherBot.maxBattery * 0.8) {
                 const compat = SpeciationManager.getInstance().evaluateMatingCompatibility(bot, otherBot);
                 if (compat.compatible) {
                   bot.battery -= 45;

@@ -10,7 +10,7 @@ export class SyntheticPhysicsManager {
     return SyntheticPhysicsManager.instance;
   }
 
-  public applyCustomPhysics(bot: any, speedMult: number): void {
+  public applyCustomPhysics(_bot: any, _speedMult: number): void {
     // To be implemented in subsequent steps
   }
 

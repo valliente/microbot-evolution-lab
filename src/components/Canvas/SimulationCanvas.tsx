@@ -23,7 +23,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const chemLayerRef = useRef<HTMLCanvasElement | null>(null);
   const pheromoneLayerRef = useRef<HTMLCanvasElement | null>(null);
   const syntheticLayerRef = useRef<HTMLCanvasElement | null>(null);
-  const trophicNetworkLayerRef = useRef<HTMLCanvasElement | null>(null);
+  
   const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
   const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
