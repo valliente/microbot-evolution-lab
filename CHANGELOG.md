@@ -1,6 +1,16 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.224] - 2026-08-04
+### Added
+- **Genetic Speciation Barriers**: Implemented allele distance mating constraints based on multidimensional genomic thresholds.
+- **Hybrid Infertility**: Added logic to apply reproductive penalties and infertility to hybrid offspring.
+- **Pheromone Diffusion Gradients**: Introduced a grid-based pheromone system with dynamic chemical diffusion and decay rates.
+- **Chemotaxis**: Microbots can now sense pheromone gradients and align their movement vectors toward chemical attraction peaks.
+- **3D Fitness Landscape Visualizer**: Added interactive WebGL/Three.js 3D fitness landscape rendering for tracking reproductive success across genetic coordinates.
+- **Performance Optimizations**: Implemented dynamic object pooling for chemical grid emitters and optimized raycasting using Float32Array buffers.
+- **Error Recovery**: Added interactive error recovery overlay for WebGL context loss.
+
 ## [v0.1.223] - 2026-08-03
 ### Added
 - **Neural Architecture Search (NAS)**: Implemented recurrent memory nodes, variable activation function mutations (ReLU, Sigmoid, Tanh, Linear), and dynamic layer depth evaluation.
