@@ -659,28 +659,38 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               const isEntangled = bot.genome && Object.values(bot.genome).some((a: any) => a.state === 'ENTANGLED');
               
               const trailLen = bot.trail.length;
+              ctx.lineCap = 'round';
+              ctx.lineJoin = 'round';
               for (let i = 1; i < trailLen; i++) {
-                const alpha = (i / trailLen) * 0.35;
+                const alpha = Math.pow(i / trailLen, 2) * 0.7;
                 
                 if (isDecaying) {
                   ctx.strokeStyle = i % 2 === 0 ? '#f43f5e' : bot.color;
-                  ctx.lineWidth = 1 + (i / trailLen) * 2;
+                  ctx.lineWidth = 1.5 + (i / trailLen) * 2;
                   ctx.setLineDash([2, 4]);
                 } else if (isEntangled) {
                   ctx.strokeStyle = '#E040FB';
-                  ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                  ctx.lineWidth = 1.5 + (i / trailLen) * 2;
                   ctx.setLineDash([4, 2]);
                 } else {
                   ctx.strokeStyle = bot.color;
-                  ctx.lineWidth = 1 + (i / trailLen) * 1.5;
+                  ctx.lineWidth = 1.5 + (i / trailLen) * 2.5;
                   ctx.setLineDash([]);
                 }
                 ctx.globalAlpha = alpha;
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 15 + (i / trailLen) * 10;
                 ctx.shadowColor = ctx.strokeStyle as string;
                 ctx.beginPath();
                 ctx.moveTo(bot.trail[i - 1].x, bot.trail[i - 1].y);
                 ctx.lineTo(bot.trail[i].x, bot.trail[i].y);
+                ctx.stroke();
+                
+                // Inner bright core for bioluminescent effect
+                ctx.globalAlpha = alpha * 0.6;
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = '#ffffff';
+                ctx.lineWidth = 1.0;
+                ctx.strokeStyle = '#ffffff';
                 ctx.stroke();
               }
               ctx.setLineDash([]);
