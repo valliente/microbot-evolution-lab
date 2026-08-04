@@ -5,6 +5,9 @@ import {
 } from './types';
 import { SpatialGrid } from './SpatialGrid';
 import { Quadtree } from './Quadtree';
+import { PheromoneGrid } from './pheromones/PheromoneGrid';
+import { SpeciationManager } from './genetics/SpeciationManager';
+import { NASBrainManager, NASBrainGenome } from './genetics/NASBrainManager';
 import { SpatialHashGrid } from './SpatialHashGrid';
 import { spatialAudio } from '../audio/SpatialAudioSynth';
 import { calculateSteering } from './steering';
@@ -250,15 +253,6 @@ export class MicrobotEngine {
     return btoa(JSON.stringify(state));
   }
 
-  public exportSyntheticRulesets(): string {
-    const state = {
-      fluidZones: this.fluidZones,
-      gravityWells: this.gravityWells,
-      catalystZones: this.catalystZones,
-    };
-    return JSON.stringify(state, null, 2);
-  }
-
   public importState(hash: string): void {
     try {
       const state = JSON.parse(atob(hash));
@@ -299,7 +293,7 @@ export class MicrobotEngine {
     this.generateBiomes();
   }
 
-  public spawnMicrobot(parent?: Microbot): Microbot {
+  public spawnMicrobot(parentA?: Microbot, parentB?: Microbot): Microbot {
     const id = `MB-${String(this.nextBotIdNum++).padStart(4, '0')}`;
 
     let x = Math.random() * (this.width - 100) + 50;
@@ -320,13 +314,26 @@ export class MicrobotEngine {
       { geneId: 'VISION_BOOST', activationLevel: 0, heritability: 0.2, stressThreshold: 6.0 }
     ];
 
-    if (parent) {
-      x = parent.x + (Math.random() - 0.5) * 20;
-      y = parent.y + (Math.random() - 0.5) * 20;
+    if (parentA) {
+      x = parentA.x + (Math.random() - 0.5) * 20;
+      y = parentA.y + (Math.random() - 0.5) * 20;
       // Fix(genetics): correct generation counting logic
-      generation = parent.generation + 1;
-      parentId = parent.id;
-      parent.offspringCount++;
+      generation = parentA.generation + 1;
+      parentId = parentA.id;
+      parentA.offspringCount++;
+
+      // Inherit species ID
+      const botSpeciesId = parentA.speciesId || SpeciationManager.getInstance().getSpeciesId();
+      let isHybrid = false;
+      let fertility = parentA.fertility ?? 1.0;
+      
+      if (parentB) {
+        parentB.offspringCount++;
+        const compat = SpeciationManager.getInstance().evaluateMatingCompatibility(parentA, parentB);
+        isHybrid = compat.isHybrid;
+        fertility = compat.fertilityFactor;
+      }
+      
       if (generation > this.generationCount) {
         this.generationCount = generation;
       }
@@ -1360,11 +1367,33 @@ export class MicrobotEngine {
             bot.energyEfficiency = Math.max(0.6, Math.min(2.5, bot.energyEfficiency + (Math.random() - 0.5) * 0.5));
           }
 
-          // Asexual Reproduction threshold
+          // Reproduction threshold
           if (bot.battery >= bot.maxBattery * 0.95 && this.microbots.length < this.config.maxPopulation) {
-            bot.battery -= 45;
-            bot.behaviorState = 'REPRODUCING';
-            this.spawnMicrobot(bot);
+            
+            // Try to find a mate nearby
+            let mateFound = false;
+            const nearbyBots = this.spatialGrid.queryRadius(bot.x, bot.y, bot.visionRadius);
+            for (const otherBot of nearbyBots) {
+              if (otherBot.id !== bot.id && otherBot.battery >= otherBot.maxBattery * 0.8) {
+                const compat = SpeciationManager.getInstance().evaluateMatingCompatibility(bot, otherBot);
+                if (compat.compatible) {
+                  bot.battery -= 45;
+                  otherBot.battery -= 45;
+                  bot.behaviorState = 'REPRODUCING';
+                  otherBot.behaviorState = 'REPRODUCING';
+                  this.spawnMicrobot(bot, otherBot);
+                  mateFound = true;
+                  break;
+                }
+              }
+            }
+
+            // Asexual Reproduction fallback
+            if (!mateFound) {
+              bot.battery -= 45;
+              bot.behaviorState = 'REPRODUCING';
+              this.spawnMicrobot(bot);
+            }
           }
         }
       }
