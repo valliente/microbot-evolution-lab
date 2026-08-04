@@ -11,10 +11,7 @@ export default defineConfig({
     cssCodeSplit: false,
     brotliSize: false,
     rollupOptions: {
-      inlineDynamicImports: true,
-      output: {
-        manualChunks: () => 'everything.js'
-      }
+      // vite-plugin-singlefile handles inline dynamic imports and manual chunks automatically.
     }
   },
   worker: {
