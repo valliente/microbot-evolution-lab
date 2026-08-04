@@ -48,11 +48,19 @@ export const App: React.FC = () => {
       setSimulationError(event.reason instanceof Error ? event.reason : new Error(String(event.reason)));
     };
     
+    const handleWebGLContextLost = (event: Event) => {
+      event.preventDefault();
+      setSimulationError(new Error("WebGL Context Lost: The GPU has dropped the context. Click 'Recover' to restart rendering."));
+    };
+
     window.addEventListener('error', handleGlobalError);
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('webglcontextlost', handleWebGLContextLost, true);
+
     return () => {
       window.removeEventListener('error', handleGlobalError);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('webglcontextlost', handleWebGLContextLost, true);
       spatialAudio.dispose();
     };
   }, []);
