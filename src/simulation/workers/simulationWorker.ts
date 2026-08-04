@@ -49,5 +49,16 @@ self.onmessage = (event: MessageEvent) => {
   } else if (type === 'QUADTREE_BUILD') {
     const { points } = payload;
     self.postMessage({ type: 'QUADTREE_BUILT', payload: { count: points.length } });
+  } else if (type === 'SPECIATION_QUERIES') {
+    // Process Float32Array arrays for zero-copy serialization overhead
+    const { genomeA, genomeB } = payload;
+    let distance = 0;
+    if (genomeA && genomeB && genomeA.length === genomeB.length) {
+      for (let i = 0; i < genomeA.length; i++) {
+        distance += Math.pow(genomeA[i] - genomeB[i], 2);
+      }
+      distance = Math.sqrt(distance);
+    }
+    self.postMessage({ type: 'SPECIATION_RESULT', payload: { distance } });
   }
 };
