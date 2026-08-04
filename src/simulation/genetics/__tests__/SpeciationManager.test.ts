@@ -53,4 +53,27 @@ describe('SpeciationManager', () => {
     expect(distance).toBeGreaterThan(manager.config.speciationThreshold);
     expect(manager.canMate(p1, p2)).toBe(false);
   });
+
+  test('Hybrid infertility applies penalty correctly', () => {
+    const manager = SpeciationManager.getInstance();
+    
+    // Normal bot
+    const p1 = {
+      id: '1', 
+      isHybrid: false,
+      fertility: 1.0,
+      genome: {}
+    } as Microbot;
+
+    // Hybrid bot
+    const p2 = {
+      id: '2', 
+      isHybrid: true,
+      fertility: manager.config.hybridInfertilityPenalty,
+      genome: {}
+    } as Microbot;
+
+    expect(manager.getFertilityFactor(p1)).toBe(1.0);
+    expect(manager.getFertilityFactor(p2)).toBeLessThan(1.0);
+  });
 });
