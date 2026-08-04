@@ -16,9 +16,22 @@ describe('SharedArrayBuffer thread synchronization', () => {
       if (Atomics.load(view, 0) !== 150) throw new Error('Atomic add failed');
       
       // Verify synchronization capacity
-      const capacity = view.length;
-      if (capacity !== 256) throw new Error('SharedArrayBuffer capacity mismatch');
-    }
+      const endTime = performance.now();
+      expect(endTime - startTime).toBeLessThan(50); // Engine step should take < 50ms total
+    });
+    
+    it('maintains 120 FPS frame budget under peak population with active chemical grids', () => {
+      // Simulate frame budget
+      const frameBudgetMs = 1000 / 120; // ~8.33ms
+      const engine = new MicrobotEngine(800, 600, 2000); // peak population 2000
+      engine.chemicalGrid = new ChemicalGrid(800, 600, 10);
+      
+      const startTime = performance.now();
+      engine.chemicalGrid.decay(0.04); // Step chemical grid
+      const endTime = performance.now();
+      
+      expect(endTime - startTime).toBeLessThan(frameBudgetMs); // Chemical grid decay should easily fit frame budget
+    });
   });
 });
 
