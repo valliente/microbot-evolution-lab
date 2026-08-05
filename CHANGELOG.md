@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.225] - 2026-08-05
+### Added
+- **Zero-Failure Boundary Guardrails**: Comprehensive NaN/Infinity safety wrappers (`safeSqrt`, `safeAtan2`, `safeDiv`, coordinate clamping) across math and physics vector operations.
+- **Self-Healing Web Worker Recovery**: Automatic worker thread crash detection, strike reset, and state snapshot serialization/restoration.
+- **Epigenetic Stress Memory**: Environmental stress-induced gene expression modulation algorithms with non-genetic inheritance decay for direct offspring.
+- **3D Allele Frequency Topology**: Interactive WebGL/Three.js 3D surface mesh visualizer mapping population trait density with OrbitControls (pan, zoom, orbit).
+- **Stability Telemetry & Exporters**: Float32Array ring buffers for real-time epigenetic metrics and dynamic JSON state exporters.
+
 ## [v0.1.224] - 2026-08-04
 ### Added
 - **Genetic Speciation Barriers**: Implemented allele distance mating constraints based on multidimensional genomic thresholds.
