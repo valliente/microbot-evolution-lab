@@ -46,3 +46,7 @@ export function resolveWorkerUrl(workerPath: string): string {
     return sanitizedPath;
   }
 }
+
+export function resolveShaderUrl(shaderPath: string): string {
+  return sanitizePath(shaderPath);
+}
