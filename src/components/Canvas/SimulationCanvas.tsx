@@ -29,6 +29,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const isMouseDownRef = useRef<boolean>(false);
   const resolutionScaleRef = useRef<number>(window.devicePixelRatio || 1.0);
   const frameCountRef = useRef<number>(0);
+  const [hasRenderError, setHasRenderError] = React.useState<boolean>(false);
 
   // Resize Observer for dynamic canvas viewport
   useEffect(() => {
@@ -1133,6 +1134,41 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
         }}
         style={{ display: 'block', width: '100%', height: '100%', cursor: currentBrush !== 'NONE' ? 'cell' : 'crosshair', touchAction: 'none' }}
       />
+
+      {/* Interactive Error Recovery Overlay */}
+      {hasRenderError && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 50,
+          background: 'rgba(8, 14, 20, 0.92)',
+          backdropFilter: 'blur(12px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justify: 'center',
+          color: '#F0F6FC',
+          gap: 12
+        }}>
+          <AlertTriangle style={{ width: 48, height: 48, color: '#FF6B00' }} />
+          <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Render Context Interrupted</div>
+          <div style={{ fontSize: '0.85rem', color: '#8B949E' }}>Zero-Failure Guardrails active. Click below to recover render pipeline.</div>
+          <button
+            onClick={() => setHasRenderError(false)}
+            style={{
+              padding: '8px 20px',
+              background: '#00E5FF',
+              color: '#080E14',
+              fontWeight: 700,
+              borderRadius: 6,
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Recover Canvas Pipeline
+          </button>
+        </div>
+      )}
 
       {/* Click Tip Overlay */}
       <div style={{
