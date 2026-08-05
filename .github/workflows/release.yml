@@ -88,6 +88,7 @@ jobs:
             Microbot-Evolution-Lab-Windows.zip
             dist-standalone/index.html
             checksums.txt
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
