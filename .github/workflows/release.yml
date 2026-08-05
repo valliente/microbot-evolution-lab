@@ -66,16 +66,16 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.224
-          name: "Microbot Evolution Lab v0.1.224"
+          tag_name: v0.1.225
+          name: "Microbot Evolution Lab v0.1.225"
           body: |
-            Microbot Evolution Lab v0.1.224
-            - Genetic Speciation Barriers & Allele Distance Thresholds
-            - Hybrid Infertility Penalties & Epigenetic Modifiers
-            - Pheromone Diffusion Gradients & Decay Grid
-            - Chemotaxis & Chemical Attraction Vectors
-            - 3D Fitness Landscape Visualizer
-            - Dynamic JSON Exporters for Speciation and Pheromone profiles
+            Microbot Evolution Lab v0.1.225
+            - Zero-Failure Boundary Guardrails & State Sanitizer
+            - NaN and Infinity Math & Physics Safety Wrappers
+            - Self-Healing Web Worker Auto-Restart & Snapshot Recovery
+            - Epigenetic Stress Memory & Trait Inheritance Decay
+            - 3D Allele Frequency Topology Mesh Visualizer
+            - Dynamic JSON Exporters & Float32Array Ring Buffers
           draft: false
           prerelease: false
           files: |
