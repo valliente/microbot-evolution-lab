@@ -677,6 +677,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                   ctx.strokeStyle = bot.color;
                   ctx.lineWidth = 1.5 + (i / trailLen) * 2.5;
                   ctx.setLineDash([]);
+                  ctx.shadowColor = bot.color;
+                  ctx.shadowBlur = 4;
                 }
                 ctx.globalAlpha = alpha;
                 ctx.shadowBlur = 15 + (i / trailLen) * 10;
