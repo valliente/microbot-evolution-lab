@@ -61,6 +61,29 @@ export class EpigeneticEngine {
     this.historyIndex = (this.historyIndex + 1) % this.maxHistory;
   }
   
+  public modulateGeneExpression(bot: import('../types').Microbot, stressIndex: number): void {
+    if (!bot.epigenome) {
+      bot.epigenome = this.getDefaultMarkers();
+    }
+
+    for (const marker of bot.epigenome) {
+      if (stressIndex >= marker.stressThreshold) {
+        marker.activationLevel = Math.min(1.0, marker.activationLevel + 0.05 * stressIndex);
+      } else {
+        marker.activationLevel = Math.max(0.0, marker.activationLevel - 0.01);
+      }
+
+      // Apply modulation multiplier to microbot physical traits
+      if (marker.geneId === 'SPEED' && marker.activationLevel > 0) {
+        bot.speed = Math.min(10.0, bot.maxSpeed * (1 + 0.25 * marker.activationLevel));
+      } else if (marker.geneId === 'EFFICIENCY' && marker.activationLevel > 0) {
+        bot.energyEfficiency = Math.min(3.0, bot.energyEfficiency * (1 + 0.2 * marker.activationLevel));
+      } else if (marker.geneId === 'ARMOR' && marker.activationLevel > 0) {
+        bot.armorGene = Math.min(0.9, (bot.armorGene || 0) + 0.05 * marker.activationLevel);
+      }
+    }
+  }
+
   public getStressHistory(): Float32Array {
     // Return an ordered copy starting from the oldest element
     const ordered = new Float32Array(this.maxHistory);
