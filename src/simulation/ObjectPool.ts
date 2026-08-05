@@ -136,5 +136,5 @@ export interface PooledEpigeneticParticle {
 export const epigeneticParticlePool = new ObjectPool<PooledEpigeneticParticle>(
   () => ({ x: 0, y: 0, activationLevel: 0, color: '#06b6d4' }),
   (p) => { p.x = 0; p.y = 0; p.activationLevel = 0; p.color = '#06b6d4'; },
-  500
+  1000
 );
