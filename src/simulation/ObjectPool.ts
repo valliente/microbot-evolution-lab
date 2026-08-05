@@ -125,3 +125,16 @@ export const organelleParticlePool = new ObjectPool<OrganelleParticle>(
   (p) => { p.id = ''; p.x = 0; p.y = 0; p.radius = 4; p.color = '#34d399'; },
   100
 );
+
+export interface PooledEpigeneticParticle {
+  x: number;
+  y: number;
+  activationLevel: number;
+  color: string;
+}
+
+export const epigeneticParticlePool = new ObjectPool<PooledEpigeneticParticle>(
+  () => ({ x: 0, y: 0, activationLevel: 0, color: '#06b6d4' }),
+  (p) => { p.x = 0; p.y = 0; p.activationLevel = 0; p.color = '#06b6d4'; },
+  500
+);
