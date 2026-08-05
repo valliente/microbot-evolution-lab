@@ -99,3 +99,17 @@ export const SpeciationSymbiosisPreset: SimulationConfig = {
   batteryDrainMultiplier: 1.1,
   showPheromoneTrails: true,
 };
+
+export const ZeroFailureEpigeneticsPreset: SimulationConfig = {
+  ...BaseConfig,
+  startPopulation: 200,
+  maxPopulation: 750,
+  mutationRate: 0.18,
+  energySpawnRate: 25,
+  maxEnergyParticles: 450,
+  hazardCount: 18,
+  batteryDrainMultiplier: 1.05,
+  showPheromoneTrails: true,
+  autoDisastersEnabled: true,
+  disasterScheduleInterval: 1500
+};
