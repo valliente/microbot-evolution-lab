@@ -1,3 +1,5 @@
+import { EpigeneticMarker } from '../types';
+
 export class EpigeneticEngine {
   private static instance: EpigeneticEngine;
   private globalStressIndex: number = 0;
@@ -7,7 +9,37 @@ export class EpigeneticEngine {
   private historyIndex: number = 0;
   private maxHistory: number = 1000;
   
-  private constructor() {}
+  private defaultMarkers: Map<string, EpigeneticMarker> = new Map();
+  private activeEpigeneticProfiles: Map<string, EpigeneticMarker[]> = new Map();
+
+  private constructor() {
+    this.initDefaultMarkers();
+  }
+
+  private initDefaultMarkers(): void {
+    this.defaultMarkers.set('STRESS_SPEED_BOOST', {
+      geneId: 'SPEED',
+      activationLevel: 0.0,
+      heritability: 0.75,
+      stressThreshold: 0.4
+    });
+    this.defaultMarkers.set('STRESS_EFFICIENCY_BOOST', {
+      geneId: 'EFFICIENCY',
+      activationLevel: 0.0,
+      heritability: 0.60,
+      stressThreshold: 0.5
+    });
+    this.defaultMarkers.set('RADIATION_DEFENSE', {
+      geneId: 'ARMOR',
+      activationLevel: 0.0,
+      heritability: 0.80,
+      stressThreshold: 0.6
+    });
+  }
+
+  public getDefaultMarkers(): EpigeneticMarker[] {
+    return Array.from(this.defaultMarkers.values()).map(m => ({ ...m }));
+  }
 
   public static getInstance(): EpigeneticEngine {
     if (!EpigeneticEngine.instance) {
