@@ -6,6 +6,7 @@ export class EpigeneticEngine {
   
   // High-performance typed array for real-time telemetry rendering (capacity: 1000 data points)
   public stressHistory: Float32Array = new Float32Array(1000);
+  public markerBuffer: Float32Array = new Float32Array(3000); // 1000 bots x 3 markers
   private historyIndex: number = 0;
   private maxHistory: number = 1000;
   
@@ -92,6 +93,17 @@ export class EpigeneticEngine {
         activationLevel: passedOn ? marker.activationLevel * decayRate : 0.0
       };
     });
+  }
+
+  public packMarkerBuffer(microbots: import('../types').Microbot[]): Float32Array {
+    let offset = 0;
+    for (let i = 0; i < microbots.length && offset < 3000; i++) {
+      const markers = microbots[i].epigenome || [];
+      this.markerBuffer[offset++] = markers[0]?.activationLevel || 0;
+      this.markerBuffer[offset++] = markers[1]?.activationLevel || 0;
+      this.markerBuffer[offset++] = markers[2]?.activationLevel || 0;
+    }
+    return this.markerBuffer.subarray(0, offset);
   }
 
   public getStressHistory(): Float32Array {
