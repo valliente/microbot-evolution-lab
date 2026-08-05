@@ -14,6 +14,7 @@ import { EpigeneticEngine } from './genetics/EpigeneticEngine';
 import { EpigeneticMarker } from './types';
 import { disasterParticlePool, PooledDisasterParticle } from './ObjectPool';
 import { ccdSubstep, sanitizeVector, clamp } from './physics';
+import { Guardrails } from './physics/Guardrails';
 import { ThreadManager } from './workers/ThreadManager';
 import { ChemicalGrid } from './pheromones/ChemicalGrid';
 
@@ -419,6 +420,8 @@ export class MicrobotEngine {
       },
       epigenome: inheritedEpigenome
     };
+
+    Guardrails.getInstance().sanitizeMicrobotState(bot, this.width, this.height);
 
     this.microbots.push(bot);
     this.totalBirths++;
