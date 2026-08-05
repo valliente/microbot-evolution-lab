@@ -51,7 +51,17 @@ export class ThreadManager {
     this.errorStrikes = 0;
   }
 
+  private lastStateSnapshot: any = null;
+
+  public saveSnapshot(snapshot: any): void {
+    this.lastStateSnapshot = snapshot;
+    this.postTask('RESTORE_SNAPSHOT', { snapshot });
+  }
+
   public postTask(type: string, payload: any): void {
+    if (type === 'RESTORE_SNAPSHOT') {
+      this.lastStateSnapshot = payload.snapshot;
+    }
     if (this.worker) {
       this.worker.postMessage({ type, payload });
     }
