@@ -129,44 +129,6 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
                   <span>Mutation Tendency</span>
                   <span style={{ color: '#E040FB', fontWeight: 800 }}>{(config.mutationRate * 100).toFixed(0)}%</span>
-                </div>
-                <input
-                  type="range"
-                  min="0.01"
-                  max="0.50"
-                  step="0.01"
-                  value={config.mutationRate}
-                  onChange={(e) => onUpdateConfig({ mutationRate: parseFloat(e.target.value) })}
-                  style={{ width: '100%', height: 4, marginTop: 4 }}
-                />
-              </div>
-
-              {/* Symbiosis & Parasitism Mechanics */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
-                <span>Symbiosis & Parasitism</span>
-                <span style={{ color: '#00E5FF', fontWeight: 800 }}>ENABLED</span>
-              </div>
-
-              {/* Battery Drain Rate Slider + Sparkline */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 50px', gap: 8, alignItems: 'center' }}>
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', fontFamily: "'JetBrains Mono', monospace", color: '#8B949E' }}>
-                    <span>Battery Drain Rate</span>
-                    <span style={{ color: '#E040FB', fontWeight: 700 }}>{config.batteryDrainMultiplier.toFixed(1)}x</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0.2"
-                    max="3.0"
-                    step="0.1"
-                    value={config.batteryDrainMultiplier}
-                    onChange={(e) => onUpdateConfig({ batteryDrainMultiplier: parseFloat(e.target.value) })}
-                    style={{ width: '100%', height: 4 }}
-                  />
-                </div>
-                <svg viewBox="0 0 50 16" style={{ width: 50, height: 16 }}>
-                  <path d="M 0 14 L 12 10 L 25 12 L 38 6 L 50 4" fill="none" stroke="#E040FB" strokeWidth="1.5" />
-                </svg>
               </div>
             </div>
           )}
