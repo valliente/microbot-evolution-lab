@@ -30,14 +30,25 @@ export class ThreadManager {
         console.error('Web Worker Error:', err);
         this.errorStrikes++;
         this.terminate();
-        if (this.errorStrikes < this.maxStrikes) {
-          console.log(`Restarting Worker (Strike ${this.errorStrikes}/${this.maxStrikes})...`);
-          setTimeout(() => this.initWorker(this.workerScriptUrl), 1000);
+        if (this.errorStrikes <= this.maxStrikes) {
+          console.log(`Self-healing Worker Auto-Restarting (Attempt ${this.errorStrikes}/${this.maxStrikes})...`);
+          setTimeout(() => {
+            this.initWorker(this.workerScriptUrl);
+            if (this.onWorkerRestarted) {
+              this.onWorkerRestarted();
+            }
+          }, 500);
         } else {
-          console.error('Worker failed 3 times, giving up.');
+          console.error('Worker exceeded max retry strikes, operating in main thread fallback.');
         }
       };
     }
+  }
+
+  public onWorkerRestarted?: () => void;
+
+  public resetStrikes(): void {
+    this.errorStrikes = 0;
   }
 
   public postTask(type: string, payload: any): void {
