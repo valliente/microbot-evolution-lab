@@ -60,6 +60,14 @@ self.onmessage = (event: MessageEvent) => {
       distance = Math.sqrt(distance);
     }
     self.postMessage({ type: 'SPECIATION_RESULT', payload: { distance } });
+  } else if (type === 'BATCH_PHYSICS_QUERY') {
+    const { positionsBuffer } = payload;
+    const coords = new Float32Array(positionsBuffer);
+    const results = new Float32Array(coords.length / 2);
+    for (let i = 0; i < coords.length; i += 2) {
+      results[i / 2] = Math.hypot(coords[i], coords[i + 1]);
+    }
+    self.postMessage({ type: 'PHYSICS_QUERY_RESULT', payload: results.buffer }, [results.buffer]);
   } else if (type === 'RESTORE_SNAPSHOT') {
     const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
