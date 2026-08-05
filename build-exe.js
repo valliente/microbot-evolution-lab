@@ -131,7 +131,7 @@ try {
   console.log('Compiling MicrobotEvolutionLab.exe using csc.exe...');
   const cmd = '"' + cscCompiler + '" /target:winexe /out:"' + exePath + '" /r:System.dll,System.Windows.Forms.dll,System.Drawing.dll "' + csPath + '"';
   execSync(cmd, { stdio: 'inherit' });
-  console.log('Successfully created robust standalone executable: MicrobotEvolutionLab.exe');
+  console.log('Successfully created robust standalone executable for v' + version + ': MicrobotEvolutionLab.exe');
 } catch (err) {
   console.error('Failed to compile C# executable:', err);
 } finally {
