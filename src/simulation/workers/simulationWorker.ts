@@ -61,7 +61,7 @@ self.onmessage = (event: MessageEvent) => {
     }
     self.postMessage({ type: 'SPECIATION_RESULT', payload: { distance } });
   } else if (type === 'RESTORE_SNAPSHOT') {
-    const { snapshot } = payload;
+    const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
   } else if (type === 'GET_SNAPSHOT') {
     self.postMessage({ type: 'SNAPSHOT_SERIALIZED', payload: { timestamp: Date.now() } });

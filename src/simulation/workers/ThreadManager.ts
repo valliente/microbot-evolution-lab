@@ -53,6 +53,10 @@ export class ThreadManager {
 
   private lastStateSnapshot: any = null;
 
+  public getLastSnapshot(): any {
+    return this.lastStateSnapshot;
+  }
+
   public saveSnapshot(snapshot: any): void {
     this.lastStateSnapshot = snapshot;
     this.postTask('RESTORE_SNAPSHOT', { snapshot });

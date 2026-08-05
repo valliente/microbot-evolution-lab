@@ -23,7 +23,6 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
   const chemLayerRef = useRef<HTMLCanvasElement | null>(null);
   const pheromoneLayerRef = useRef<HTMLCanvasElement | null>(null);
   const syntheticLayerRef = useRef<HTMLCanvasElement | null>(null);
-  const surface3DOverlayLayerRef = useRef<HTMLCanvasElement | null>(null);
   
   const bgDirtyRef = useRef<boolean>(true);
   const isMouseDownRef = useRef<boolean>(false);
@@ -1146,7 +1145,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justify: 'center',
+          justifyContent: 'center',
           color: '#F0F6FC',
           gap: 12
         }}>

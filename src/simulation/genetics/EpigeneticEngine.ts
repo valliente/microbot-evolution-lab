@@ -11,7 +11,6 @@ export class EpigeneticEngine {
   private maxHistory: number = 1000;
   
   private defaultMarkers: Map<string, EpigeneticMarker> = new Map();
-  private activeEpigeneticProfiles: Map<string, EpigeneticMarker[]> = new Map();
 
   private constructor() {
     this.initDefaultMarkers();
