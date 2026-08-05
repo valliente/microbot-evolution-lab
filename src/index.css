@@ -5,6 +5,7 @@
   --panel-glass: rgba(15, 26, 36, 0.75);
   --panel-border: rgba(0, 229, 255, 0.22);
   --panel-glow: rgba(0, 229, 255, 0.15);
+  --glass-backdrop-filter: blur(12px) saturate(180%);
   
   --cyan-glow: #00E5FF;
   --magenta-glow: #E040FB;
@@ -14,6 +15,18 @@
   --text-primary: #F0F6FC;
   --text-muted: #8B949E;
   --text-dim: #546575;
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  :root {
+    --glass-backdrop-filter: blur(16px) saturate(200%);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 4px;
+  }
 }
 
 * {
