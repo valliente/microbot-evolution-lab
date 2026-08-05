@@ -26,6 +26,13 @@ export const AlleleTopology3D: React.FC<{ microbots: Microbot[] }> = ({ microbot
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.enableZoom = true;
+    controls.minDistance = 5;
+    controls.maxDistance = 60;
+    controls.enablePan = true;
+    controls.panSpeed = 0.8;
+    controls.rotateSpeed = 0.6;
+    controls.maxPolarAngle = Math.PI / 2 - 0.05;
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
