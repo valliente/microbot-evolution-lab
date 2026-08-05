@@ -39,3 +39,28 @@ export function exportSpeciationAndPheromoneProfiles(engine: MicrobotEngine): vo
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportEpigeneticsAndStateProfiles(engine: MicrobotEngine): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalMicrobots: engine.microbots.length,
+    epigeneticProfiles: engine.microbots.map(bot => ({
+      id: bot.id,
+      speciesId: bot.speciesId,
+      battery: bot.battery,
+      epigenome: bot.epigenome || []
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `microbot_epigenetics_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
