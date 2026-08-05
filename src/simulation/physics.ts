@@ -1,16 +1,16 @@
+import { Guardrails } from './physics/Guardrails';
+
 export function clamp(val: number, min: number, max: number): number {
   if (isNaN(val)) return min;
   return Math.max(min, Math.min(max, val));
 }
 
 export function safeSqrt(val: number): number {
-  if (isNaN(val) || val < 0) return 0;
-  return Math.sqrt(val);
+  return Guardrails.getInstance().safeSqrt(val);
 }
 
 export function safeAtan2(y: number, x: number): number {
-  if (isNaN(y) || isNaN(x)) return 0;
-  return Math.atan2(y, x);
+  return Guardrails.getInstance().safeAtan2(y, x);
 }
 
 export function wrapAngle(angle: number): number {
@@ -26,7 +26,8 @@ export function clampAngle(angle: number): number {
 }
 
 export function distance(x1: number, y1: number, x2: number, y2: number): number {
-  return Math.hypot(x2 - x1, y2 - y1);
+  const d = Math.hypot(x2 - x1, y2 - y1);
+  return isNaN(d) || !isFinite(d) ? 0 : d;
 }
 
 export function keepInBounds(x: number, y: number, width: number, height: number, margin: number = 15): { x: number; y: number } {
@@ -42,8 +43,11 @@ export function sanitizeVector(v: number): number {
 
 export function normalizeVector(vx: number, vy: number): { x: number, y: number } {
   const len = Math.hypot(vx, vy);
-  if (len === 0 || isNaN(len)) return { x: 0, y: 0 };
-  return { x: sanitizeVector(vx / len), y: sanitizeVector(vy / len) };
+  if (len === 0 || isNaN(len) || !isFinite(len)) return { x: 0, y: 0 };
+  return { 
+    x: Guardrails.getInstance().safeDiv(vx, len, 0), 
+    y: Guardrails.getInstance().safeDiv(vy, len, 0) 
+  };
 }
 
 export function ccdSubstep(
@@ -53,9 +57,10 @@ export function ccdSubstep(
   width: number, height: number, margin: number = 15,
   hazards: any[] = []
 ): { x: number; y: number; hitHazard: boolean } {
-  const steps = Math.ceil(Math.hypot(vx * speedMult, vy * speedMult) / 10);
-  const stepX = (vx * speedMult) / steps;
-  const stepY = (vy * speedMult) / steps;
+  const rawDist = Math.hypot(vx * speedMult, vy * speedMult);
+  const steps = Math.max(1, Math.ceil(isNaN(rawDist) ? 1 : rawDist / 10));
+  const stepX = Guardrails.getInstance().safeDiv(vx * speedMult, steps, 0);
+  const stepY = Guardrails.getInstance().safeDiv(vy * speedMult, steps, 0);
   let cx = x;
   let cy = y;
   let hitHazard = false;
@@ -71,7 +76,7 @@ export function ccdSubstep(
       if (Math.hypot(cx - h.x, cy - h.y) < h.radius) {
         hitHazard = true;
         // Simple bounce back out of hazard
-        const angle = Math.atan2(cy - h.y, cx - h.x);
+        const angle = Guardrails.getInstance().safeAtan2(cy - h.y, cx - h.x);
         cx = h.x + Math.cos(angle) * h.radius;
         cy = h.y + Math.sin(angle) * h.radius;
       }
@@ -86,3 +91,4 @@ export function ccdSubstep(
 
   return { x: cx, y: cy, hitHazard };
 }
+
