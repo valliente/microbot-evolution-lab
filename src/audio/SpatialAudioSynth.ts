@@ -19,6 +19,14 @@ export class SpatialAudioSynth {
     // Lazy AudioContext initialization on first user interaction
   }
 
+  public sanitizeReset(): void {
+    this.spatialPanners.forEach(panner => {
+      try { panner.disconnect(); } catch (e) {}
+    });
+    this.spatialPanners.clear();
+    this.activeOscCount = 0;
+  }
+
   // Fix(audio): sanitize audio node cleanup on app exit to prevent ghost hums
   public dispose(): void {
     this.stopAmbientDrone();
