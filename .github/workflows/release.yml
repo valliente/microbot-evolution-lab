@@ -78,6 +78,7 @@ jobs:
             - Dynamic JSON Exporters & Float32Array Ring Buffers
           draft: false
           prerelease: false
+          # Attach BOTH desktop EXE and Android APK binaries
           files: |
             MicrobotEvolutionLab.exe
             MicrobotEvolutionLab.apk
