@@ -34,11 +34,13 @@ export const AlleleTopology3D: React.FC<{ microbots: Microbot[] }> = ({ microbot
     dirLight.position.set(10, 20, 10);
     scene.add(dirLight);
 
-    // Initial placeholder mesh
-    const geometry = new THREE.PlaneGeometry(20, 20, 20, 20);
+    // Dynamic 3D Trait Surface Mesh
+    const gridSegs = 24;
+    const geometry = new THREE.PlaneGeometry(20, 20, gridSegs, gridSegs);
     const material = new THREE.MeshStandardMaterial({
-      color: 0x0ea5e9,
-      wireframe: true,
+      color: 0x06b6d4,
+      wireframe: false,
+      flatShading: true,
       side: THREE.DoubleSide
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -46,6 +48,30 @@ export const AlleleTopology3D: React.FC<{ microbots: Microbot[] }> = ({ microbot
     scene.add(mesh);
 
     let animationFrameId: number;
+
+    const updateMeshHeights = () => {
+      const posAttr = geometry.attributes.position;
+      const count = posAttr.count;
+      for (let i = 0; i < count; i++) {
+        const u = (i % (gridSegs + 1)) / gridSegs;
+        const v = Math.floor(i / (gridSegs + 1)) / gridSegs;
+        let heightVal = 0;
+
+        if (microbots.length > 0) {
+          microbots.forEach(bot => {
+            const bSpeedNorm = (bot.speed - 1.0) / 4.0;
+            const bEffNorm = (bot.energyEfficiency - 0.6) / 1.9;
+            const dist = Math.hypot(u - bSpeedNorm, v - bEffNorm);
+            if (dist < 0.2) {
+              heightVal += (0.2 - dist) * 15;
+            }
+          });
+        }
+        posAttr.setZ(i, Math.min(8.0, heightVal));
+      }
+      posAttr.needsUpdate = true;
+      geometry.computeVertexNormals();
+    };
 
     const handleContextLost = (e: Event) => {
       e.preventDefault();
@@ -62,6 +88,7 @@ export const AlleleTopology3D: React.FC<{ microbots: Microbot[] }> = ({ microbot
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+      updateMeshHeights();
       controls.update();
       renderer.render(scene, camera);
     };
