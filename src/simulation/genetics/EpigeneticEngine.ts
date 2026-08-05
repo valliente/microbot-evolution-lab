@@ -84,6 +84,16 @@ export class EpigeneticEngine {
     }
   }
 
+  public inheritEpigenome(parentMarkers: EpigeneticMarker[], decayRate: number = 0.85): EpigeneticMarker[] {
+    return parentMarkers.map(marker => {
+      const passedOn = Math.random() < marker.heritability;
+      return {
+        ...marker,
+        activationLevel: passedOn ? marker.activationLevel * decayRate : 0.0
+      };
+    });
+  }
+
   public getStressHistory(): Float32Array {
     // Return an ordered copy starting from the oldest element
     const ordered = new Float32Array(this.maxHistory);
