@@ -288,6 +288,7 @@ export interface SimulationStats {
   efficiencyHistogram: number[];
   diversityBuckets: number[];
   speciationDiversityRingBuffer?: Float32Array;
+  spatialHashDensityRingBuffer?: Float32Array;
   biomePopulation: Record<string, number>;
   historyTimeline: {
     time: number;
