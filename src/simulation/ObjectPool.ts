@@ -138,3 +138,18 @@ export const epigeneticParticlePool = new ObjectPool<PooledEpigeneticParticle>(
   (p) => { p.x = 0; p.y = 0; p.activationLevel = 0; p.color = '#06b6d4'; },
   1000
 );
+
+export interface PooledMeshVertex {
+  x: number;
+  y: number;
+  z: number;
+  nx: number;
+  ny: number;
+  nz: number;
+}
+
+export const structuralMeshVertexPool = new ObjectPool<PooledMeshVertex>(
+  () => ({ x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1 }),
+  (v) => { v.x = 0; v.y = 0; v.z = 0; v.nx = 0; v.ny = 0; v.nz = 1; },
+  2000
+);
