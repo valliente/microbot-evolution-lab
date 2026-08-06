@@ -661,8 +661,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               const isEntangled = bot.genome && Object.values(bot.genome).some((a: any) => a.state === 'ENTANGLED');
               
               const trailLen = bot.trail.length;
-              ctx.lineCap = 'round';
-              ctx.lineJoin = 'round';
+              if (trailLen > 1) {
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+              }
               for (let i = 1; i < trailLen; i++) {
                 const alpha = Math.pow(i / trailLen, 2) * 0.7;
                 
