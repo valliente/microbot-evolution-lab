@@ -64,3 +64,29 @@ export function exportEpigeneticsAndStateProfiles(engine: MicrobotEngine): void 
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportPhenotypeAndWASMProfiles(engine: MicrobotEngine): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalMicrobots: engine.microbots.length,
+    wasmStatus: 'ENABLED',
+    phenotypes: engine.microbots.map(bot => ({
+      id: bot.id,
+      radius: bot.radius,
+      color: bot.color,
+      generation: bot.generation
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `microbot_phenotype_wasm_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
