@@ -43,6 +43,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
             <option value="15">15 FPS (Battery Saver)</option>
           </select>
           <span style={{ fontSize: '0.62rem', color: '#00E676' }}>⚡ WORKER ON</span>
+          <span style={{ fontSize: '0.62rem', color: '#00E5FF', border: '1px solid rgba(0,229,255,0.4)', borderRadius: 6, padding: '2px 6px', background: '#080E14' }}>⚡ WASM GRID 64KB</span>
         </div>
       </div>
 
