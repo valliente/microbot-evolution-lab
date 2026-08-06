@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { MicrobotEngine } from '../../simulation/MicrobotEngine';
 import { BrushMode, HeatmapOverlayMode } from '../../simulation/types';
+import { PhenotypeEngine } from '../../simulation/genetics/PhenotypeEngine';
 import { Target, MousePointerClick, Zap, ShieldAlert, Sparkles, Dna, AlertTriangle, Layers } from 'lucide-react';
 
 interface SimulationCanvasProps {
@@ -720,6 +721,10 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               ctx.arc(bot.x, bot.y, bot.visionRadius, 0, Math.PI * 2);
               ctx.stroke();
             }
+
+            // Render Phenotype Structural Geometry Batch (Armor, Fins, Lure)
+            const phenotype = PhenotypeEngine.mapGenomeToPhenotype(bot.genome);
+            PhenotypeEngine.renderPhenotype(ctx, bot, phenotype);
 
             // Triangular Vector Body (Predators get red glowing claws)
             ctx.save();
