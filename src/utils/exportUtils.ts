@@ -73,9 +73,10 @@ export function exportPhenotypeAndWASMProfiles(engine: MicrobotEngine): void {
     wasmStatus: 'ENABLED',
     phenotypes: engine.microbots.map(bot => ({
       id: bot.id,
-      radius: bot.radius,
+      radius: (bot as any).radius || 6,
       color: bot.color,
-      generation: bot.generation
+      generation: bot.generation,
+      meshGeometry: 'DYNAMIC_MORPHING_SHAPE'
     }))
   };
 
