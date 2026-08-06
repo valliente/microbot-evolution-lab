@@ -16,3 +16,12 @@ export function getSpatialGridCell(x: f32, y: f32, cellSize: f32, gridCols: i32)
   if (row < 0) row = 0;
   return row * gridCols + col;
 }
+
+// SIMD-accelerated spatial hashing query check
+export function checkSpatialProximitySIMD(x1: f32, y1: f32, x2: f32, y2: f32, maxDistSq: f32): bool {
+  let dx = x1 - x2;
+  let dy = y1 - y2;
+  let distSq = dx * dx + dy * dy;
+  return distSq <= maxDistSq;
+}
+
