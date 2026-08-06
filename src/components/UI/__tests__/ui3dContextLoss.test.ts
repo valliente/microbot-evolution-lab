@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { describe, it, expect } from 'vitest';
 
 describe('3D UI Canvas WebGL Context Loss Safety', () => {
