@@ -1157,8 +1157,8 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           gap: 12
         }}>
           <AlertTriangle style={{ width: 48, height: 48, color: '#FF6B00' }} />
-          <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Render Context Interrupted</div>
-          <div style={{ fontSize: '0.85rem', color: '#8B949E' }}>Zero-Failure Guardrails active. Click below to recover render pipeline.</div>
+          <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Render Context or WASM Interrupted</div>
+          <div style={{ fontSize: '0.85rem', color: '#8B949E' }}>Zero-Failure Guardrails active. Click below to recover render and WASM pipeline.</div>
           <button
             onClick={() => setHasRenderError(false)}
             style={{
