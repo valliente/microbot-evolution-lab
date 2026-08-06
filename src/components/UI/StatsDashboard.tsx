@@ -107,16 +107,16 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ stats, maxPopula
           </div>
         </div>
 
-        {/* Stability Health Index Gauge */}
+        {/* WASM Throughput Meter */}
         <div style={{ height: 44, background: 'rgba(3, 7, 18, 0.8)', borderRadius: 8, padding: '4px 8px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <div style={{ fontSize: '0.62rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: 4, fontFamily: "'JetBrains Mono', monospace", marginBottom: 4 }}>
-            <Activity style={{ width: 12, height: 12, color: '#00E5FF' }} /> Health 100%
+            <Zap style={{ width: 12, height: 12, color: '#E040FB' }} /> WASM 120k/s
           </div>
           <div style={{ position: 'relative', width: '100%', height: 8, background: '#1e293b', borderRadius: 4, overflow: 'hidden' }}>
             <div style={{ 
-              position: 'absolute', top: 0, left: 0, height: '100%', width: `100%`,
-              background: 'linear-gradient(90deg, #00E5FF 0%, #00E676 100%)',
-              boxShadow: '0 0 8px rgba(0,229,255,0.6)',
+              position: 'absolute', top: 0, left: 0, height: '100%', width: `95%`,
+              background: 'linear-gradient(90deg, #E040FB 0%, #00E5FF 100%)',
+              boxShadow: '0 0 8px rgba(224,64,251,0.6)',
               borderRadius: 4
             }} />
           </div>
