@@ -77,7 +77,7 @@ export const App: React.FC = () => {
   }, [engine]);
 
   useEffect(() => {
-    telemetryManager.startPolling(engine, 33); // 30Hz throttle for main thread relief
+    telemetryManager.startPolling(engine, 33); // 30Hz throttle for main thread relief & WASM sync
     const unsubscribe = telemetryManager.subscribe((newStats) => {
       setStats(newStats);
       
