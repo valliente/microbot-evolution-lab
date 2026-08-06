@@ -22,4 +22,36 @@ export class PhenotypeEngine {
       lureHue: (genome?.hueAllele?.baseValue || 180) % 360
     };
   }
+
+  public static renderPhenotype(ctx: CanvasRenderingContext2D, bot: any, phenotype: StructuralPhenotype): void {
+    ctx.save();
+    ctx.translate(bot.x, bot.y);
+    ctx.rotate(bot.heading || 0);
+
+    // Draw Thrust Fins
+    if (phenotype.thrustFinsLength > 0) {
+      ctx.fillStyle = bot.color || '#00E5FF';
+      ctx.beginPath();
+      ctx.moveTo(-bot.radius, -bot.radius * 0.5);
+      ctx.lineTo(-bot.radius - phenotype.thrustFinsLength, -bot.radius * 0.8);
+      ctx.lineTo(-bot.radius - phenotype.thrustFinsLength * 0.5, 0);
+      ctx.lineTo(-bot.radius - phenotype.thrustFinsLength, bot.radius * 0.8);
+      ctx.lineTo(-bot.radius, bot.radius * 0.5);
+      ctx.fill();
+    }
+
+    // Draw Armor Plates
+    if (phenotype.armorPlatesCount > 0) {
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = phenotype.armorThickness;
+      for (let i = 0; i < phenotype.armorPlatesCount; i++) {
+        const angle = (i / phenotype.armorPlatesCount) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, bot.radius + phenotype.armorThickness * 0.5, angle, angle + Math.PI / phenotype.armorPlatesCount * 0.8);
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
 }
