@@ -24,11 +24,11 @@ export class WASMSpatialHash {
 
   public packEntities(entities: Array<{ x: number; y: number; radius: number; id: number | string }>): Float32Array {
     for (let i = 0; i < entities.length; i++) {
-      const offset = i * 4;
+      const offset = i << 2;
       this.memoryBuffer[offset] = entities[i].x;
       this.memoryBuffer[offset + 1] = entities[i].y;
       this.memoryBuffer[offset + 2] = entities[i].radius;
-      this.memoryBuffer[offset + 3] = typeof entities[i].id === 'number' ? entities[i].id : i;
+      this.memoryBuffer[offset + 3] = typeof entities[i].id === 'number' ? (entities[i].id as number) : i;
     }
     return this.memoryBuffer;
   }
