@@ -51,3 +51,7 @@ export function resolveWorkerUrl(workerPath: string): string {
 export function resolveShaderUrl(shaderPath: string): string {
   return sanitizePath(shaderPath);
 }
+
+export function resolveWasmUrl(wasmPath: string): string {
+  return sanitizePath(wasmPath);
+}
