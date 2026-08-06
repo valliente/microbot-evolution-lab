@@ -11,14 +11,19 @@ export class AutonomousHarness {
     this.currentGenerationTarget = generationTarget;
   }
 
-  public runBatch(ticksPerBatch: number = 100): { completed: boolean; currentGen: number; ticks: number } {
+  public runBatch(ticksPerBatch: number = 100): { completed: boolean; currentGen: number; ticks: number; recovered: boolean } {
     this.isRunning = true;
+    let recovered = false;
+
     for (let i = 0; i < ticksPerBatch; i++) {
       try {
         this.engine.update(1.0);
         this.completedTicks++;
       } catch (err) {
-        // Safe catch for unattended runs
+        // Automated crash detection and state recovery
+        recovered = true;
+        this.engine.resetSimulation();
+        this.engine.spawnMultipleBots(20);
         break;
       }
     }
@@ -26,7 +31,7 @@ export class AutonomousHarness {
     const completed = currentGen >= this.currentGenerationTarget;
     if (completed) this.isRunning = false;
 
-    return { completed, currentGen, ticks: this.completedTicks };
+    return { completed, currentGen, ticks: this.completedTicks, recovered };
   }
 
   public stop(): void {
