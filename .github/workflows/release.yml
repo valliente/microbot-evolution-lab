@@ -67,16 +67,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.225
-          name: "Microbot Evolution Lab v0.1.225"
+          tag_name: v0.1.226
+          name: "Microbot Evolution Lab v0.1.226"
           body: |
-            Microbot Evolution Lab v0.1.225
-            - Zero-Failure Boundary Guardrails & State Sanitizer
-            - NaN and Infinity Math & Physics Safety Wrappers
-            - Self-Healing Web Worker Auto-Restart & Snapshot Recovery
-            - Epigenetic Stress Memory & Trait Inheritance Decay
-            - 3D Allele Frequency Topology Mesh Visualizer
-            - Dynamic JSON Exporters & Float32Array Ring Buffers
+            Microbot Evolution Lab v0.1.226
+            - WASM SIMD Spatial Hashing & ArrayBuffer Transfer Pipeline
+            - Dynamic Phenotype Structural Morphing (Armor, Fins, Lure Shaders)
+            - Autonomous Sandbox Harness for 1,000-Generation Runs
+            - Phenotype Structural Inspector Modal
+            - WASM Memory & Spatial Hash Telemetry
           draft: false
           prerelease: false
           # Attach BOTH desktop EXE and Android APK binaries
