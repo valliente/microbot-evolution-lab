@@ -52,12 +52,16 @@ export const DisasterSandboxPreset: SimulationConfig = {
   batteryDrainMultiplier: 1.5, // Harsh environment
 };
 
-export const EpigeneticSwarmPreset: SimulationConfig = {
+export const WASMMorphingPreset: SimulationConfig = {
   ...BaseConfig,
-  startPopulation: 120,
-  maxPopulation: 500,
-  mutationRate: 0.2, 
-  energySpawnRate: 15,
+  startPopulation: 200,
+  maxPopulation: 1000,
+  mutationRate: 0.1,
+  energySpawnRate: 30,
+  maxEnergyParticles: 600,
+  hazardCount: 8,
+  batteryDrainMultiplier: 1.0
+};
   maxEnergyParticles: 300,
   hazardCount: 15, 
   batteryDrainMultiplier: 1.2,
