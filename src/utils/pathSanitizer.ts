@@ -53,5 +53,9 @@ export function resolveShaderUrl(shaderPath: string): string {
 }
 
 export function resolveWasmUrl(wasmPath: string): string {
-  return sanitizePath(wasmPath);
+  const clean = sanitizePath(wasmPath);
+  if (typeof window !== 'undefined' && window.location.href.includes('android_asset')) {
+    return clean.replace('file://', '');
+  }
+  return clean;
 }
