@@ -43,6 +43,13 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
             <option value="15">15 FPS (Battery Saver)</option>
           </select>
           <span style={{ fontSize: '0.62rem', color: '#00E676' }}>⚡ WORKER ON</span>
+          <button
+            onClick={() => alert('WASM SIMD Spatial Hashing Engine Active (64KB Shared Memory)')}
+            className="btn-holo btn-holo-cyan"
+            style={{ fontSize: '0.62rem', padding: '2px 6px', display: 'flex', alignItems: 'center', gap: 4 }}
+          >
+            ⚡ WASM GRID ON
+          </button>
         </div>
       </div>
 
