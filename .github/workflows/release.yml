@@ -78,7 +78,7 @@ jobs:
             - WASM Memory & Spatial Hash Telemetry
           draft: false
           prerelease: false
-          # Attach BOTH desktop EXE and Android APK binaries
+          # Attach BOTH desktop EXE and Android APK binaries for release v0.1.226
           files: |
             MicrobotEvolutionLab.exe
             MicrobotEvolutionLab.apk
