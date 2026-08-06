@@ -151,5 +151,5 @@ export interface PooledMeshVertex {
 export const structuralMeshVertexPool = new ObjectPool<PooledMeshVertex>(
   () => ({ x: 0, y: 0, z: 0, nx: 0, ny: 0, nz: 1 }),
   (v) => { v.x = 0; v.y = 0; v.z = 0; v.nx = 0; v.ny = 0; v.nz = 1; },
-  2000
+  5000
 );
