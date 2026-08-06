@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.226] - 2026-08-06
+### Added
+- **WASM SIMD Spatial Hashing**: AssemblyScript SIMD spatial grid partitioning (`spatial.wasm`) with zero-copy ArrayBuffer transfer pipeline between JS and WebAssembly.
+- **Dynamic Phenotype Structural Morphing**: Gene-to-geometry structural morphing maps generating custom armor plates, thrust fins, and bioluminescent lure visual shaders.
+- **Autonomous Sandbox Harness**: Automated harness runner for unattended 1,000-generation long runs with crash detection and state recovery.
+- **Phenotype Inspector Modal**: Interactive UI modal inspecting active bot armor, fins, and lure glow metrics.
+- **WASM Throughput & Memory Telemetry**: WASM Memory & Spatial Hash metrics gauge and Float32Array ring buffers.
+
 ## [v0.1.225] - 2026-08-05
 ### Added
 - **Zero-Failure Boundary Guardrails**: Comprehensive NaN/Infinity safety wrappers (`safeSqrt`, `safeAtan2`, `safeDiv`, coordinate clamping) across math and physics vector operations.
