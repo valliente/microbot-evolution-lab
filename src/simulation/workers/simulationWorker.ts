@@ -67,7 +67,10 @@ self.onmessage = (event: MessageEvent) => {
     for (let i = 0; i < coords.length; i += 2) {
       results[i / 2] = Math.hypot(coords[i], coords[i + 1]);
     }
-    self.postMessage({ type: 'PHYSICS_QUERY_RESULT', payload: results.buffer }, [results.buffer]);
+    (self as any).postMessage({ type: 'PHYSICS_QUERY_RESULT', payload: results.buffer }, [results.buffer]);
+  } else if (type === 'WASM_SPATIAL_STATE') {
+    const { spatialBuffer } = payload;
+    (self as any).postMessage({ type: 'WASM_SPATIAL_UPDATED', payload: spatialBuffer }, [spatialBuffer]);
   } else if (type === 'RESTORE_SNAPSHOT') {
     const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
