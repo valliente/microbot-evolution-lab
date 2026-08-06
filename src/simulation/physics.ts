@@ -37,6 +37,15 @@ export function keepInBounds(x: number, y: number, width: number, height: number
   };
 }
 
+export function teleportThroughPortal(x: number, y: number, portalX: number, portalY: number, targetWidth: number, targetHeight: number): { x: number; y: number } {
+  const relX = (x - portalX) / targetWidth;
+  const relY = (y - portalY) / targetHeight;
+  return {
+    x: clamp(targetWidth * 0.5 + relX * targetWidth * 0.2, 20, targetWidth - 20),
+    y: clamp(targetHeight * 0.5 + relY * targetHeight * 0.2, 20, targetHeight - 20)
+  };
+}
+
 export function sanitizeVector(v: number): number {
   return isNaN(v) || !isFinite(v) ? 0 : v;
 }
