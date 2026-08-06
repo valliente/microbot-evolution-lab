@@ -52,6 +52,17 @@ export class PhenotypeEngine {
       }
     }
 
+    // Draw Bioluminescent Lure Shader Effect
+    if (phenotype.bioluminescentLureGlow > 0) {
+      ctx.shadowColor = `hsl(${phenotype.lureHue}, 100%, 50%)`;
+      ctx.shadowBlur = 12 * phenotype.bioluminescentLureGlow;
+      ctx.fillStyle = `hsl(${phenotype.lureHue}, 100%, 70%)`;
+      ctx.beginPath();
+      ctx.arc(bot.radius + 6, 0, 3 * phenotype.bioluminescentLureGlow, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
     ctx.restore();
   }
 }
