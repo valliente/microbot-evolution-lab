@@ -24,6 +24,9 @@ export class SpatialAudioSynth {
       try { panner.disconnect(); } catch (e) {}
     });
     this.spatialPanners.clear();
+    if (this.masterGain && this.ctx) {
+      try { this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime); } catch (e) {}
+    }
     this.activeOscCount = 0;
   }
 
