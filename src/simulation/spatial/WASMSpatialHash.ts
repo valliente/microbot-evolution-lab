@@ -33,6 +33,27 @@ export class WASMSpatialHash {
     return this.memoryBuffer;
   }
 
+  public queryNearbyZeroAlloc(x: number, y: number, radius: number, outIndices: Int32Array): number {
+    let count = 0;
+    const rSq = radius * radius;
+    const totalEntities = this.memoryBuffer.length / 4;
+
+    for (let i = 0; i < totalEntities; i++) {
+      const offset = i * 4;
+      const ex = this.memoryBuffer[offset];
+      const ey = this.memoryBuffer[offset + 1];
+      const dx = ex - x;
+      const dy = ey - y;
+
+      if (dx * dx + dy * dy <= rSq) {
+        if (count < outIndices.length) {
+          outIndices[count++] = i;
+        }
+      }
+    }
+    return count;
+  }
+
   public isReady(): boolean {
     return this.isWASMReady;
   }
