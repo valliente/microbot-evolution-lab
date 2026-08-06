@@ -1,7 +1,7 @@
 {
   "name": "microbot-evolution-lab",
   "private": true,
-  "version": "0.1.225",
+  "version": "0.1.226",
   "type": "module",
   "scripts": {
     "asbuild": "asc src/wasm/physics.ts -b public/physics.wasm -t public/physics.wat --optimize && asc src/wasm/spatial.ts -b public/spatial.wasm -t public/spatial.wat --optimize",
