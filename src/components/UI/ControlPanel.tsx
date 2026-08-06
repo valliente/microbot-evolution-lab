@@ -160,7 +160,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
                     max="3.0"
                     step="0.1"
                     value={config.batteryDrainMultiplier}
-                    onChange={(e) => onUpdateConfig({ batteryDrainMultiplier: parseFloat(e.target.value) })}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      onUpdateConfig({ batteryDrainMultiplier: isNaN(val) ? 1.0 : Math.max(0.1, Math.min(5.0, val)) });
+                    }}
                     style={{ width: '100%', height: 4 }}
                   />
                 </div>
