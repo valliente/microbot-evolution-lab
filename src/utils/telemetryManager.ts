@@ -7,6 +7,7 @@ class TelemetryManager {
   private listeners: Set<TelemetryListener> = new Set();
   private lastStats: SimulationStats | null = null;
   private intervalId: number | null = null;
+  private organelleRingBuffer: Float32Array = new Float32Array(50);
 
   public subscribe(listener: TelemetryListener) {
     this.listeners.add(listener);
