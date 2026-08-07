@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.227] - 2026-08-07
+### Added
+- **Symbiotic Organelle Absorption & mDNA Inheritance**: Photosynthetic chloroplasts, motor mitochondria boosts, and mitochondrial DNA inheritance across offspring.
+- **Dynamic Micro-Biomes**: Viscous Swamps (physics drag & energy burn), Radiation Zones (2.5x elevated mutation), Thermal Vents (thermal recharge), and Crystal Shallows.
+- **3D Gene Regulatory Network Visualizer**: Interactive WebGL/Three.js 3D modal with orbit, pan, and zoom camera controls for transcription factor nodes and interaction arcs.
+- **Organelle Inspector Modal**: Interactive UI modal inspecting active bot chloroplasts, mitochondria, and mDNA sequence metrics.
+- **Organelle Diversity & Biome Telemetry**: Float32Array organelle ring buffers and dynamic JSON exporters for active Organelle and Biome profiles.
+
 ## [v0.1.226] - 2026-08-06
 ### Added
 - **WASM SIMD Spatial Hashing**: AssemblyScript SIMD spatial grid partitioning (`spatial.wasm`) with zero-copy ArrayBuffer transfer pipeline between JS and WebAssembly.
