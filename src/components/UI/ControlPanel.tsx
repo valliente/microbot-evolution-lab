@@ -211,7 +211,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
                     max="12.0"
                     step="0.5"
                     value={config.energySpawnRate}
-                    onChange={(e) => onUpdateConfig({ energySpawnRate: parseFloat(e.target.value) })}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      onUpdateConfig({ energySpawnRate: isNaN(val) ? 5.0 : Math.max(0.1, Math.min(20.0, val)) });
+                    }}
                     style={{ width: '100%', height: 4 }}
                   />
                 </div>
