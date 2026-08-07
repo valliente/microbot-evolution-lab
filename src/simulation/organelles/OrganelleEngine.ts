@@ -41,6 +41,15 @@ export class OrganelleEngine {
     };
   }
 
+  public static inheritOrganellesToOffspring(parent: Microbot, child: Microbot, mutationRate: number): void {
+    if (parent.organelles && parent.organelles.length > 0) {
+      child.organelles = parent.organelles.map(o => ({ ...o }));
+    }
+    if (parent.mitochondrialDNA) {
+      child.mitochondrialDNA = OrganelleEngine.transmitMitochondrialDNA(parent, mutationRate);
+    }
+  }
+
   public static processOrganelleEffects(bot: Microbot): { energyMod: number; speedMod: number } {
     let energyMod = 0;
     let speedMod = 1.0;
