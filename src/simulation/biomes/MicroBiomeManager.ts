@@ -101,6 +101,11 @@ export class MicroBiomeManager {
     };
   }
 
+  public calculateThermalVentEffects(energy: number, maxEnergy: number = 100): number {
+    const thermalRecharge = 0.35;
+    return Math.min(maxEnergy, energy + thermalRecharge);
+  }
+
   public getRegions(): MicroBiomeRegion[] {
     return this.regions;
   }
