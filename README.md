@@ -2,20 +2,20 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen.svg)](https://valliente.github.io/microbot-evolution-lab/)
-[![Release](https://img.shields.io/badge/Release-v0.1.225-cyan.svg)](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.225)
+[![Release](https://img.shields.io/badge/Release-v0.1.227-cyan.svg)](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.227)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 
 An interactive, high-performance **2D Autonomous Artificial Life & Genetic Evolution Simulation** built with React 18, TypeScript, HTML5 Canvas, and WebGL 3D overlays.
 
-**Microbot Evolution Lab v0.1.225** features Zero-Failure Math/Physics Guardrails, Web Worker Self-Healing Crash Recovery, Epigenetic Stress Memory, and 3D Allele Frequency Topology Mesh Visualization.
+**Microbot Evolution Lab v0.1.227** features Symbiotic Organelle Absorption, Mitochondrial DNA Inheritance, Dynamic Micro-Biomes, and 3D WebGL Gene Regulatory Network Visualizer.
 
 ---
 
 ## 🌐 Live Web Demo & Releases
 
 - **Play Online**: [https://valliente.github.io/microbot-evolution-lab/](https://valliente.github.io/microbot-evolution-lab/)
-- **Official Release (v0.1.225)**: [Download Standalone Executables & APKs](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.225)
+- **Official Release (v0.1.227)**: [Download Standalone Executables & APKs](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.227)
 
 ---
 
