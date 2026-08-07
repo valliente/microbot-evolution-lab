@@ -695,7 +695,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
                   ctx.shadowBlur = 4;
                 }
                 ctx.globalAlpha = alpha;
-                ctx.shadowBlur = 18 + (i / trailLen) * 12;
+                ctx.shadowBlur = bot.organelles && bot.organelles.length > 0 ? 22 + (i / trailLen) * 14 : 18 + (i / trailLen) * 12;
                 ctx.shadowColor = ctx.strokeStyle as string;
                 ctx.beginPath();
                 ctx.moveTo(bot.trail[i - 1].x, bot.trail[i - 1].y);
