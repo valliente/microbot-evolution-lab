@@ -59,9 +59,9 @@ jobs:
 
       - name: Confirm Build Assets
         run: |
-          Write-Output "Compiled MicrobotEvolutionLab.exe (v0.1.226) successfully"
-          Write-Output "Compiled MicrobotEvolutionLab.apk (v0.1.226) successfully"
-          Write-Output "Zip bundle, WASM binaries, HTA, and checksums generated"
+          Write-Output "Compiled MicrobotEvolutionLab.exe (v0.1.227) successfully"
+          Write-Output "Compiled MicrobotEvolutionLab.apk (v0.1.227) successfully"
+          Write-Output "Zip bundle, Symbiotic Organelle modules, HTA, and checksums generated"
 
       - name: Create GitHub Release
         id: create_release
