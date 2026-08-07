@@ -25,7 +25,10 @@ export class SpatialAudioSynth {
     });
     this.spatialPanners.clear();
     if (this.masterGain && this.ctx) {
-      try { this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime); } catch (e) {}
+      try {
+        this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.ctx.currentTime);
+        this.masterGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.05);
+      } catch (e) {}
     }
     this.activeOscCount = 0;
   }
