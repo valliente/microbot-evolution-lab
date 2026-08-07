@@ -153,3 +153,9 @@ export const structuralMeshVertexPool = new ObjectPool<PooledMeshVertex>(
   (v) => { v.x = 0; v.y = 0; v.z = 0; v.nx = 0; v.ny = 0; v.nz = 1; },
   5000
 );
+
+export const organelleParticlePool = new ObjectPool<{ x: number; y: number; type: string }>(
+  () => ({ x: 0, y: 0, type: 'CHLOROPLAST' }),
+  (p) => { p.x = 0; p.y = 0; p.type = 'CHLOROPLAST'; },
+  1000
+);
