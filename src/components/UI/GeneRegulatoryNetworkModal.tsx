@@ -63,10 +63,38 @@ export const GeneRegulatoryNetworkModal: React.FC<GeneRegulatoryNetworkModalProp
       scene.add(line);
     }
 
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const handleMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - previousMousePosition.x;
+      const deltaY = e.clientY - previousMousePosition.y;
+      scene.rotation.y += deltaX * 0.01;
+      scene.rotation.x += deltaY * 0.01;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+
+    const handleMouseUp = () => { isDragging = false; };
+    const handleWheel = (e: WheelEvent) => {
+      camera.position.z = Math.max(5, Math.min(40, camera.position.z + e.deltaY * 0.02));
+    };
+
+    const dom = renderer.domElement;
+    dom.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    dom.addEventListener('wheel', handleWheel);
+
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      scene.rotation.y += 0.01;
+      if (!isDragging) scene.rotation.y += 0.005;
       renderer.render(scene, camera);
     };
     animate();
