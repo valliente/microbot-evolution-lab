@@ -123,7 +123,7 @@ export interface OrganelleParticle {
 export const organelleParticlePool = new ObjectPool<OrganelleParticle>(
   () => ({ id: '', x: 0, y: 0, radius: 4, color: '#34d399' }),
   (p) => { p.id = ''; p.x = 0; p.y = 0; p.radius = 4; p.color = '#34d399'; },
-  100
+  1000
 );
 
 export interface PooledEpigeneticParticle {
@@ -154,8 +154,4 @@ export const structuralMeshVertexPool = new ObjectPool<PooledMeshVertex>(
   5000
 );
 
-export const organelleParticlePool = new ObjectPool<{ x: number; y: number; type: string }>(
-  () => ({ x: 0, y: 0, type: 'CHLOROPLAST' }),
-  (p) => { p.x = 0; p.y = 0; p.type = 'CHLOROPLAST'; },
-  1000
-);
+
