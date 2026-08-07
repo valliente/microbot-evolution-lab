@@ -78,7 +78,7 @@ jobs:
             - Organelle Diversity & Micro-Biome Telemetry
           draft: false
           prerelease: false
-          # Attach BOTH desktop EXE and Android APK binaries for release v0.1.226
+          # Attach BOTH desktop EXE and Android APK binaries for release v0.1.227
           files: |
             MicrobotEvolutionLab.exe
             MicrobotEvolutionLab.apk
