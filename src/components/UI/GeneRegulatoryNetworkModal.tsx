@@ -122,7 +122,7 @@ export const GeneRegulatoryNetworkModal: React.FC<GeneRegulatoryNetworkModalProp
       zIndex: 10000,
       display: 'flex',
       alignItems: 'center',
-      justify: 'center'
+      justifyContent: 'center'
     }}>
       <div style={{
         width: 540,

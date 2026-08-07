@@ -9,6 +9,10 @@ class TelemetryManager {
   private intervalId: number | null = null;
   private organelleRingBuffer: Float32Array = new Float32Array(50);
 
+  public getOrganelleRingBuffer(): Float32Array {
+    return this.organelleRingBuffer;
+  }
+
   public subscribe(listener: TelemetryListener) {
     this.listeners.add(listener);
     if (this.lastStats) {
