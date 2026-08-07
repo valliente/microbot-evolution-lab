@@ -53,6 +53,16 @@ export const GeneRegulatoryNetworkModal: React.FC<GeneRegulatoryNetworkModalProp
       nodes.push(mesh);
     }
 
+    // Render active gene interaction arcs
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.6 });
+    for (let i = 0; i < nodes.length; i++) {
+      const nextNode = nodes[(i + 1) % nodes.length];
+      const points = [nodes[i].position, nextNode.position];
+      const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+      const line = new THREE.Line(lineGeo, lineMat);
+      scene.add(line);
+    }
+
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
