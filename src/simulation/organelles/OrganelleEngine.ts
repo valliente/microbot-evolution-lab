@@ -51,7 +51,8 @@ export class OrganelleEngine {
 
     for (const organelle of bot.organelles) {
       if (organelle.type === 'CHLOROPLAST') {
-        energyMod += organelle.energyOutput * 0.05; // Photosynthetic energy generation
+        const lightIntensity = Math.max(0.2, 1.0 - (bot.y / 1000));
+        energyMod += organelle.energyOutput * 0.08 * lightIntensity; // Photosynthetic energy generation
       } else if (organelle.type === 'MITOCHONDRIA') {
         const mtBonus = bot.mitochondrialDNA ? bot.mitochondrialDNA.efficiencyBonus : 1.0;
         energyMod += organelle.energyOutput * 0.08 * mtBonus;
