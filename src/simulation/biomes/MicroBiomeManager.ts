@@ -92,6 +92,15 @@ export class MicroBiomeManager {
     };
   }
 
+  public calculateRadiationZoneEffects(baseMutationRate: number, energy: number): { mutationRate: number; energy: number } {
+    const elevatedMutationRate = baseMutationRate * 2.5;
+    const radEnergyDrain = 0.25;
+    return {
+      mutationRate: Math.min(0.8, elevatedMutationRate),
+      energy: Math.max(0, energy - radEnergyDrain)
+    };
+  }
+
   public getRegions(): MicroBiomeRegion[] {
     return this.regions;
   }
