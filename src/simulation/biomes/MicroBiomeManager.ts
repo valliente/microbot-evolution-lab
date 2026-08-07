@@ -82,6 +82,16 @@ export class MicroBiomeManager {
     );
   }
 
+  public calculateViscousSwampEffects(vx: number, vy: number, energy: number): { vx: number; vy: number; energy: number } {
+    const dragFactor = 0.65;
+    const energyBurn = 0.15;
+    return {
+      vx: vx * dragFactor,
+      vy: vy * dragFactor,
+      energy: Math.max(0, energy - energyBurn)
+    };
+  }
+
   public getRegions(): MicroBiomeRegion[] {
     return this.regions;
   }
