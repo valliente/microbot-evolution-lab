@@ -50,6 +50,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
           >
             ⚡ WASM GRID ON
           </button>
+          <span style={{ fontSize: '0.62rem', color: '#00E676', border: '1px solid rgba(0,230,118,0.4)', borderRadius: 6, padding: '2px 6px', background: '#080E14' }}>🌿 BIOMES ON</span>
         </div>
       </div>
 
