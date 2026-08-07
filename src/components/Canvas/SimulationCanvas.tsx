@@ -381,6 +381,17 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             }
           }
 
+          // Render Dedicated Micro-Biome Grid Layer Pass
+          const hw = canvas.width * 0.5;
+          const hh = canvas.height * 0.5;
+          ctx.save();
+          ctx.globalAlpha = 0.08;
+          ctx.fillStyle = '#16a34a'; ctx.fillRect(0, 0, hw, hh); // Viscous Swamp
+          ctx.fillStyle = '#dc2626'; ctx.fillRect(hw, 0, hw, hh); // Radiation Zone
+          ctx.fillStyle = '#ea580c'; ctx.fillRect(0, hh, hw, hh); // Thermal Vent
+          ctx.fillStyle = '#0284c7'; ctx.fillRect(hw, hh, hw, hh); // Crystal Shallows
+          ctx.restore();
+
           // Render Chemical Pheromone Grid
           if (engine.config.showPheromoneTrails && engine.chemicalGrid) {
              if (!chemLayerRef.current) {
