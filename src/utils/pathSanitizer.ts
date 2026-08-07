@@ -10,7 +10,7 @@ export function sanitizePath(relativePath: string): string {
   let cleanPath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
 
   // Android file & Capacitor asset protocol fix
-  if (window.location.href.includes('android_asset') || window.location.origin === 'https://localhost') {
+  if (window.location.href.includes('android_asset') || window.location.origin === 'https://localhost' || window.location.protocol === 'file:') {
     const basePath = window.location.href.split('index.html')[0];
     return basePath.endsWith('/') ? `${basePath}${cleanPath}` : `${basePath}/${cleanPath}`;
   }
