@@ -52,22 +52,15 @@ export const DisasterSandboxPreset: SimulationConfig = {
   batteryDrainMultiplier: 1.5, // Harsh environment
 };
 
-export const WASMMorphingPreset: SimulationConfig = {
+export const OrganelleBiomePreset: SimulationConfig = {
   ...BaseConfig,
-  startPopulation: 200,
-  maxPopulation: 1000,
-  mutationRate: 0.1,
-  energySpawnRate: 30,
-  maxEnergyParticles: 600,
-  hazardCount: 8,
-  batteryDrainMultiplier: 1.0
-};
-  maxEnergyParticles: 300,
-  hazardCount: 15, 
-  batteryDrainMultiplier: 1.2,
-  showPheromoneTrails: true,
-  autoDisastersEnabled: true,
-  disasterScheduleInterval: 1200
+  startPopulation: 150,
+  maxPopulation: 800,
+  mutationRate: 0.08,
+  energySpawnRate: 25,
+  maxEnergyParticles: 500,
+  hazardCount: 6,
+  batteryDrainMultiplier: 0.95
 };
 
 export const SyntheticChaosPreset: SimulationConfig = {
