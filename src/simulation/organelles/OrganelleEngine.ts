@@ -15,6 +15,9 @@ export class OrganelleEngine {
     if (!bot.organelles) {
       bot.organelles = [];
     }
+    if (bot.organelles.length < 5) {
+      bot.organelles.push({ ...organelle });
+    }
     if (organelle.mitochondrialDNA) {
       bot.mitochondrialDNA = { ...organelle.mitochondrialDNA };
     }
