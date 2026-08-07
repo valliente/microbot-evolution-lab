@@ -49,7 +49,8 @@ export function resolveWorkerUrl(workerPath: string): string {
 }
 
 export function resolveShaderUrl(shaderPath: string): string {
-  return sanitizePath(shaderPath);
+  const resolved = sanitizePath(shaderPath);
+  return resolved.startsWith('/') ? '.' + resolved : resolved;
 }
 
 export function resolveWasmUrl(wasmPath: string): string {
