@@ -2,7 +2,7 @@ import { expect, test, describe } from 'vitest';
 import { MicrobotEngine } from '../MicrobotEngine';
 
 describe('Engine Memory & 20-Reset RAM Stability', () => {
-  test('resetSimulation maintains RAM stability across 20 consecutive world resets with WASM grid reset', () => {
+  test('resetSimulation maintains RAM stability across 20 consecutive world resets with Organelle & Micro-Biome cleanup', () => {
     const engine = new MicrobotEngine();
     engine.width = 800;
     engine.height = 600;
