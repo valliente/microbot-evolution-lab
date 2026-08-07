@@ -67,15 +67,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.226
-          name: "Microbot Evolution Lab v0.1.226"
+          tag_name: v0.1.227
+          name: "Microbot Evolution Lab v0.1.227"
           body: |
-            Microbot Evolution Lab v0.1.226
-            - WASM SIMD Spatial Hashing & ArrayBuffer Transfer Pipeline
-            - Dynamic Phenotype Structural Morphing (Armor, Fins, Lure Shaders)
-            - Autonomous Sandbox Harness for 1,000-Generation Runs
-            - Phenotype Structural Inspector Modal
-            - WASM Memory & Spatial Hash Telemetry
+            Microbot Evolution Lab v0.1.227
+            - Symbiotic Organelle Absorption & Mitochondrial DNA Inheritance
+            - Dynamic Micro-Biomes (Viscous Swamps, Radiation Zones, Thermal Vents)
+            - 3D Gene Regulatory Network Visualizer with Camera Controls
+            - Symbiotic Organelle Inspector Modal
+            - Organelle Diversity & Micro-Biome Telemetry
           draft: false
           prerelease: false
           # Attach BOTH desktop EXE and Android APK binaries for release v0.1.226
