@@ -55,7 +55,8 @@ export class OrganelleEngine {
         energyMod += organelle.energyOutput * 0.08 * lightIntensity; // Photosynthetic energy generation
       } else if (organelle.type === 'MITOCHONDRIA') {
         const mtBonus = bot.mitochondrialDNA ? bot.mitochondrialDNA.efficiencyBonus : 1.0;
-        energyMod += organelle.energyOutput * 0.08 * mtBonus;
+        energyMod += organelle.energyOutput * 0.12 * mtBonus;
+        speedMod += 0.15 * mtBonus; // High-efficiency motor boost
       } else if (organelle.type === 'FLAGELLA_BOOSTER') {
         speedMod += 0.25; // Speed multiplier boost
       }
