@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { X, Network, RotateCcw } from 'lucide-react';
+import { X, Network } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface LineageConstellationModalProps {
