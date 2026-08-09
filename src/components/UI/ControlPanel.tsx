@@ -33,6 +33,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
       }}>
         <span style={{ color: '#00E5FF' }}>●</span> PARAMETERS & CONTROLS
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(244, 63, 94, 0.2)', border: '1px solid rgba(244, 63, 94, 0.4)', color: '#F43F5E', fontWeight: 800 }}>
+            🔥 CATACLYSM READY
+          </span>
           <select 
             value={config.targetFPS || 60} 
             onChange={(e) => onUpdateConfig({ targetFPS: parseInt(e.target.value, 10) })}
