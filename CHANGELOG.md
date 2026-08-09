@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.228] - 2026-08-09
+### Added
+- **Hebbian Synaptic Plasticity & Lifetime Learning**: Short-term memory trace buffers, Hebbian weight reinforcement on reward/pain events, and intra-generational learning rate decay.
+- **Planetary Cataclysms Engine**: Tectonic Inversion terrain heightmap deformations and Solar Storm force-field inversions with blackout events.
+- **3D Lineage Constellation Visualizer**: Interactive WebGL/Three.js 3D lineage tree displaying active species nodes and extinct branch connections with orbit/pan/zoom camera controls.
+- **Synaptic Inspector & Cataclysm Trigger Deck**: UI panels for inspecting bot plasticity metrics and triggering planetary cataclysms from top navigation.
+- **Telemetry & Exporters**: Learning rate ring buffers and dynamic JSON exporters for active Synaptic and Cataclysm profiles.
+
 ## [v0.1.227] - 2026-08-07
 ### Added
 - **Symbiotic Organelle Absorption & mDNA Inheritance**: Photosynthetic chloroplasts, motor mitochondria boosts, and mitochondrial DNA inheritance across offspring.
