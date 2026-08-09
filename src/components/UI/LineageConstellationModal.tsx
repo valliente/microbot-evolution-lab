@@ -57,6 +57,21 @@ export const LineageConstellationModal: React.FC<LineageConstellationModalProps>
     }
     scene.add(nodesGroup);
 
+    // Create extinct/active 3D branch lines between parent and child nodes
+    const linesMaterial = new THREE.LineBasicMaterial({ color: 0x00E5FF, transparent: true, opacity: 0.35 });
+    const linesGeometry = new THREE.BufferGeometry();
+    const positions: number[] = [];
+
+    const children = nodesGroup.children;
+    for (let i = 0; i < children.length - 1; i++) {
+      const p1 = children[i].position;
+      const p2 = children[i + 1].position;
+      positions.push(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
+    }
+    linesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    const lineSegments = new THREE.LineSegments(linesGeometry, linesMaterial);
+    nodesGroup.add(lineSegments);
+
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
