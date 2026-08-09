@@ -46,4 +46,22 @@ export class NeuralPlasticityManager {
       maxTraceLength: maxLength
     };
   }
+
+  public adjustWeightsOnEvent(
+    connections: SynapticConnection[],
+    inputs: number[],
+    outputs: number[],
+    rewardOrPainDelta: number
+  ): void {
+    for (const conn of connections) {
+      const inVal = inputs[conn.fromNode] || 0;
+      const outVal = outputs[conn.toNode] || 0;
+      // Hebbian rule: Δw = η * r * (input * output)
+      const hebbianDelta = conn.learningRate * rewardOrPainDelta * (inVal * outVal);
+      conn.weight += hebbianDelta;
+      // Strict clamping guards [-3.0, 3.0]
+      conn.weight = Math.max(-3.0, Math.min(3.0, conn.weight));
+      conn.eligibilityTrace = conn.eligibilityTrace * this.traceDecay + Math.abs(hebbianDelta);
+    }
+  }
 }
