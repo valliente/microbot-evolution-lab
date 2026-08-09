@@ -86,4 +86,13 @@ export class NeuralPlasticityManager {
     }
     return sum;
   }
+
+  public applyIntraGenerationalDecay(connections: SynapticConnection[], botAge: number, halfLifeAge: number = 500): void {
+    // Learning decay over bot lifetime: η(t) = η_0 / (1 + t / halfLife)
+    const currentRate = this.learningRate / (1 + botAge / halfLifeAge);
+    for (const conn of connections) {
+      conn.learningRate = Math.max(0.001, currentRate);
+      conn.eligibilityTrace *= this.traceDecay;
+    }
+  }
 }
