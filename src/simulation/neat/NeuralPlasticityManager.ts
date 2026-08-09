@@ -64,4 +64,26 @@ export class NeuralPlasticityManager {
       conn.eligibilityTrace = conn.eligibilityTrace * this.traceDecay + Math.abs(hebbianDelta);
     }
   }
+
+  public pushTraceStep(buffer: NeuralTraceBuffer, inputs: number[], outputs: number[], reward: number): void {
+    buffer.inputsHistory.push([...inputs]);
+    buffer.outputsHistory.push([...outputs]);
+    buffer.rewardsHistory.push(reward);
+    if (buffer.inputsHistory.length > buffer.maxTraceLength) {
+      buffer.inputsHistory.shift();
+      buffer.outputsHistory.shift();
+      buffer.rewardsHistory.shift();
+    }
+  }
+
+  public evaluateMemoryTrace(buffer: NeuralTraceBuffer): number {
+    if (buffer.rewardsHistory.length === 0) return 0;
+    let sum = 0;
+    let weight = 1.0;
+    for (let i = buffer.rewardsHistory.length - 1; i >= 0; i--) {
+      sum += buffer.rewardsHistory[i] * weight;
+      weight *= this.traceDecay;
+    }
+    return sum;
+  }
 }
