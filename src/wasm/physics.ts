@@ -20,10 +20,15 @@ export function resolveCollision(x1: f32, y1: f32, x2: f32, y2: f32, radiusSum: 
   let dx = x2 - x1;
   let dy = y2 - y1;
   let distSq = dx * dx + dy * dy;
-  if (distSq < radiusSum * radiusSum && distSq > 0) {
-     return Math.sqrt(distSq) as f32;
+  let rSq = radiusSum * radiusSum;
+  if (distSq < rSq && distSq > 0) {
+    return Math.sqrt(distSq) as f32;
   }
-  return -1.0 as f32;
+  return -1.0;
+}
+
+export function alignMemoryPointer(ptr: i32, align: i32): i32 {
+  return (ptr + (align - 1)) & ~(align - 1);
 }
 
 // Memory-shared bulk position resolver
