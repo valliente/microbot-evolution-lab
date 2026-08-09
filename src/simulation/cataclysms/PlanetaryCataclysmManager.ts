@@ -55,4 +55,20 @@ export class PlanetaryCataclysmManager {
     this.eventQueue = [];
     this.activeEvent = null;
   }
+
+  public computeTectonicDeformation(x: number, y: number, event: CataclysmEvent): { dx: number; dy: number; heightShift: number } {
+    if (event.type !== 'TECTONIC_INVERSION') return { dx: 0, dy: 0, heightShift: 0 };
+    const dist = Math.hypot(x - event.epicenterX, y - event.epicenterY);
+    if (dist > event.radius) return { dx: 0, dy: 0, heightShift: 0 };
+
+    const normDist = dist / event.radius;
+    const factor = Math.sin(normDist * Math.PI * 2) * event.intensity;
+    const angle = Math.atan2(y - event.epicenterY, x - event.epicenterX);
+
+    return {
+      dx: Math.cos(angle) * factor * 5.0,
+      dy: Math.sin(angle) * factor * 5.0,
+      heightShift: (1.0 - normDist) * 20.0 * event.intensity
+    };
+  }
 }
