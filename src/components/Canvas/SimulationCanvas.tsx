@@ -807,6 +807,22 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             }
           }
         }
+
+        // Cataclysm Particle Shaders Overlay Pass
+        if (engine.cataclysmManager && engine.cataclysmManager.getActiveEvent()) {
+          const activeCataclysm = engine.cataclysmManager.getActiveEvent();
+          if (activeCataclysm.type === 'TECTONIC_INVERSION') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 107, 0, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+          } else if (activeCataclysm.type === 'SOLAR_STORM') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(224, 64, 251, 0.08)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+          }
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
