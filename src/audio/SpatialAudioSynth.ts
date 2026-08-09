@@ -31,6 +31,9 @@ export class SpatialAudioSynth {
       } catch (e) {}
     }
     this.activeOscCount = 0;
+    if (this.ctx && this.ctx.state === 'suspended') {
+      try { this.ctx.resume(); } catch (e) {}
+    }
   }
 
   // Fix(audio): sanitize audio node cleanup on app exit to prevent ghost hums
