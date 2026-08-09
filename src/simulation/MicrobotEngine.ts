@@ -17,6 +17,7 @@ import { ccdSubstep, sanitizeVector, clamp } from './physics';
 import { Guardrails } from './physics/Guardrails';
 import { ThreadManager } from './workers/ThreadManager';
 import { ChemicalGrid } from './pheromones/ChemicalGrid';
+import { PlanetaryCataclysmManager } from './cataclysms/PlanetaryCataclysmManager';
 
 export class MicrobotEngine {
   public width: number;
@@ -37,6 +38,7 @@ export class MicrobotEngine {
   public portals: PortalNode[] = [];
   public biomes: SectorBiome[] = [];
   public spores: ParasiticSpore[] = [];
+  public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
   public selectedMicrobotId: string | null = null;
