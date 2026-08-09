@@ -71,4 +71,13 @@ export class PlanetaryCataclysmManager {
       heightShift: (1.0 - normDist) * 20.0 * event.intensity
     };
   }
+
+  public computeSolarStormEffects(event: CataclysmEvent): { energyBlackout: boolean; forceFieldInversion: boolean; visionReduction: number } {
+    if (event.type !== 'SOLAR_STORM') return { energyBlackout: false, forceFieldInversion: false, visionReduction: 1.0 };
+    return {
+      energyBlackout: Math.random() < 0.3 * event.intensity,
+      forceFieldInversion: event.remainingFrames % 20 < 10,
+      visionReduction: Math.max(0.2, 1.0 - 0.7 * event.intensity)
+    };
+  }
 }
