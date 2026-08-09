@@ -100,5 +100,3 @@ jobs:
           Remove-Item -Path "Microbot-Evolution-Lab-Windows.zip" -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "checksums.txt" -Force -ErrorAction SilentlyContinue
 
-
-
