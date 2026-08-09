@@ -11,6 +11,7 @@ if (!fs.existsSync(htmlPath)) {
 }
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve('package.json'), 'utf8'));
+// Target release version v0.1.228
 const version = packageJson.version;
 
 const htmlBase64 = fs.readFileSync(htmlPath).toString('base64');
