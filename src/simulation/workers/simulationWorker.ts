@@ -74,6 +74,9 @@ self.onmessage = (event: MessageEvent) => {
   } else if (type === 'BIOME_PHYSICS_QUERY') {
     const { biomeBuffer } = payload;
     (self as any).postMessage({ type: 'BIOME_QUERY_RESULT', payload: biomeBuffer }, [biomeBuffer]);
+  } else if (type === 'PLASTICITY_QUERY') {
+    const { weightsBuffer } = payload;
+    (self as any).postMessage({ type: 'PLASTICITY_QUERY_RESULT', payload: weightsBuffer }, [weightsBuffer]);
   } else if (type === 'RESTORE_SNAPSHOT') {
     const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
