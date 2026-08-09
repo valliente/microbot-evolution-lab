@@ -95,4 +95,10 @@ export class NeuralPlasticityManager {
       conn.eligibilityTrace *= this.traceDecay;
     }
   }
+
+  public packSynapticWeightsToFloat32(connections: SynapticConnection[], outBuffer: Float32Array): void {
+    for (let i = 0; i < connections.length && i < outBuffer.length; i++) {
+      outBuffer[i] = connections[i].weight;
+    }
+  }
 }
