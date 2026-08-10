@@ -41,4 +41,16 @@ export class ViralImmunityManager {
     const resistedProb = baseProb * (1.0 - Math.min(0.95, existingAntibody));
     return Math.max(0.001, resistedProb);
   }
+
+  public spliceViralGenes(hostGenome: any, viralSequence: string): any {
+    if (!hostGenome) return hostGenome;
+    const spliced = { ...hostGenome };
+    if (spliced.speedAllele) {
+      spliced.speedAllele = {
+        ...spliced.speedAllele,
+        baseValue: Math.max(0.5, Math.min(10.0, spliced.speedAllele.baseValue * (1.0 + (viralSequence.length % 5) * 0.05)))
+      };
+    }
+    return spliced;
+  }
 }
