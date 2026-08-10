@@ -140,3 +140,24 @@ export function exportSynapticAndCataclysmProfiles(engine: any): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportViralAndClimateProfiles(engine: any): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalBots: engine.microbots.length,
+    climateState: engine.atmosphereManager ? engine.atmosphereManager.currentCondition : null,
+    viralSporesCount: engine.viralManager ? engine.viralManager.viralSpores.length : 0,
+    infectedBotsCount: engine.microbots.filter((b: any) => b.immunity && b.immunity.isInfected).length
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `viral_climate_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
