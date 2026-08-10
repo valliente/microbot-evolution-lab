@@ -1215,7 +1215,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
               cursor: 'pointer'
             }}
           >
-            Recover Plasticity & Cataclysm Pipeline
+            Recover Immunity & Climate Pipeline
           </button>
         </div>
       )}
