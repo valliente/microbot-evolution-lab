@@ -59,4 +59,22 @@ export class AtmosphericCycleManager {
         break;
     }
   }
+
+  public calculateThermalBatteryDrain(baseDrain: number): number {
+    const temp = this.currentCondition.temperatureCelsius;
+    // Extreme heat (>40°C) or cold (<0°C) increases battery drain
+    let tempFactor = 1.0;
+    if (temp > 35) tempFactor += (temp - 35) * 0.02;
+    if (temp < 5) tempFactor += (5 - temp) * 0.025;
+    return baseDrain * tempFactor;
+  }
+
+  public calculateThermalMobilityDrag(baseSpeed: number): number {
+    const temp = this.currentCondition.temperatureCelsius;
+    // Cold viscous drag slows mobility
+    if (temp < 0) {
+      return baseSpeed * Math.max(0.4, 1.0 + temp * 0.015);
+    }
+    return baseSpeed;
+  }
 }
