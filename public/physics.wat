@@ -2,10 +2,12 @@
  (type $0 (func (param f32 f32 f32 f32) (result f32)))
  (type $1 (func (param f32 f32 f32 f32 f32) (result f32)))
  (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32 i32) (result i32)))
  (memory $0 0)
  (export "calcDistance" (func $src/wasm/physics/calcDistance))
  (export "calcDistSq" (func $src/wasm/physics/calcDistSq))
  (export "resolveCollision" (func $src/wasm/physics/resolveCollision))
+ (export "alignMemoryPointer" (func $src/wasm/physics/alignMemoryPointer))
  (export "bulkResolve" (func $src/wasm/physics/bulkResolve))
  (export "memory" (memory $0))
  (func $src/wasm/physics/resolveCollision (param $0 f32) (param $1 f32) (param $2 f32) (param $3 f32) (param $4 f32) (result f32)
@@ -74,5 +76,17 @@
   f32.add
  )
  (func $src/wasm/physics/bulkResolve (param $0 i32) (param $1 i32)
+ )
+ (func $src/wasm/physics/alignMemoryPointer (param $0 i32) (param $1 i32) (result i32)
+  local.get $1
+  i32.const 1
+  i32.sub
+  local.tee $1
+  local.get $0
+  i32.add
+  local.get $1
+  i32.const -1
+  i32.xor
+  i32.and
  )
 )
