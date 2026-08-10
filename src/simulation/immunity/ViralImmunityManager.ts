@@ -53,4 +53,19 @@ export class ViralImmunityManager {
     }
     return spliced;
   }
+
+  public updateImmunityProfile(immunity: ImmunityProfile): void {
+    if (!immunity) return;
+    for (const key of Object.keys(immunity.antibodyLevels)) {
+      immunity.antibodyLevels[key] = Math.max(0, immunity.antibodyLevels[key] - this.antibodyDecayRate);
+    }
+    if (immunity.isInfected && immunity.activeVirusId) {
+      const current = immunity.antibodyLevels[immunity.activeVirusId] || 0;
+      immunity.antibodyLevels[immunity.activeVirusId] = Math.min(1.0, current + 0.015);
+      if (immunity.antibodyLevels[immunity.activeVirusId] >= 0.85) {
+        immunity.isInfected = false;
+        immunity.viralLoad = 0;
+      }
+    }
+  }
 }
