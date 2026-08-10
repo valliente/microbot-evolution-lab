@@ -68,4 +68,12 @@ export class ViralImmunityManager {
       }
     }
   }
+
+  public packAntibodyLevelsToFloat32(immunity: ImmunityProfile, outBuffer: Float32Array): void {
+    if (!immunity || !immunity.antibodyLevels) return;
+    const values = Object.values(immunity.antibodyLevels);
+    for (let i = 0; i < values.length && i < outBuffer.length; i++) {
+      outBuffer[i] = values[i];
+    }
+  }
 }
