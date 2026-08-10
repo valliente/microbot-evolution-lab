@@ -52,15 +52,15 @@ export const DisasterSandboxPreset: SimulationConfig = {
   batteryDrainMultiplier: 1.5, // Harsh environment
 };
 
-export const PlasticityCataclysmPreset: SimulationConfig = {
+export const ImmunityClimatePreset: SimulationConfig = {
   ...BaseConfig,
-  startPopulation: 180,
-  maxPopulation: 900,
-  mutationRate: 0.12,
-  energySpawnRate: 20,
-  maxEnergyParticles: 450,
-  hazardCount: 12,
-  batteryDrainMultiplier: 1.1
+  startPopulation: 200,
+  maxPopulation: 1000,
+  mutationRate: 0.15,
+  energySpawnRate: 25,
+  maxEnergyParticles: 500,
+  hazardCount: 15,
+  batteryDrainMultiplier: 1.05
 };
 
 export const SyntheticChaosPreset: SimulationConfig = {
