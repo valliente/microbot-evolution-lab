@@ -50,7 +50,7 @@ export function resolveWorkerUrl(workerPath: string): string {
 
 export function resolveShaderUrl(shaderPath: string): string {
   const resolved = sanitizePath(shaderPath);
-  if (resolved.startsWith('./')) return resolved;
+  if (resolved.startsWith('./') || resolved.startsWith('blob:')) return resolved;
   return resolved.startsWith('/') ? '.' + resolved : './' + resolved;
 }
 
