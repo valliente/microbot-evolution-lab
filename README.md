@@ -8,7 +8,7 @@
 
 An interactive, high-performance **2D Autonomous Artificial Life & Genetic Evolution Simulation** built with React 18, TypeScript, HTML5 Canvas, and WebGL 3D overlays.
 
-**Microbot Evolution Lab- v0.1.228**: Hebbian Synaptic Plasticity, Lifetime Learning, Planetary Cataclysms Engine (Tectonic Inversion & Solar Storms), and 3D Lineage Constellation Visualizer.
+**Microbot Evolution Lab- v0.1.229**: Viral Parasitism, Host Splicing, Immunity Systems, Global Atmospheric Cycles, and 3D Trait Space Visualizer.
 
 ---
 
