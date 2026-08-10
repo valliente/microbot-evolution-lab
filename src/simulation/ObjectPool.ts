@@ -160,4 +160,10 @@ export const cataclysmParticlePool = new ObjectPool<{ x: number; y: number; vx: 
   2000
 );
 
+export const viralSporeParticlePool = new ObjectPool<{ x: number; y: number; radius: number; viralLoad: number }>(
+  () => ({ x: 0, y: 0, radius: 3.0, viralLoad: 1.0 }),
+  (sp) => { sp.x = 0; sp.y = 0; sp.radius = 3.0; sp.viralLoad = 1.0; },
+  3000
+);
+
 
