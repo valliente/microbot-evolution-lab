@@ -55,8 +55,8 @@ body {
     radial-gradient(circle at 50% 30%, rgba(15, 30, 45, 0.6) 0%, rgba(8, 14, 20, 0.95) 70%),
     radial-gradient(circle at 80% 80%, rgba(224, 64, 251, 0.05) 0%, transparent 50%),
     radial-gradient(circle at 20% 80%, rgba(0, 229, 255, 0.05) 0%, transparent 50%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   position: relative;
 }
 
