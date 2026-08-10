@@ -57,6 +57,10 @@ export const TraitSpace3DModal: React.FC<TraitSpace3DModalProps> = ({ isOpen, on
     }
     scene.add(group);
 
+    const gridHelper = new THREE.GridHelper(100, 10, 0x00E676, 0x1E293B);
+    gridHelper.position.y = -30;
+    scene.add(gridHelper);
+
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
