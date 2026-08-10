@@ -5,7 +5,7 @@ describe('Antibody Production & Immunity Decay', () => {
   it('builds antibodies during infection and clears virus upon threshold', () => {
     const manager = new ViralImmunityManager();
     const immunity: ImmunityProfile = {
-      antibodyLevels: { 'v1': 0.80 },
+      antibodyLevels: { 'v1': 0.84 },
       infectionHistory: [],
       isInfected: true,
       activeVirusId: 'v1',
