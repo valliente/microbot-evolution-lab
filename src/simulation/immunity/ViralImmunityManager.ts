@@ -34,4 +34,11 @@ export class ViralImmunityManager {
       }
     }
   }
+
+  public calculateInfectionProbability(spore: ViralSpore, immunity: ImmunityProfile): number {
+    const existingAntibody = immunity.antibodyLevels[spore.genomeSequence] || 0;
+    const baseProb = Math.min(1.0, this.baseInfectionRate * spore.viralLoad);
+    const resistedProb = baseProb * (1.0 - Math.min(0.95, existingAntibody));
+    return Math.max(0.001, resistedProb);
+  }
 }
