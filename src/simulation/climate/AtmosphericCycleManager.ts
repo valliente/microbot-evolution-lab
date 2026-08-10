@@ -77,4 +77,14 @@ export class AtmosphericCycleManager {
     }
     return baseSpeed;
   }
+
+  public calculateInsulationEfficiency(heatDissipationGene: number, cryoInsulationGene: number): number {
+    const temp = this.currentCondition.temperatureCelsius;
+    if (temp > 30) {
+      return Math.min(1.0, 0.5 + (heatDissipationGene || 0) * 0.5);
+    } else if (temp < 5) {
+      return Math.min(1.0, 0.5 + (cryoInsulationGene || 0) * 0.5);
+    }
+    return 1.0;
+  }
 }
