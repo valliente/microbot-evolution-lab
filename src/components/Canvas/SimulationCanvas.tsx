@@ -808,7 +808,7 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           }
         }
 
-        // Cataclysm Particle Shaders Overlay Pass
+        // Cataclysm & Atmospheric Weather Shaders Overlay Pass
         if (ctx && engine.cataclysmManager && engine.cataclysmManager.getActiveEvent()) {
           const activeCataclysm = engine.cataclysmManager.getActiveEvent();
           if (activeCataclysm && activeCataclysm.type === 'TECTONIC_INVERSION') {
@@ -819,6 +819,21 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           } else if (activeCataclysm && activeCataclysm.type === 'SOLAR_STORM') {
             ctx.save();
             ctx.fillStyle = 'rgba(224, 64, 251, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+          }
+        }
+
+        if (ctx && engine.atmosphereManager) {
+          const weather = engine.atmosphereManager.currentCondition.weather;
+          if (weather === 'HEATWAVE') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+          } else if (weather === 'GLACIAL_BLIZZARD') {
+            ctx.save();
+            ctx.fillStyle = 'rgba(147, 197, 253, 0.06)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.restore();
           }
