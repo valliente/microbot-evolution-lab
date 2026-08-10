@@ -88,6 +88,8 @@ export interface PortalNode {
   linkedId: string;
 }
 
+import { ImmunityProfile } from './immunity/ViralImmunityManager';
+
 export interface Microbot {
   id: string;
   x: number;
@@ -120,6 +122,7 @@ export interface Microbot {
   energyCollected: number;
   isPredator: boolean;
   isInfected?: boolean;
+  immunity?: ImmunityProfile;
   infectionTimer?: number;
   hasAntibodies?: boolean;
   trail: Vector2D[];

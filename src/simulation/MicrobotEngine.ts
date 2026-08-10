@@ -18,6 +18,8 @@ import { Guardrails } from './physics/Guardrails';
 import { ThreadManager } from './workers/ThreadManager';
 import { ChemicalGrid } from './pheromones/ChemicalGrid';
 import { PlanetaryCataclysmManager } from './cataclysms/PlanetaryCataclysmManager';
+import { ViralImmunityManager } from './immunity/ViralImmunityManager';
+import { AtmosphericCycleManager } from './climate/AtmosphericCycleManager';
 
 export class MicrobotEngine {
   public width: number;
@@ -38,6 +40,8 @@ export class MicrobotEngine {
   public portals: PortalNode[] = [];
   public biomes: SectorBiome[] = [];
   public spores: ParasiticSpore[] = [];
+  public viralManager: ViralImmunityManager = new ViralImmunityManager();
+  public atmosphereManager: AtmosphericCycleManager = new AtmosphericCycleManager();
   public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
