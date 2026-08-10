@@ -77,6 +77,9 @@ self.onmessage = (event: MessageEvent) => {
   } else if (type === 'PLASTICITY_QUERY') {
     const { weightsBuffer } = payload;
     (self as any).postMessage({ type: 'PLASTICITY_QUERY_RESULT', payload: weightsBuffer }, [weightsBuffer]);
+  } else if (type === 'VIRAL_QUERY') {
+    const { viralBuffer } = payload;
+    (self as any).postMessage({ type: 'VIRAL_QUERY_RESULT', payload: viralBuffer }, [viralBuffer]);
   } else if (type === 'RESTORE_SNAPSHOT') {
     const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
