@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.229] - 2026-08-10
+### Added
+- **Viral Parasitism & Immunity Systems**: Interspecies viral spore emissions, host chromosome splicing, antibody production formulas, and herd immunity decay.
+- **Atmospheric Cycles Engine**: Dynamic weather states (`TEMPERATE`, `HEATWAVE`, `GLACIAL_BLIZZARD`, `ACID_RAIN`, `HIGH_PRESSURE_GALE`) with temperature drag and insulation gene expressions.
+- **3D Phenotypic Trait Space Visualizer**: Interactive WebGL/Three.js 3D morphological trait space with orbit, pan, and zoom camera controls.
+- **Viral Immunity Inspector**: Modal panel for inspecting host infection status, viral loads, and active antibody strains.
+- **Telemetry & Exporters**: Infection rate ring buffers and dynamic JSON exporters for active Viral and Climate profiles.
+
 ## [v0.1.228] - 2026-08-09
 ### Added
 - **Hebbian Synaptic Plasticity & Lifetime Learning**: Short-term memory trace buffers, Hebbian weight reinforcement on reward/pain events, and intra-generational learning rate decay.
