@@ -64,4 +64,15 @@ export class OpticalSignatureManager {
 
     return { perceivedIntensity, perceivedHueDelta };
   }
+
+  public calculateCamouflageFactor(
+    botWavelengthNm: number,
+    biomeDominantWavelengthNm: number,
+    chromatophoreGene: number = 0.5
+  ): number {
+    const wavelengthDelta = Math.abs(botWavelengthNm - biomeDominantWavelengthNm);
+    const spectralMatch = Math.max(0, 1.0 - wavelengthDelta / 150.0);
+    const camouflageFactor = spectralMatch * Math.min(1.0, chromatophoreGene * 1.2);
+    return Math.max(0, Math.min(0.95, camouflageFactor));
+  }
 }
