@@ -1,5 +1,49 @@
 export type TissueRole = 'DERMAL_ARMOR' | 'MITOCHONDRIAL_CORE' | 'CILIA' | 'UNDIFFERENTIATED';
 
+export interface TissueRoleProperties {
+  role: TissueRole;
+  armorMultiplier: number;
+  propulsionMultiplier: number;
+  energyGenerationRate: number;
+  energyStorageBonus: number;
+  tensileStrength: number;
+}
+
+export const TISSUE_ROLE_SCHEMAS: Record<TissueRole, TissueRoleProperties> = {
+  DERMAL_ARMOR: {
+    role: 'DERMAL_ARMOR',
+    armorMultiplier: 3.5,
+    propulsionMultiplier: 0.7,
+    energyGenerationRate: 0.0,
+    energyStorageBonus: 50,
+    tensileStrength: 2.5
+  },
+  MITOCHONDRIAL_CORE: {
+    role: 'MITOCHONDRIAL_CORE',
+    armorMultiplier: 0.8,
+    propulsionMultiplier: 0.5,
+    energyGenerationRate: 0.4,
+    energyStorageBonus: 200,
+    tensileStrength: 1.0
+  },
+  CILIA: {
+    role: 'CILIA',
+    armorMultiplier: 0.9,
+    propulsionMultiplier: 2.8,
+    energyGenerationRate: -0.05,
+    energyStorageBonus: 20,
+    tensileStrength: 1.2
+  },
+  UNDIFFERENTIATED: {
+    role: 'UNDIFFERENTIATED',
+    armorMultiplier: 1.0,
+    propulsionMultiplier: 1.0,
+    energyGenerationRate: 0.0,
+    energyStorageBonus: 0,
+    tensileStrength: 1.0
+  }
+};
+
 export interface CellTissueBinding {
   cellId: string;
   partnerId: string;
