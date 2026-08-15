@@ -81,4 +81,39 @@ export class MulticellularManager {
     }
     return undefined;
   }
+
+  public createBinding(cellAId: string, cellBId: string, restDistance: number = 18.0): CellTissueBinding {
+    const existing = this.bindings.find(b => 
+      (b.cellId === cellAId && b.partnerId === cellBId) ||
+      (b.cellId === cellBId && b.partnerId === cellAId)
+    );
+    if (existing) return existing;
+
+    const newBinding: CellTissueBinding = {
+      cellId: cellAId,
+      partnerId: cellBId,
+      bondStrength: 0.9,
+      restDistance,
+      currentDistance: restDistance,
+      integrity: 1.0
+    };
+    this.bindings.push(newBinding);
+    return newBinding;
+  }
+
+  public calculateBondForce(binding: CellTissueBinding, currentDist: number): { forceMagnitude: number; isBroken: boolean } {
+    binding.currentDistance = currentDist;
+    const delta = currentDist - binding.restDistance;
+    const springConstant = 0.05 * binding.bondStrength;
+    const forceMagnitude = -springConstant * delta;
+
+    if (Math.abs(delta) > binding.restDistance * 2.5) {
+      binding.integrity = Math.max(0, binding.integrity - 0.1);
+    } else {
+      binding.integrity = Math.min(1.0, binding.integrity + 0.01);
+    }
+
+    const isBroken = binding.integrity <= 0;
+    return { forceMagnitude, isBroken };
+  }
 }
