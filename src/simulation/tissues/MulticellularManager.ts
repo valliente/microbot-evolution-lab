@@ -140,4 +140,32 @@ export class MulticellularManager {
 
     return { vx: avgVx, vy: avgVy, totalThrust };
   }
+
+  public redistributeClusterEnergy(
+    cluster: MulticellularCluster,
+    memberBatteries: number[],
+    maxMemberBatteries: number[]
+  ): number[] {
+    let totalEnergy = cluster.sharedEnergyPool;
+    for (let i = 0; i < memberBatteries.length; i++) {
+      totalEnergy += memberBatteries[i];
+    }
+
+    const memberCount = memberBatteries.length;
+    if (memberCount === 0) return [];
+
+    const targetEnergyPerMember = totalEnergy / (memberCount + 0.5);
+    const updatedBatteries: number[] = [];
+
+    let distributed = 0;
+    for (let i = 0; i < memberCount; i++) {
+      const maxCap = maxMemberBatteries[i] || 100;
+      const allocated = Math.min(maxCap, targetEnergyPerMember);
+      updatedBatteries.push(allocated);
+      distributed += allocated;
+    }
+
+    cluster.sharedEnergyPool = Math.max(0, Math.min(cluster.maxSharedEnergy || 500, totalEnergy - distributed));
+    return updatedBatteries;
+  }
 }
