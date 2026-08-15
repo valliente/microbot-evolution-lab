@@ -28,4 +28,24 @@ export class OpticalSignatureManager {
       camouflageFactor: 0.0
     };
   }
+
+  public updateSignature(sig: OpticalSignature, dt: number): void {
+    sig.emissionTimer += dt;
+    const angularFreq = sig.frequencyHz * 2 * Math.PI;
+    
+    if (sig.pattern === 'PULSE') {
+      sig.intensity = Math.max(0, Math.sin(sig.emissionTimer * angularFreq + sig.phase));
+    } else if (sig.pattern === 'STROBE') {
+      sig.intensity = Math.sin(sig.emissionTimer * angularFreq) > 0.6 ? 1.0 : 0.0;
+    } else if (sig.pattern === 'CONTINUOUS') {
+      sig.intensity = 0.85;
+    } else if (sig.pattern === 'PHASE_SHIFT') {
+      sig.phase += 0.02;
+      sig.intensity = (Math.sin(sig.emissionTimer * angularFreq + sig.phase) + 1.0) * 0.5;
+    }
+  }
+
+  public modulateWavelength(sig: OpticalSignature, deltaNm: number): void {
+    sig.wavelengthNm = Math.max(380, Math.min(750, sig.wavelengthNm + deltaNm));
+  }
 }
