@@ -75,4 +75,16 @@ export class OpticalSignatureManager {
     const camouflageFactor = spectralMatch * Math.min(1.0, chromatophoreGene * 1.2);
     return Math.max(0, Math.min(0.95, camouflageFactor));
   }
+
+  public calculateFluidDiffraction(
+    wavelengthNm: number,
+    fluidViscosity: number = 1.0
+  ): { diffractionAngle: number; spectralScattering: number } {
+    const lambdaMeters = wavelengthNm * 1e-9;
+    const aperture = 5e-6; // 5 microns cellular slit
+    const diffractionAngle = Math.asin(Math.min(1.0, lambdaMeters / aperture));
+    const spectralScattering = (1.0 / Math.pow(wavelengthNm / 500, 4)) * 0.05 * fluidViscosity;
+
+    return { diffractionAngle, spectralScattering };
+  }
 }
