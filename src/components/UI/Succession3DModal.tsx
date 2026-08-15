@@ -57,15 +57,48 @@ export const Succession3DModal: React.FC<Succession3DModalProps> = ({ isOpen, on
     scene.add(gridHelper);
 
     let animationFrameId: number;
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const domElement = renderer.domElement;
+    const handleMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - previousMousePosition.x;
+      const deltaY = e.clientY - previousMousePosition.y;
+      group.rotation.y += deltaX * 0.008;
+      group.rotation.x += deltaY * 0.008;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+    const handleMouseUp = () => { isDragging = false; };
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      camera.position.z = Math.max(30, Math.min(300, camera.position.z + e.deltaY * 0.1));
+    };
+
+    domElement.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    domElement.addEventListener('wheel', handleWheel, { passive: false });
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      group.rotation.y += 0.003;
+      if (!isDragging) {
+        group.rotation.y += 0.003;
+      }
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      domElement.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      domElement.removeEventListener('wheel', handleWheel);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
