@@ -166,4 +166,10 @@ export const viralSporeParticlePool = new ObjectPool<{ x: number; y: number; rad
   3000
 );
 
+export const opticalFlashParticlePool = new ObjectPool<{ x: number; y: number; wavelengthNm: number; intensity: number; life: number }>(
+  () => ({ x: 0, y: 0, wavelengthNm: 520, intensity: 1.0, life: 1.0 }),
+  (op) => { op.x = 0; op.y = 0; op.wavelengthNm = 520; op.intensity = 1.0; op.life = 1.0; },
+  3500
+);
+
 
