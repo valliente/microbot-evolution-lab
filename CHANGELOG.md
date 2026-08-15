@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.230] - 2026-08-15
+### Added
+- **Multicellular Tissue Differentiation**: Dermal Armor kinetic deflection, Mitochondrial Core centralized energy sharing, synchronized Cilia propulsion, and dynamic cell-binding structural integrity math.
+- **Bioluminescent Optical Signatures & Camouflage**: Dynamic flash frequency, wavelength modulation (380-750nm), optical signal sensory reception, and biome-matching camouflage mechanics.
+- **3D Ecological Succession Graph Visualizer**: Interactive 3D WebGL (Three.js) graph component with orbit, pan, and zoom camera controls.
+- **Multicellular Structure Inspector**: Real-time modal for inspecting tissue differentiation roles, active bonds, and cluster integrity.
+- **Telemetry & Exporters**: Multicellular biomass ring buffers and dynamic JSON exporter for active Tissue and Optical profiles.
+
 ## [v0.1.229] - 2026-08-10
 ### Added
 - **Viral Parasitism & Immunity Systems**: Interspecies viral spore emissions, host chromosome splicing, antibody production formulas, and herd immunity decay.
