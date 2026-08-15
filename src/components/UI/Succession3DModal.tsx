@@ -52,6 +52,10 @@ export const Succession3DModal: React.FC<Succession3DModalProps> = ({ isOpen, on
     }
     scene.add(group);
 
+    const gridHelper = new THREE.GridHelper(120, 12, 0x00E5FF, 0x1E293B);
+    gridHelper.position.y = -35;
+    scene.add(gridHelper);
+
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
