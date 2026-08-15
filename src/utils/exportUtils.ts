@@ -161,3 +161,24 @@ export function exportViralAndClimateProfiles(engine: any): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportTissueAndOpticalProfiles(engine: any): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalBots: engine.microbots.length,
+    multicellularClustersCount: engine.multicellularManager ? engine.multicellularManager.clusters.size : 0,
+    activeBindingsCount: engine.multicellularManager ? engine.multicellularManager.bindings.length : 0,
+    multicellularBotsCount: engine.microbots.filter((b: any) => b.clusterId).length
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tissue_optical_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
