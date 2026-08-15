@@ -87,7 +87,7 @@ jobs:
             Microbot-Evolution-Lab-Windows.zip
             dist-standalone/index.html
             checksums.txt
-          # Strict release attachment validation for v0.1.229 binaries
+          # Strict release attachment validation for v0.1.230 binaries
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
