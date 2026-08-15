@@ -48,4 +48,20 @@ export class OpticalSignatureManager {
   public modulateWavelength(sig: OpticalSignature, deltaNm: number): void {
     sig.wavelengthNm = Math.max(380, Math.min(750, sig.wavelengthNm + deltaNm));
   }
+
+  public calculatePerceivedOpticalSignal(
+    sourceSig: OpticalSignature,
+    distance: number,
+    receiverOpticSensitivity: number = 1.0
+  ): { perceivedIntensity: number; perceivedHueDelta: number } {
+    if (distance <= 0) return { perceivedIntensity: sourceSig.intensity, perceivedHueDelta: 0 };
+    
+    // Inverse square law with fluid optical absorption
+    const fluidAbsorption = Math.exp(-0.005 * distance);
+    const attenuation = Math.max(0, (1.0 / (1.0 + 0.002 * distance * distance))) * fluidAbsorption;
+    const perceivedIntensity = sourceSig.intensity * attenuation * receiverOpticSensitivity * (1.0 - sourceSig.camouflageFactor);
+    const perceivedHueDelta = (sourceSig.wavelengthNm - 520) / 230;
+
+    return { perceivedIntensity, perceivedHueDelta };
+  }
 }
