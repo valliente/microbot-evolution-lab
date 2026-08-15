@@ -116,4 +116,28 @@ export class MulticellularManager {
     const isBroken = binding.integrity <= 0;
     return { forceMagnitude, isBroken };
   }
+
+  public calculateSynchronizedCiliaThrust(
+    memberHeadings: number[],
+    memberWeights: number[]
+  ): { vx: number; vy: number; totalThrust: number } {
+    let sumVx = 0;
+    let sumVy = 0;
+    let totalWeight = 0;
+
+    for (let i = 0; i < memberHeadings.length; i++) {
+      const heading = memberHeadings[i];
+      const weight = memberWeights[i] || 1.0;
+      sumVx += Math.cos(heading) * weight;
+      sumVy += Math.sin(heading) * weight;
+      totalWeight += weight;
+    }
+
+    if (totalWeight <= 0) return { vx: 0, vy: 0, totalThrust: 0 };
+    const avgVx = sumVx / totalWeight;
+    const avgVy = sumVy / totalWeight;
+    const totalThrust = Math.sqrt(avgVx * avgVx + avgVy * avgVy) * 1.5;
+
+    return { vx: avgVx, vy: avgVy, totalThrust };
+  }
 }
