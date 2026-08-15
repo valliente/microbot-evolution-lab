@@ -838,6 +838,24 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
             ctx.restore();
           }
         }
+
+        // Multicellular Tissue Bond Geometry Pass
+        if (ctx && engine.multicellularManager && engine.multicellularManager.bindings.length > 0) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          for (const binding of engine.multicellularManager.bindings) {
+            const botA = engine.microbots.find((b: any) => b.id === binding.cellId);
+            const botB = engine.microbots.find((b: any) => b.id === binding.partnerId);
+            if (botA && botB && binding.integrity > 0) {
+              ctx.moveTo(botA.x, botA.y);
+              ctx.lineTo(botB.x, botB.y);
+            }
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
