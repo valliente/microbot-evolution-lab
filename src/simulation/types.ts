@@ -89,6 +89,8 @@ export interface PortalNode {
 }
 
 import { ImmunityProfile } from './immunity/ViralImmunityManager';
+import { TissueRole, CellTissueBinding } from './tissues/MulticellularManager';
+import { OpticalSignature } from './optical/OpticalSignatureManager';
 
 export interface Microbot {
   id: string;
@@ -141,6 +143,9 @@ export interface Microbot {
   panicGene?: number;
   panicTimer?: number;
   clusterId?: string;
+  tissueRole?: TissueRole;
+  tissueBonds?: CellTissueBinding[];
+  opticalSignature?: OpticalSignature;
   boundTo?: string[];
   clusterOffset?: { x: number; y: number };
   nasBrain?: import('./genetics/NASBrainManager').NASBrainGenome;

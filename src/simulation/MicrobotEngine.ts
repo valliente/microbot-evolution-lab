@@ -20,6 +20,8 @@ import { ChemicalGrid } from './pheromones/ChemicalGrid';
 import { PlanetaryCataclysmManager } from './cataclysms/PlanetaryCataclysmManager';
 import { ViralImmunityManager } from './immunity/ViralImmunityManager';
 import { AtmosphericCycleManager } from './climate/AtmosphericCycleManager';
+import { MulticellularManager } from './tissues/MulticellularManager';
+import { OpticalSignatureManager } from './optical/OpticalSignatureManager';
 
 export class MicrobotEngine {
   public width: number;
@@ -42,6 +44,8 @@ export class MicrobotEngine {
   public spores: ParasiticSpore[] = [];
   public viralManager: ViralImmunityManager = new ViralImmunityManager();
   public atmosphereManager: AtmosphericCycleManager = new AtmosphericCycleManager();
+  public multicellularManager: MulticellularManager = new MulticellularManager();
+  public opticalManager: OpticalSignatureManager = new OpticalSignatureManager();
   public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];

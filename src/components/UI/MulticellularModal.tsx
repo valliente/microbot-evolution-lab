@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Network, Shield, Zap, Wind } from 'lucide-react';
+import { X, Network, Shield, Zap } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface MulticellularModalProps {
