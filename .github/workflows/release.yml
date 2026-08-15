@@ -94,7 +94,7 @@ jobs:
 
       - name: Cleanup Build Artifacts
         run: |
-          # Purge temporary build artifacts from GitHub Actions runner workspace for v0.1.229
+          # Purge temporary build artifacts from GitHub Actions runner workspace for v0.1.230
           Remove-Item -Path "MicrobotEvolutionLab.exe" -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "MicrobotEvolutionLab.apk" -Force -ErrorAction SilentlyContinue
           Remove-Item -Path "Microbot-Evolution-Lab-Windows.zip" -Force -ErrorAction SilentlyContinue
