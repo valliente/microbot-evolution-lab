@@ -168,4 +168,20 @@ export class MulticellularManager {
     cluster.sharedEnergyPool = Math.max(0, Math.min(cluster.maxSharedEnergy || 500, totalEnergy - distributed));
     return updatedBatteries;
   }
+
+  public calculateDeflectedDamage(
+    incomingDamage: number,
+    dermalArmorLayers: number,
+    membraneHardness: number
+  ): { mitigatedDamage: number; absorbedByArmor: number; deflectedPercentage: number } {
+    if (incomingDamage <= 0) return { mitigatedDamage: 0, absorbedByArmor: 0, deflectedPercentage: 1.0 };
+
+    const effectiveArmor = Math.min(10.0, dermalArmorLayers * (1.0 + membraneHardness));
+    const mitigationFactor = effectiveArmor / (effectiveArmor + 4.0);
+    const absorbedByArmor = incomingDamage * mitigationFactor;
+    const mitigatedDamage = incomingDamage - absorbedByArmor;
+    const deflectedPercentage = mitigationFactor;
+
+    return { mitigatedDamage, absorbedByArmor, deflectedPercentage };
+  }
 }
