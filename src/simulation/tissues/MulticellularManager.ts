@@ -184,4 +184,16 @@ export class MulticellularManager {
 
     return { mitigatedDamage, absorbedByArmor, deflectedPercentage };
   }
+
+  public packBondVectorsToFloat32(outBuffer: Float32Array): void {
+    let offset = 0;
+    for (let i = 0; i < this.bindings.length && offset + 4 <= outBuffer.length; i++) {
+      const b = this.bindings[i];
+      outBuffer[offset] = b.bondStrength;
+      outBuffer[offset + 1] = b.restDistance;
+      outBuffer[offset + 2] = b.currentDistance;
+      outBuffer[offset + 3] = b.integrity;
+      offset += 4;
+    }
+  }
 }
