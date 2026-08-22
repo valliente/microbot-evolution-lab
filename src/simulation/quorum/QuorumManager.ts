@@ -89,4 +89,12 @@ export class QuorumManager {
     }
     return 'SOLITARY';
   }
+
+  public packPulseDensitiesToFloat32(targetBuffer?: Float32Array): Float32Array {
+    const buffer = targetBuffer && targetBuffer.length >= this.pulseDensityGrid.length
+      ? targetBuffer
+      : new Float32Array(this.pulseDensityGrid.length);
+    buffer.set(this.pulseDensityGrid);
+    return buffer;
+  }
 }
