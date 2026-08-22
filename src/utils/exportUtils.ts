@@ -182,3 +182,23 @@ export function exportTissueAndOpticalProfiles(engine: any): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportQuorumAndHydroProfiles(engine: any): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalBots: engine.microbots.length,
+    activePulsesCount: engine.quorumManager ? engine.quorumManager.pulses.length : 0,
+    fluidGridSize: engine.fluidField ? `${engine.fluidField.cols}x${engine.fluidField.rows}` : '0x0'
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `quorum_hydro_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
