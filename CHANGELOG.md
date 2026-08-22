@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.231] - 2026-08-22
+### Added
+- **Bio-Electrical Quorum Sensing**: Electrical pulse aggregation buffers across spatial partitions, density threshold metrics, and collective behavior state triggers (`SWARMING`, `DEFENSIVE_WALL`, `SPORULATION`).
+- **Hydrodynamic Fluid Vector Fields**: Navier-Stokes-approximated velocity field advection and diffusion math, fluid drag on entity movement, and chemical trail/spore dispersion along current trajectories.
+- **3D Niche Differentiation Visualizer**: Interactive WebGL (Three.js) multi-dimensional ecological niche cluster space with orbit, pan, and zoom camera controls.
+- **Quorum Sensing Density Inspector**: Real-time modal for monitoring quorum density indices and synchronized agent states.
+- **Telemetry & Exporters**: Real-time `quorumActivityRingBuffer` (`Float32Array`) and dynamic JSON exporter for Quorum and Hydro profiles.
+
 ## [v0.1.230] - 2026-08-15
 ### Added
 - **Multicellular Tissue Differentiation**: Dermal Armor kinetic deflection, Mitochondrial Core centralized energy sharing, synchronized Cilia propulsion, and dynamic cell-binding structural integrity math.
