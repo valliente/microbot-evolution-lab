@@ -52,15 +52,15 @@ export const DisasterSandboxPreset: SimulationConfig = {
   batteryDrainMultiplier: 1.5, // Harsh environment
 };
 
-export const MulticellularOpticalPreset: SimulationConfig = {
+export const QuorumHydroPreset: SimulationConfig = {
   ...BaseConfig,
-  startPopulation: 220,
-  maxPopulation: 1100,
-  mutationRate: 0.16,
-  energySpawnRate: 28,
-  maxEnergyParticles: 550,
-  hazardCount: 16,
-  batteryDrainMultiplier: 1.02
+  startPopulation: 250,
+  maxPopulation: 1200,
+  mutationRate: 0.17,
+  energySpawnRate: 30,
+  maxEnergyParticles: 600,
+  hazardCount: 18,
+  batteryDrainMultiplier: 1.01
 };
 
 export const SyntheticChaosPreset: SimulationConfig = {
