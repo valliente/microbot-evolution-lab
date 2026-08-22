@@ -42,6 +42,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
           <span style={{ fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(0, 229, 255, 0.2)', border: '1px solid rgba(0, 229, 255, 0.4)', color: '#00E5FF', fontWeight: 800 }}>
             ✨ MULTICELLULAR & OPTICAL
           </span>
+          <span style={{ fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(250, 204, 21, 0.2)', border: '1px solid rgba(250, 204, 21, 0.4)', color: '#FACC15', fontWeight: 800 }}>
+            🌊 QUORUM & HYDRO
+          </span>
           <select 
             value={config.targetFPS || 60} 
             onChange={(e) => onUpdateConfig({ targetFPS: parseInt(e.target.value, 10) })}
