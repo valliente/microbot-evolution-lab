@@ -8,7 +8,7 @@
 
 An interactive, high-performance **2D Autonomous Artificial Life & Genetic Evolution Simulation** built with React 18, TypeScript, HTML5 Canvas, and WebGL 3D overlays.
 
-**Microbot Evolution Lab- v0.1.230**: Multicellular Tissue Differentiation, Dermal Armor, Cilia Propulsion, Bioluminescent Optical Signatures & Camouflage, and 3D Succession Graph.
+**Microbot Evolution Lab- v0.1.231**: Bio-Electrical Quorum Sensing, Hydrodynamic Fluid Vector Fields, and 3D Niche Differentiation Visualizer.
 
 ---
 
