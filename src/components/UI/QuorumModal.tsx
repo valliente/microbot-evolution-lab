@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Activity, Radio, ShieldAlert } from 'lucide-react';
+import { X, Activity, Radio } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface QuorumModalProps {
@@ -12,7 +12,7 @@ export const QuorumModal: React.FC<QuorumModalProps> = ({ isOpen, onClose, micro
   if (!isOpen) return null;
 
   const totalBots = microbots.length;
-  const swarmingBots = microbots.filter(b => b.behaviorState === 'SEEKING_ENERGY' || b.behaviorState === 'HUNTING').length;
+  const swarmingBots = microbots.filter(b => b.behaviorState === 'HUNTING_PREY' || b.behaviorState === 'WANDERING').length;
   const quorumIndex = totalBots > 0 ? (swarmingBots / totalBots).toFixed(2) : '0.00';
 
   return (

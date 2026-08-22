@@ -22,6 +22,8 @@ import { ViralImmunityManager } from './immunity/ViralImmunityManager';
 import { AtmosphericCycleManager } from './climate/AtmosphericCycleManager';
 import { MulticellularManager } from './tissues/MulticellularManager';
 import { OpticalSignatureManager } from './optical/OpticalSignatureManager';
+import { QuorumManager } from './quorum/QuorumManager';
+import { FluidVectorField } from './hydro/FluidVectorField';
 
 export class MicrobotEngine {
   public width: number;
@@ -46,6 +48,8 @@ export class MicrobotEngine {
   public atmosphereManager: AtmosphericCycleManager = new AtmosphericCycleManager();
   public multicellularManager: MulticellularManager = new MulticellularManager();
   public opticalManager: OpticalSignatureManager = new OpticalSignatureManager();
+  public quorumManager: QuorumManager = new QuorumManager();
+  public fluidField: FluidVectorField = new FluidVectorField();
   public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];

@@ -53,7 +53,7 @@ export class FluidVectorField {
     }
   }
 
-  public advectAndDiffuse(dt: number, viscosityDecay: number = 0.985): void {
+  public advectAndDiffuse(_dt: number, viscosityDecay: number = 0.985): void {
     const totalCells = this.cols * this.rows;
     for (let i = 0; i < totalCells; i++) {
       this.velocityX[i] *= viscosityDecay;
