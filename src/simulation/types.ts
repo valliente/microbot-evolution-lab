@@ -301,6 +301,7 @@ export interface SimulationStats {
   learningEfficiencyRingBuffer?: Float32Array;
   viralInfectionRateRingBuffer?: Float32Array;
   multicellularBiomassRingBuffer?: Float32Array;
+  quorumActivityRingBuffer?: Float32Array;
   biomePopulation: Record<string, number>;
   historyTimeline: {
     time: number;
