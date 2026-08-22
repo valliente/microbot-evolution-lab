@@ -38,4 +38,18 @@ export class QuorumManager {
     this.pulses.push(pulse);
     return pulse;
   }
+
+  public calculateLocalDensity(x: number, y: number, sampleRadius: number = 100.0): number {
+    let totalVoltage = 0;
+    for (const pulse of this.pulses) {
+      const dx = pulse.x - x;
+      const dy = pulse.y - y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist <= sampleRadius + pulse.radius) {
+        const falloff = Math.max(0, 1.0 - dist / (sampleRadius + pulse.radius));
+        totalVoltage += pulse.voltageMv * falloff;
+      }
+    }
+    return totalVoltage / 200.0; // Normalized density index
+  }
 }
