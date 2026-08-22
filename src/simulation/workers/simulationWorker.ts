@@ -83,6 +83,9 @@ self.onmessage = (event: MessageEvent) => {
   } else if (type === 'MULTICELLULAR_QUERY') {
     const { tissueBuffer } = payload;
     (self as any).postMessage({ type: 'MULTICELLULAR_QUERY_RESULT', payload: tissueBuffer }, [tissueBuffer]);
+  } else if (type === 'FLUID_QUERY') {
+    const { fluidBuffer } = payload;
+    (self as any).postMessage({ type: 'FLUID_QUERY_RESULT', payload: fluidBuffer }, [fluidBuffer]);
   } else if (type === 'RESTORE_SNAPSHOT') {
     const { snapshot: _snapshot } = payload;
     self.postMessage({ type: 'SNAPSHOT_RESTORED', payload: { success: true, timestamp: Date.now() } });
