@@ -18,11 +18,27 @@ export class QuorumManager {
   public gridHeight: number;
   public quorumThreshold: number = 0.65;
   public refractoryPeriod: number = 60; // frames
+  public refractoryTimers: Map<string, number> = new Map();
 
   constructor(worldWidth: number = 2000, worldHeight: number = 2000) {
     this.gridWidth = Math.ceil(worldWidth / this.gridResolution);
     this.gridHeight = Math.ceil(worldHeight / this.gridResolution);
     this.pulseDensityGrid = new Float32Array(this.gridWidth * this.gridHeight);
+  }
+
+  public canEmit(emitterId: string): boolean {
+    const timer = this.refractoryTimers.get(emitterId) || 0;
+    return timer <= 0;
+  }
+
+  public updateRefractoryTimers(dt: number = 1.0): void {
+    for (const [id, time] of this.refractoryTimers.entries()) {
+      if (time - dt <= 0) {
+        this.refractoryTimers.delete(id);
+      } else {
+        this.refractoryTimers.set(id, time - dt);
+      }
+    }
   }
 
   public emitPulse(emitterId: string, x: number, y: number, voltageMv: number = 50.0): ElectricalPulse {
