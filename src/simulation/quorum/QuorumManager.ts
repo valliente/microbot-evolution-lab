@@ -72,4 +72,21 @@ export class QuorumManager {
       }
     }
   }
+
+  public evaluateCollectiveBehavior(
+    density: number,
+    environmentalThreat: number = 0.0,
+    starvationRate: number = 0.0
+  ): QuorumState {
+    if (density >= 1.2 && starvationRate > 0.6) {
+      return 'SPORULATION';
+    }
+    if (density >= 0.9 && environmentalThreat > 0.4) {
+      return 'DEFENSIVE_WALL';
+    }
+    if (density >= this.quorumThreshold) {
+      return 'SWARMING';
+    }
+    return 'SOLITARY';
+  }
 }
