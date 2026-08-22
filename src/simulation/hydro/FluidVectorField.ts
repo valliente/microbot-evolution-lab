@@ -64,4 +64,21 @@ export class FluidVectorField {
       if (!isFinite(this.velocityY[i])) this.velocityY[i] = 0;
     }
   }
+
+  public calculateFluidInfluence(
+    entityX: number,
+    entityY: number,
+    entityVx: number,
+    entityVy: number,
+    dragCoefficient: number = 0.05
+  ): { forceX: number; forceY: number } {
+    const fluidVel = this.getVelocity(entityX, entityY);
+    const relVx = fluidVel.vx - entityVx;
+    const relVy = fluidVel.vy - entityVy;
+
+    const forceX = relVx * dragCoefficient;
+    const forceY = relVy * dragCoefficient;
+
+    return { forceX, forceY };
+  }
 }
