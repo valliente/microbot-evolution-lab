@@ -57,15 +57,48 @@ export const Niche3DModal: React.FC<Niche3DModalProps> = ({ isOpen, onClose, mic
     scene.add(gridHelper);
 
     let animationFrameId: number;
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    const dom = renderer.domElement;
+    const onMouseDown = (e: MouseEvent) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - previousMousePosition.x;
+      const deltaY = e.clientY - previousMousePosition.y;
+      group.rotation.y += deltaX * 0.005;
+      group.rotation.x += deltaY * 0.005;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    };
+    const onMouseUp = () => { isDragging = false; };
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      camera.position.z = Math.max(30, Math.min(250, camera.position.z + e.deltaY * 0.08));
+    };
+
+    dom.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+    dom.addEventListener('wheel', onWheel, { passive: false });
+
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
-      group.rotation.y += 0.003;
+      if (!isDragging) {
+        group.rotation.y += 0.002;
+      }
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      dom.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      dom.removeEventListener('wheel', onWheel);
       if (mountRef.current && renderer.domElement) {
         mountRef.current.removeChild(renderer.domElement);
       }
