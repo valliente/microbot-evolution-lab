@@ -52,4 +52,24 @@ export class QuorumManager {
     }
     return totalVoltage / 200.0; // Normalized density index
   }
+
+  public updatePulseGrid(dt: number): void {
+    this.pulseDensityGrid.fill(0);
+
+    for (let i = this.pulses.length - 1; i >= 0; i--) {
+      const p = this.pulses[i];
+      p.durationLeft -= dt;
+      if (p.durationLeft <= 0) {
+        this.pulses.splice(i, 1);
+        continue;
+      }
+
+      const cellX = Math.floor(p.x / this.gridResolution);
+      const cellY = Math.floor(p.y / this.gridResolution);
+      if (cellX >= 0 && cellX < this.gridWidth && cellY >= 0 && cellY < this.gridHeight) {
+        const index = cellY * this.gridWidth + cellX;
+        this.pulseDensityGrid[index] += p.voltageMv * (p.durationLeft / 30.0);
+      }
+    }
+  }
 }
