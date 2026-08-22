@@ -52,6 +52,10 @@ export const Niche3DModal: React.FC<Niche3DModalProps> = ({ isOpen, onClose, mic
     }
     scene.add(group);
 
+    const gridHelper = new THREE.GridHelper(120, 12, 0x38BDF8, 0x1E293B);
+    gridHelper.position.y = -35;
+    scene.add(gridHelper);
+
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
