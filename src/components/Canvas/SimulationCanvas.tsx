@@ -856,6 +856,27 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           ctx.stroke();
           ctx.restore();
         }
+
+        // Dedicated Hydrodynamic Fluid Velocity Streamlines Pass
+        if (ctx && engine.fluidField) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(56, 189, 248, 0.12)';
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          const step = engine.fluidField.cellSize * 2;
+          for (let y = step / 2; y < engine.height; y += step) {
+            for (let x = step / 2; x < engine.width; x += step) {
+              const vel = engine.fluidField.getVelocity(x, y);
+              const speed = Math.hypot(vel.vx, vel.vy);
+              if (speed > 0.05) {
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + vel.vx * 15, y + vel.vy * 15);
+              }
+            }
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
