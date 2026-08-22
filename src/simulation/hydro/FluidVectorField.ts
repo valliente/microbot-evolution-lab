@@ -52,4 +52,16 @@ export class FluidVectorField {
       }
     }
   }
+
+  public advectAndDiffuse(dt: number, viscosityDecay: number = 0.985): void {
+    const totalCells = this.cols * this.rows;
+    for (let i = 0; i < totalCells; i++) {
+      this.velocityX[i] *= viscosityDecay;
+      this.velocityY[i] *= viscosityDecay;
+
+      // Prevent NaN/Infinity runaway values
+      if (!isFinite(this.velocityX[i])) this.velocityX[i] = 0;
+      if (!isFinite(this.velocityY[i])) this.velocityY[i] = 0;
+    }
+  }
 }
