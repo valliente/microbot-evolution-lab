@@ -95,4 +95,30 @@ export class FluidVectorField {
       if (p.vy !== undefined) p.vy += vel.vy * currentWeight * 0.1;
     }
   }
+
+  public createVortex(centerX: number, centerY: number, strength: number = 8.0, radius: number = 80): void {
+    const col = Math.floor(centerX / this.cellSize);
+    const row = Math.floor(centerY / this.cellSize);
+    const cellRadius = Math.ceil(radius / this.cellSize);
+
+    for (let r = Math.max(0, row - cellRadius); r <= Math.min(this.rows - 1, row + cellRadius); r++) {
+      for (let c = Math.max(0, col - cellRadius); c <= Math.min(this.cols - 1, col + cellRadius); c++) {
+        const index = r * this.cols + c;
+        const cellCenterX = (c + 0.5) * this.cellSize;
+        const cellCenterY = (r + 0.5) * this.cellSize;
+        const dx = cellCenterX - centerX;
+        const dy = cellCenterY - centerY;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist > 0 && dist < radius) {
+          const falloff = (1.0 - dist / radius);
+          // Tangential vortex forces
+          const tangX = -dy / dist;
+          const tangY = dx / dist;
+          this.velocityX[index] += tangX * strength * falloff * 0.2;
+          this.velocityY[index] += tangY * strength * falloff * 0.2;
+        }
+      }
+    }
+  }
 }
