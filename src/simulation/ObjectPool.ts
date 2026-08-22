@@ -172,4 +172,10 @@ export const opticalFlashParticlePool = new ObjectPool<{ x: number; y: number; w
   3500
 );
 
+export const fluidCurrentParticlePool = new ObjectPool<{ x: number; y: number; vx: number; vy: number; life: number }>(
+  () => ({ x: 0, y: 0, vx: 0, vy: 0, life: 1.0 }),
+  (fp) => { fp.x = 0; fp.y = 0; fp.vx = 0; fp.vy = 0; fp.life = 1.0; },
+  4000
+);
+
 
