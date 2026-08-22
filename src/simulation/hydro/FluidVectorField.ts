@@ -81,4 +81,18 @@ export class FluidVectorField {
 
     return { forceX, forceY };
   }
+
+  public disperseParticles<T extends { x: number; y: number; vx?: number; vy?: number }>(
+    particles: T[],
+    currentWeight: number = 0.2
+  ): void {
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const vel = this.getVelocity(p.x, p.y);
+      p.x += vel.vx * currentWeight;
+      p.y += vel.vy * currentWeight;
+      if (p.vx !== undefined) p.vx += vel.vx * currentWeight * 0.1;
+      if (p.vy !== undefined) p.vy += vel.vy * currentWeight * 0.1;
+    }
+  }
 }
