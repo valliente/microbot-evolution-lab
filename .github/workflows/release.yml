@@ -67,15 +67,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.230
-          name: "Microbot Evolution Lab v0.1.230"
+          tag_name: v0.1.231
+          name: "Microbot Evolution Lab v0.1.231"
           body: |
-            Microbot Evolution Lab v0.1.230
-            - Multicellular Tissue Differentiation (Dermal Armor, Mitochondrial Core, Cilia)
-            - Bioluminescent Optical Signatures & Biome-Matching Camouflage
-            - 3D Ecological Succession Graph Visualizer with Orbit & Pan Controls
-            - Multicellular Organism Structure Inspector
-            - Real-Time Multicellular Biomass Telemetry & Profile Exporters
+            Microbot Evolution Lab v0.1.231
+            - Bio-Electrical Quorum Sensing & Pulse Aggregation
+            - Hydrodynamic Fluid Vector Fields (Navier-Stokes Advection & Drag)
+            - 3D Niche Differentiation Visualizer with Orbit & Pan Controls
+            - Quorum Sensing Density Inspector
+            - Real-Time Quorum Activity Telemetry & Profile Exporters
           draft: false
           prerelease: false
           # Attach BOTH desktop EXE and Android APK binaries for release v0.1.230
