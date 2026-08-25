@@ -90,4 +90,13 @@ export class EndosymbiosisManager {
       this.organelles.set(hostId, inherited);
     }
   }
+
+  public boostCristaeDensity(hostId: string, organelleId: string, delta: number = 0.2): void {
+    const orgs = this.getHostOrganelles(hostId);
+    const target = orgs.find(o => o.id === organelleId);
+    if (target) {
+      target.cristaeSurfaceArea = Math.min(3.5, target.cristaeSurfaceArea + delta);
+      target.energyOutput *= (1.0 + delta * 0.15);
+    }
+  }
 }
