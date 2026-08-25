@@ -39,4 +39,36 @@ export class MorphogenGrid {
       b: this.inhibitor[idx] || 0
     };
   }
+
+  public updateTuringStep(dt: number = 1.0): void {
+    const nextA = new Float32Array(this.activator.length);
+    const nextB = new Float32Array(this.inhibitor.length);
+
+    for (let r = 0; r < this.rows; r++) {
+      for (let c = 0; c < this.cols; c++) {
+        const idx = r * this.cols + c;
+        const a = this.activator[idx];
+        const b = this.inhibitor[idx];
+
+        // 5-point discrete Laplacian stencil
+        const top = r > 0 ? (r - 1) * this.cols + c : idx;
+        const btm = r < this.rows - 1 ? (r + 1) * this.cols + c : idx;
+        const lft = c > 0 ? r * this.cols + (c - 1) : idx;
+        const rgt = c < this.cols - 1 ? r * this.cols + (c + 1) : idx;
+
+        const lapA = (this.activator[top] + this.activator[btm] + this.activator[lft] + this.activator[rgt]) * 0.25 - a;
+        const lapB = (this.inhibitor[top] + this.inhibitor[btm] + this.inhibitor[lft] + this.inhibitor[rgt]) * 0.25 - b;
+
+        const abb = a * b * b;
+        const deltaA = (this.da * lapA - abb + this.feed * (1.0 - a)) * dt;
+        const deltaB = (this.db * lapB + abb - (this.kill + this.feed) * b) * dt;
+
+        nextA[idx] = Math.max(0, Math.min(1.0, a + deltaA));
+        nextB[idx] = Math.max(0, Math.min(1.0, b + deltaB));
+      }
+    }
+
+    this.activator.set(nextA);
+    this.inhibitor.set(nextB);
+  }
 }
