@@ -54,4 +54,19 @@ export class EndosymbiosisManager {
 
     return { success: false };
   }
+
+  public calculateOrganelleMetabolicYield(hostId: string): { totalEnergy: number; atpMultiplier: number } {
+    const organelles = this.getHostOrganelles(hostId);
+    let totalEnergy = 0;
+    let atpMultiplier = 1.0;
+
+    for (const organelle of organelles) {
+      // Cristae folding multiplies energetic yield
+      const yieldBoost = organelle.energyOutput * Math.max(1.0, organelle.cristaeSurfaceArea);
+      totalEnergy += yieldBoost;
+      atpMultiplier *= (1.0 + (organelle.atpBoost - 1.0) * 0.5);
+    }
+
+    return { totalEnergy, atpMultiplier };
+  }
 }
