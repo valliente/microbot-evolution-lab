@@ -52,7 +52,7 @@ jobs:
 
       - name: Generate Checksums
         run: |
-          # Generate SHA-256 checksums for release asset verification (v0.1.231)
+          # Generate SHA-256 checksums for release asset verification (v0.1.232)
           Get-FileHash -Path MicrobotEvolutionLab.exe -Algorithm SHA256 > checksums.txt
           Get-FileHash -Path MicrobotEvolutionLab.apk -Algorithm SHA256 >> checksums.txt
           Get-FileHash -Path Microbot-Evolution-Lab-Windows.zip -Algorithm SHA256 >> checksums.txt
