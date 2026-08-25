@@ -80,4 +80,21 @@ export class MorphogenGrid {
     if (ratio > 1.2) return 'MESODERM';
     return 'ENDODERM';
   }
+
+  public calculateSymmetryOffset(x: number, y: number, baseRadius: number = 8.0): { offsetX: number; offsetY: number } {
+    const col = Math.floor(x / this.cellSize);
+    const row = Math.floor(y / this.cellSize);
+    const top = Math.max(0, row - 1) * this.cols + col;
+    const btm = Math.min(this.rows - 1, row + 1) * this.cols + col;
+    const lft = row * this.cols + Math.max(0, col - 1);
+    const rgt = row * this.cols + Math.min(this.cols - 1, col + 1);
+
+    const gradX = (this.activator[rgt] - this.activator[lft]) * 0.5;
+    const gradY = (this.activator[btm] - this.activator[top]) * 0.5;
+
+    return {
+      offsetX: gradX * baseRadius,
+      offsetY: gradY * baseRadius
+    };
+  }
 }
