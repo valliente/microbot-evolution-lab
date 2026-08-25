@@ -178,4 +178,10 @@ export const fluidCurrentParticlePool = new ObjectPool<{ x: number; y: number; v
   4000
 );
 
+export const organelleParticlePool = new ObjectPool<{ x: number; y: number; atpOutput: number; color: string; life: number }>(
+  () => ({ x: 0, y: 0, atpOutput: 1.0, color: '#C084FC', life: 1.0 }),
+  (org) => { org.x = 0; org.y = 0; org.atpOutput = 1.0; org.color = '#C084FC'; org.life = 1.0; },
+  3000
+);
+
 
