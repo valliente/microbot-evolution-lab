@@ -50,9 +50,10 @@ export const Waddington3DModal: React.FC<Waddington3DModalProps> = ({ isOpen, on
     planeGeo.computeVertexNormals();
 
     const planeMat = new THREE.MeshPhongMaterial({
-      color: 0x6b21a8,
+      color: 0x8b5cf6,
+      emissive: 0x2e1065,
       wireframe: true,
-      shininess: 40
+      shininess: 60
     });
     const landscapeMesh = new THREE.Mesh(planeGeo, planeMat);
     landscapeMesh.rotation.x = -Math.PI / 2.5;
