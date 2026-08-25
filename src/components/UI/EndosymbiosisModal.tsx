@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Dna, Sparkles, Activity } from 'lucide-react';
+import { X, Dna, Sparkles } from 'lucide-react';
 import { Microbot } from '../../simulation/types';
 
 interface EndosymbiosisModalProps {

@@ -24,6 +24,8 @@ import { MulticellularManager } from './tissues/MulticellularManager';
 import { OpticalSignatureManager } from './optical/OpticalSignatureManager';
 import { QuorumManager } from './quorum/QuorumManager';
 import { FluidVectorField } from './hydro/FluidVectorField';
+import { EndosymbiosisManager } from './endosymbiosis/EndosymbiosisManager';
+import { MorphogenGrid } from './morphogenesis/MorphogenGrid';
 
 export class MicrobotEngine {
   public width: number;
@@ -50,6 +52,8 @@ export class MicrobotEngine {
   public opticalManager: OpticalSignatureManager = new OpticalSignatureManager();
   public quorumManager: QuorumManager = new QuorumManager();
   public fluidField: FluidVectorField = new FluidVectorField();
+  public endosymbiosisManager: EndosymbiosisManager = new EndosymbiosisManager();
+  public morphogenGrid: MorphogenGrid = new MorphogenGrid();
   public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
