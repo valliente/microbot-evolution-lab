@@ -877,6 +877,24 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           ctx.stroke();
           ctx.restore();
         }
+
+        // Dedicated Morphogenetic Reaction-Diffusion Field Pass
+        if (ctx && engine.morphogenGrid) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(168, 85, 247, 0.04)';
+          const step = engine.morphogenGrid.cellSize * 4;
+          for (let y = 0; y < engine.height; y += step) {
+            for (let x = 0; x < engine.width; x += step) {
+              const { b } = engine.morphogenGrid.getConcentration(x, y);
+              if (b > 0.15) {
+                ctx.beginPath();
+                ctx.arc(x, y, step * 0.4 * b, 0, Math.PI * 2);
+                ctx.fill();
+              }
+            }
+          }
+          ctx.restore();
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
