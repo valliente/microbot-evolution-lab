@@ -71,4 +71,13 @@ export class MorphogenGrid {
     this.activator.set(nextA);
     this.inhibitor.set(nextB);
   }
+
+  public getDifferentiationFate(x: number, y: number): 'ECTODERM' | 'MESODERM' | 'ENDODERM' {
+    const { a, b } = this.getConcentration(x, y);
+    const ratio = b > 0 ? a / (b + 0.001) : a * 10;
+
+    if (ratio > 2.5) return 'ECTODERM';
+    if (ratio > 1.2) return 'MESODERM';
+    return 'ENDODERM';
+  }
 }
