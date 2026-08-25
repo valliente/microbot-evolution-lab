@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.232] - 2026-08-25
+### Added
+- **Eukaryotic Endosymbiosis & Organelles**: Engulfment mechanics, symbiont survival probability, independent organellar DNA replication and mutation loops, and specialized mitochondrial cristae folding ATP boosts.
+- **Morphogenetic Turing Gradients**: Spatial reaction-diffusion activator-inhibitor concentration math, cellular differentiation triggers (`ECTODERM`, `MESODERM`, `ENDODERM`), and body plan symmetry constraints.
+- **3D Epigenetic Waddington Landscape Visualizer**: Interactive WebGL (Three.js) topographical surface mesh rendering developmental valleys with orbit, pan, and zoom camera controls.
+- **Endosymbiotic Organelle Inspector**: Real-time modal for inspecting absorbed symbiont lineages, mtDNA replication, and host ATP contributions.
+- **Telemetry & Exporters**: Real-time `endosymbiosisRingBuffer` (`Float32Array`) and dynamic JSON exporter for Endosymbiosis and Morphogen profiles.
+
 ## [v0.1.231] - 2026-08-22
 ### Added
 - **Bio-Electrical Quorum Sensing**: Electrical pulse aggregation buffers across spatial partitions, density threshold metrics, and collective behavior state triggers (`SWARMING`, `DEFENSIVE_WALL`, `SPORULATION`).
