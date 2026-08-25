@@ -1,0 +1,42 @@
+export class MorphogenGrid {
+  public cols: number;
+  public rows: number;
+  public cellSize: number;
+  public activator: Float32Array; // Morphogen A
+  public inhibitor: Float32Array; // Morphogen B
+  public da: number = 1.0; // Activator diffusion rate
+  public db: number = 0.5; // Inhibitor diffusion rate
+  public feed: number = 0.055;
+  public kill: number = 0.062;
+
+  constructor(width: number = 2000, height: number = 2000, cellSize: number = 32) {
+    this.cellSize = cellSize;
+    this.cols = Math.ceil(width / cellSize);
+    this.rows = Math.ceil(height / cellSize);
+    const size = this.cols * this.rows;
+    this.activator = new Float32Array(size).fill(1.0);
+    this.inhibitor = new Float32Array(size).fill(0.0);
+
+    // Initial perturbation spot in center
+    const midX = Math.floor(this.cols / 2);
+    const midY = Math.floor(this.rows / 2);
+    for (let dy = -2; dy <= 2; dy++) {
+      for (let dx = -2; dx <= 2; dx++) {
+        const idx = (midY + dy) * this.cols + (midX + dx);
+        if (idx >= 0 && idx < size) {
+          this.inhibitor[idx] = 0.8;
+        }
+      }
+    }
+  }
+
+  public getConcentration(x: number, y: number): { a: number; b: number } {
+    const col = Math.max(0, Math.min(this.cols - 1, Math.floor(x / this.cellSize)));
+    const row = Math.max(0, Math.min(this.rows - 1, Math.floor(y / this.cellSize)));
+    const idx = row * this.cols + col;
+    return {
+      a: this.activator[idx] || 0,
+      b: this.inhibitor[idx] || 0
+    };
+  }
+}
