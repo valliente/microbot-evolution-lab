@@ -105,4 +105,11 @@ export class MorphogenGrid {
     buffer.set(this.activator);
     return buffer;
   }
+
+  public setDiffusionAndDecayRates(da?: number, db?: number, feed?: number, kill?: number): void {
+    if (da !== undefined) this.da = Math.max(0.1, Math.min(2.0, da));
+    if (db !== undefined) this.db = Math.max(0.05, Math.min(1.0, db));
+    if (feed !== undefined) this.feed = Math.max(0.01, Math.min(0.1, feed));
+    if (kill !== undefined) this.kill = Math.max(0.01, Math.min(0.1, kill));
+  }
 }
