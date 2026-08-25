@@ -69,4 +69,25 @@ export class EndosymbiosisManager {
 
     return { totalEnergy, atpMultiplier };
   }
+
+  public replicateAndMutateOrganelles(hostId: string, parentHostId?: string): void {
+    if (parentHostId) {
+      const parentOrganelles = this.getHostOrganelles(parentHostId);
+      const inherited: EndosymbioticOrganelle[] = parentOrganelles.map(org => {
+        // Independent mtDNA mutation during replication
+        let mutatedDna = org.organellarDna;
+        if (Math.random() < org.mutationRate) {
+          mutatedDna += `-${Math.random().toString(36).substr(2, 2)}`;
+        }
+        return {
+          ...org,
+          id: `organelle-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          hostId,
+          organellarDna: mutatedDna,
+          cristaeSurfaceArea: Math.max(0.5, org.cristaeSurfaceArea + (Math.random() - 0.5) * 0.1)
+        };
+      });
+      this.organelles.set(hostId, inherited);
+    }
+  }
 }
