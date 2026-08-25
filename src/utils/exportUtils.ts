@@ -202,3 +202,23 @@ export function exportQuorumAndHydroProfiles(engine: any): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportEndosymbiosisAndMorphogenProfiles(engine: any): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalBots: engine.microbots.length,
+    endosymbiontHostCount: engine.endosymbiosisManager ? engine.endosymbiosisManager.organelles.size : 0,
+    morphogenGridSize: engine.morphogenGrid ? `${engine.morphogenGrid.cols}x${engine.morphogenGrid.rows}` : '0x0'
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `endosymbiosis_morphogen_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
