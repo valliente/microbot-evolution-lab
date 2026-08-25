@@ -97,4 +97,12 @@ export class MorphogenGrid {
       offsetY: gradY * baseRadius
     };
   }
+
+  public packMorphogenToFloat32(targetBuffer?: Float32Array): Float32Array {
+    const buffer = targetBuffer && targetBuffer.length >= this.activator.length
+      ? targetBuffer
+      : new Float32Array(this.activator.length);
+    buffer.set(this.activator);
+    return buffer;
+  }
 }
