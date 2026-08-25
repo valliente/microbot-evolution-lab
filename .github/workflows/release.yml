@@ -78,7 +78,7 @@ jobs:
             - Real-Time Endosymbiosis Telemetry & Profile Exporters
           draft: false
           prerelease: false
-          # Attach BOTH desktop EXE and Android APK binaries for release v0.1.231
+          # Attach BOTH desktop EXE and Android APK binaries for release v0.1.232
           files: |
             MicrobotEvolutionLab.exe
             MicrobotEvolutionLab.apk
