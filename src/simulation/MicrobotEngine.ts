@@ -26,6 +26,8 @@ import { QuorumManager } from './quorum/QuorumManager';
 import { FluidVectorField } from './hydro/FluidVectorField';
 import { EndosymbiosisManager } from './endosymbiosis/EndosymbiosisManager';
 import { MorphogenGrid } from './morphogenesis/MorphogenGrid';
+import { HGTManager } from './hgt/HGTManager';
+import { FluidShearField } from './physics/FluidShearField';
 
 export class MicrobotEngine {
   public width: number;
@@ -54,6 +56,8 @@ export class MicrobotEngine {
   public fluidField: FluidVectorField = new FluidVectorField();
   public endosymbiosisManager: EndosymbiosisManager = new EndosymbiosisManager();
   public morphogenGrid: MorphogenGrid = new MorphogenGrid();
+  public hgtManager: HGTManager = new HGTManager();
+  public fluidShearField: FluidShearField = new FluidShearField();
   public cataclysmManager: PlanetaryCataclysmManager = new PlanetaryCataclysmManager();
   public activeDisasters: EnvironmentalDisaster[] = [];
   public disasterParticles: PooledDisasterParticle[] = [];
