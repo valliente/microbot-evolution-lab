@@ -895,6 +895,26 @@ export const SimulationCanvas: React.FC<SimulationCanvasProps> = ({
           }
           ctx.restore();
         }
+
+        // Dedicated Fluid Shear Stress Field Pass
+        if (ctx && engine.fluidShearField) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.1)';
+          ctx.lineWidth = 1.0;
+          ctx.beginPath();
+          const step = engine.fluidShearField.cellSize * 4;
+          for (let y = step / 2; y < engine.height; y += step) {
+            for (let x = step / 2; x < engine.width; x += step) {
+              const { shear } = engine.fluidShearField.getShearStress(x, y);
+              if (shear > 0.2) {
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + shear * 4, y);
+              }
+            }
+          }
+          ctx.stroke();
+          ctx.restore();
+        }
       }
 
       animationFrameId = requestAnimationFrame(render);
