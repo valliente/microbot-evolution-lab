@@ -77,4 +77,12 @@ export class HGTManager {
     }
     return { integrated: false };
   }
+
+  public packBridgeCoordsToFloat32(targetBuffer?: Float32Array): Float32Array {
+    const needed = this.activeBridges.length * 4;
+    const buffer = targetBuffer && targetBuffer.length >= needed
+      ? targetBuffer
+      : new Float32Array(needed);
+    return buffer;
+  }
 }
