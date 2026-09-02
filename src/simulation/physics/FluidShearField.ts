@@ -68,4 +68,16 @@ export class FluidShearField {
       bot.heading += eddyTorque * 0.02;
     }
   }
+
+  public calculateShearDamageAndDrag(bot: any, criticalThreshold: number = 4.0): { damage: number; dragMultiplier: number } {
+    const { shear } = this.getShearStress(bot.x, bot.y);
+    let damage = 0;
+    let dragMultiplier = 1.0 + shear * 0.08;
+
+    if (shear > criticalThreshold) {
+      damage = (shear - criticalThreshold) * 0.5;
+    }
+
+    return { damage, dragMultiplier };
+  }
 }
