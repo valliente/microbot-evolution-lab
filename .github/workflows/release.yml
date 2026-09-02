@@ -67,15 +67,15 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.232
-          name: "Microbot Evolution Lab v0.1.232"
+          tag_name: v0.1.233
+          name: "Microbot Evolution Lab v0.1.233"
           body: |
-            Microbot Evolution Lab v0.1.232
-            - Eukaryotic Endosymbiosis & Organellar DNA Replication
-            - Morphogenetic Turing Reaction-Diffusion Gradients & Differentiation
-            - 3D Epigenetic Waddington Landscape Visualizer with Orbit Controls
-            - Endosymbiotic Organelle Inspector
-            - Real-Time Endosymbiosis Telemetry & Profile Exporters
+            Microbot Evolution Lab v0.1.233
+            - Horizontal Gene Transfer (Conjugation Pili & Transduction Vectors)
+            - Fluid Shear Stress Fields (Boundary Layer Gradients & Eddy Torque)
+            - 3D Cladistic Phylogeny Visualizer with Branch Focus Controls
+            - HGT Conjugation Inspector
+            - Real-Time HGT Telemetry & Dynamic Profile Exporters
           draft: false
           prerelease: false
           # Attach BOTH desktop EXE and Android APK binaries for release v0.1.232
