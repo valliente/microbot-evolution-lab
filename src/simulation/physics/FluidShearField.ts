@@ -61,4 +61,11 @@ export class FluidShearField {
       }
     }
   }
+
+  public applyShearTorqueToBot(bot: any): void {
+    const { eddyTorque } = this.getShearStress(bot.x, bot.y);
+    if (bot.heading !== undefined) {
+      bot.heading += eddyTorque * 0.02;
+    }
+  }
 }
