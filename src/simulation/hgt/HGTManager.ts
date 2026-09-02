@@ -85,4 +85,20 @@ export class HGTManager {
       : new Float32Array(needed);
     return buffer;
   }
+
+  public checkShearPilusRupture(
+    bridgeId: string,
+    shearStress: number,
+    criticalTension: number = 3.5
+  ): boolean {
+    const idx = this.activeBridges.findIndex(b => b.id === bridgeId);
+    if (idx !== -1) {
+      this.activeBridges[idx].tension += shearStress * 0.1;
+      if (this.activeBridges[idx].tension > criticalTension) {
+        this.activeBridges.splice(idx, 1); // Ruptured by high fluid shear
+        return true;
+      }
+    }
+    return false;
+  }
 }
