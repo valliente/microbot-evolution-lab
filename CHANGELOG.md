@@ -1,6 +1,14 @@
 # Changelog
 # Microbot Evolution Lab Changelog
 
+## [v0.1.233] - 2026-09-02
+### Added
+- **Horizontal Gene Transfer (HGT)**: Conjugation pilus bridge mechanics, plasmid excision/transfer loops, and viral transduction payload insertion.
+- **Fluid Shear Stress Fields**: Boundary layer shear gradients near canvas obstacles, turbulent micro-eddy torque, and shear-induced kinetic damage.
+- **3D Cladistic Phylogeny Visualizer**: Interactive WebGL (Three.js) cladogenesis tree with branching lineage vectors and orbit/pan/focus camera controls.
+- **HGT Conjugation Inspector**: Real-time modal for monitoring lateral gene transfer exchange velocities and pilus tension.
+- **Telemetry & Exporters**: Real-time `hgtExchangeRateRingBuffer` and `fluidShearStressRingBuffer` (`Float32Array`) with dynamic JSON profile exporters.
+
 ## [v0.1.232] - 2026-08-25
 ### Added
 - **Eukaryotic Endosymbiosis & Organelles**: Engulfment mechanics, symbiont survival probability, independent organellar DNA replication and mutation loops, and specialized mitochondrial cristae folding ATP boosts.
