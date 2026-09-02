@@ -37,6 +37,10 @@ export const Cladogram3DModal: React.FC<Cladogram3DModalProps> = ({ isOpen, onCl
     dirLight.position.set(20, 30, 20);
     scene.add(dirLight);
 
+    const gridHelper = new THREE.GridHelper(80, 20, 0x00E5FF, 0x1E293B);
+    gridHelper.position.y = -19;
+    scene.add(gridHelper);
+
     // Root ancestral node
     const treeGroup = new THREE.Group();
     const rootGeo = new THREE.SphereGeometry(2.0, 16, 16);
