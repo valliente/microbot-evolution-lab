@@ -8,7 +8,7 @@
 
 An interactive, high-performance **2D Autonomous Artificial Life & Genetic Evolution Simulation** built with React 18, TypeScript, HTML5 Canvas, and WebGL 3D overlays.
 
-**Microbot Evolution Lab- v0.1.232**: Eukaryotic Endosymbiosis, Organelle Specialization, Morphogenetic Turing Gradients, and 3D Epigenetic Waddington Landscape.
+**Microbot Evolution Lab- v0.1.233**: Horizontal Gene Transfer (Conjugation Pili & Transduction), Fluid Shear Stress Fields, and 3D Cladistic Phylogeny Visualizer.
 
 ---
 
