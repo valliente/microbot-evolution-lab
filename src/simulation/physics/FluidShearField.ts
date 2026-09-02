@@ -23,4 +23,42 @@ export class FluidShearField {
       eddyTorque: this.vorticity[idx] || 0
     };
   }
+
+  public calculateBoundaryLayerShear(
+    fluidVelX: Float32Array,
+    fluidVelY: Float32Array,
+    obstacles: Array<{ x: number; y: number; radius: number }> = []
+  ): void {
+    for (let r = 1; r < this.rows - 1; r++) {
+      for (let c = 1; c < this.cols - 1; c++) {
+        const idx = r * this.cols + c;
+        const top = (r - 1) * this.cols + c;
+        const btm = (r + 1) * this.cols + c;
+        const lft = r * this.cols + (c - 1);
+        const rgt = r * this.cols + (c + 1);
+
+        // Velocity spatial gradients: du/dy, dv/dx
+        const dudy = (fluidVelX[btm] - fluidVelX[top]) * 0.5;
+        const dvdx = (fluidVelY[rgt] - fluidVelY[lft]) * 0.5;
+
+        // Shear strain rate and vorticity (curl)
+        const shear = Math.abs(dudy + dvdx);
+        const vort = dvdx - dudy;
+
+        // Obstacle no-slip boundary boost
+        let obstacleBoost = 1.0;
+        const cellX = (c + 0.5) * this.cellSize;
+        const cellY = (r + 0.5) * this.cellSize;
+        for (const obs of obstacles) {
+          const d = Math.hypot(cellX - obs.x, cellY - obs.y);
+          if (d < obs.radius + this.cellSize * 1.5) {
+            obstacleBoost += 2.0 * (1.0 - d / (obs.radius + this.cellSize * 1.5));
+          }
+        }
+
+        this.shearMagnitude[idx] = Math.min(10.0, shear * obstacleBoost);
+        this.vorticity[idx] = Math.max(-5.0, Math.min(5.0, vort));
+      }
+    }
+  }
 }
