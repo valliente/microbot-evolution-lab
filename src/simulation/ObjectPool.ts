@@ -184,4 +184,10 @@ export const endosymbiontParticlePool = new ObjectPool<{ x: number; y: number; a
   3000
 );
 
+export const conjugationPilusPool = new ObjectPool<{ x1: number; y1: number; x2: number; y2: number; progress: number }>(
+  () => ({ x1: 0, y1: 0, x2: 0, y2: 0, progress: 0.0 }),
+  (p) => { p.x1 = 0; p.y1 = 0; p.x2 = 0; p.y2 = 0; p.progress = 0.0; },
+  2500
+);
+
 
