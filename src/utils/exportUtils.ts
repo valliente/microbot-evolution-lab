@@ -222,3 +222,24 @@ export function exportEndosymbiosisAndMorphogenProfiles(engine: any): void {
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
+
+export function exportHGTAndCladogramProfiles(engine: any): void {
+  const data = {
+    timestamp: new Date().toISOString(),
+    generation: engine.generationCount,
+    totalBots: engine.microbots.length,
+    activeConjugationBridges: engine.hgtManager ? engine.hgtManager.activeBridges.length : 0,
+    hgtTransfersTotal: engine.hgtManager ? engine.hgtManager.transferSuccessCount : 0,
+    shearGridSize: engine.fluidShearField ? `${engine.fluidShearField.cols}x${engine.fluidShearField.rows}` : '0x0'
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `hgt_cladogram_profile_gen${engine.generationCount}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
