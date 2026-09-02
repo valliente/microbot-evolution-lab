@@ -44,4 +44,23 @@ export class HGTManager {
     this.activeBridges.push(bridge);
     return bridge;
   }
+
+  public updateConjugationCycles(
+    dt: number = 1.0,
+    onSuccess?: (bridge: ConjugationBridge) => void
+  ): void {
+    for (let i = this.activeBridges.length - 1; i >= 0; i--) {
+      const bridge = this.activeBridges[i];
+      bridge.progress += (dt / 45) * this.conjugationRateMultiplier;
+      bridge.durationLeft -= dt;
+
+      if (bridge.progress >= 1.0) {
+        this.transferSuccessCount++;
+        if (onSuccess) onSuccess(bridge);
+        this.activeBridges.splice(i, 1);
+      } else if (bridge.durationLeft <= 0) {
+        this.activeBridges.splice(i, 1); // Expired/failed
+      }
+    }
+  }
 }
