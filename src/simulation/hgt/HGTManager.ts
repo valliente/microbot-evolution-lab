@@ -101,4 +101,8 @@ export class HGTManager {
     }
     return false;
   }
+
+  public setConjugationRateMultiplier(multiplier: number): void {
+    this.conjugationRateMultiplier = Math.max(0.1, Math.min(10.0, multiplier));
+  }
 }
