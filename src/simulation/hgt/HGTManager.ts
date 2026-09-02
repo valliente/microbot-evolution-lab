@@ -63,4 +63,18 @@ export class HGTManager {
       }
     }
   }
+
+  public transduceViralPayload(
+    targetBot: any,
+    viralPayload: string
+  ): { integrated: boolean; modifiedTrait?: string } {
+    const successRate = 0.65;
+    if (Math.random() < successRate && targetBot.genome) {
+      this.transferSuccessCount++;
+      // Transduce beneficial or novel metabolic allele
+      targetBot.genome.efficiency = Math.min(2.0, (targetBot.genome.efficiency || 1.0) * 1.1);
+      return { integrated: true, modifiedTrait: viralPayload };
+    }
+    return { integrated: false };
+  }
 }
