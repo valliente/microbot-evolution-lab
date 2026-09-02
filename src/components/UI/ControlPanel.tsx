@@ -48,6 +48,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ config, engine, onUp
           <span style={{ fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(168, 85, 247, 0.2)', border: '1px solid rgba(168, 85, 247, 0.4)', color: '#C084FC', fontWeight: 800 }}>
             🧬 ENDOSYMBIOSIS & MORPHOGEN
           </span>
+          <span style={{ fontSize: '0.6rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(0, 229, 255, 0.2)', border: '1px solid rgba(0, 229, 255, 0.4)', color: '#00E5FF', fontWeight: 800 }}>
+            ⚡ HGT & FLUID SHEAR
+          </span>
           <select 
             value={config.targetFPS || 60} 
             onChange={(e) => onUpdateConfig({ targetFPS: parseInt(e.target.value, 10) })}
