@@ -1,4 +1,4 @@
-# Microbot Evolution Lab 🤖🧬
+﻿# Microbot Evolution Lab
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-brightgreen.svg)](https://valliente.github.io/microbot-evolution-lab/)
@@ -6,56 +6,56 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
 
-An interactive, high-performance **2D Autonomous Artificial Life & Genetic Evolution Simulation** built with React 18, TypeScript, HTML5 Canvas, and WebGL 3D overlays.
+An interactive, high-performance 2D Autonomous Artificial Life & Genetic Evolution Simulation built with React 18, TypeScript, HTML5 Canvas, and WebGL overlays.
 
-**Microbot Evolution Lab- v0.1.233**: Horizontal Gene Transfer (Conjugation Pili & Transduction), Fluid Shear Stress Fields, and 3D Cladistic Phylogeny Visualizer.
-
----
-
-## 🌐 Live Web Demo & Releases
-
-- **Play Online**: [https://valliente.github.io/microbot-evolution-lab/](https://valliente.github.io/microbot-evolution-lab/)
-- **Official Release (v0.1.227)**: [Download Standalone Executables & APKs](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.227)
+Features horizontal gene transfer (conjugation pili and transduction), fluid shear stress fields, and a 3D cladistic phylogeny visualizer.
 
 ---
 
-## ✨ Key Features & Highlights
+## Live Demo & Releases
 
-- **🧠 Autonomous Rule-Based Steering**:
-  Microbots evaluate their surrounding environment dynamically using vector steering behaviors to **WANDER**, **SEEK FOOD**, **EVADE HAZARDS**, and **REPRODUCE**.
-- **🧬 Natural Selection & Genetic Inheritance**:
+- **Online Simulation**: [https://valliente.github.io/microbot-evolution-lab/](https://valliente.github.io/microbot-evolution-lab/)
+- **Release Packages (v0.1.227)**: [Standalone Executables & APKs](https://github.com/valliente/microbot-evolution-lab/releases/tag/v0.1.227)
+
+---
+
+## Key Capabilities
+
+- **Autonomous Rule-Based Steering**:
+  Microbots evaluate their surrounding environment dynamically using vector steering behaviors to wander, seek food, evade hazards, and reproduce.
+- **Natural Selection & Genetic Inheritance**:
   Upon reaching peak battery charge, microbots undergo asexual reproduction. Offspring inherit mutated biological traits:
   - **Speed & Agility** ($1.0 - 5.0\text{ px/frame}$)
   - **Sensory Vision Radius** ($60 - 260\text{ px}$)
   - **Energy Efficiency** ($0.6\times - 2.5\times$)
   - **Color Hue Alignment** ($0^\circ - 360^\circ\text{ HSL}$)
   - **Turn Rate & Steering Precision**
-- **⚡ Spatial Hash Grid Optimization ($O(1)$)**:
+- **Spatial Hash Grid Optimization ($O(1)$)**:
   Uses a uniform spatial hash grid to perform proximity lookups and collision checks across hundreds of active entities at 60 FPS without $O(N^2)$ slowdown.
-- **🖱️ Interactive Mouse Spawner & Roster Menu**:
-  - **Canvas Click**: Click anywhere on the simulation grid to instantly drop **5 green energy dots** under your cursor.
-  - **Microbot Roster Menu**: Search, sort, and select microbots by Generation, Battery, Age, or Offspring count.
-- **🛡️ Infinite Ecosystem Safety Net**:
-  Automated population minimum keeps the artificial ecosystem alive indefinitely without extinction.
-- **📦 Multi-Format Standalone Desktop Executables**:
-  Bundled with Windows Defender-verified HTML Application (`MicrobotEvolutionLab.hta`), native C# executable (`MicrobotEvolutionLab.exe`), one-click batch launcher (`PLAY.bat`), and portable zip package.
+- **Interactive Spawner & Roster Telemetry**:
+  - **Canvas Click**: Click anywhere on the simulation grid to drop 5 energy points under the cursor.
+  - **Microbot Roster**: Search, sort, and inspect microbots by Generation, Battery, Age, or Offspring count.
+- **Continuous Ecosystem Equilibration**:
+  Automated population minimum safeguards against extinction events, stabilizing long-term generational tracking.
+- **Multi-Format Standalone Desktop Distribution**:
+  Bundled with Windows Defender-verified HTML Application (`MicrobotEvolutionLab.hta`), native C# executable (`MicrobotEvolutionLab.exe`), batch launcher (`PLAY.bat`), and portable archive.
 
 ---
 
-## 🎮 How to Play & Control
+## Telemetry & Simulation Controls
 
 | Control / Action | Description |
 | :--- | :--- |
-| **`🎯 SELECT BOT MENU`** | Opens an interactive roster popup to search, sort, and lock telemetry onto any microbot. |
-| **`🍏 +20 FOOD`** | Drops 20 glowing green energy particles onto the grid. |
-| **`🤖 +10 BOTS`** | Spawns 10 new baseline microbots with randomized traits. |
-| **`💥 +HAZARD`** | Spawns a pulsing red damage hazard zone to test evolutionary survival. |
-| **`🎬 AUTO DEMO`** | Automatically cycles tracking across surviving microbots every 5 seconds. |
-| **`SPEED DROPDOWN`** | Adjust simulation clock rate from super slow-motion (`0.05x`) up to hyper speed (`5.0x`). |
+| **`SELECT BOT MENU`** | Opens an interactive roster popup to search, sort, and lock telemetry onto any microbot. |
+| **`+20 FOOD`** | Injects 20 energy particles onto the simulation grid. |
+| **`+10 BOTS`** | Spawns 10 baseline microbots with randomized initial traits. |
+| **`+HAZARD`** | Places a localized damage hazard zone to test evolutionary survival and evasion. |
+| **`AUTO DEMO`** | Cycles telemetry camera tracking across surviving microbots every 5 seconds. |
+| **`SPEED SELECTOR`** | Adjusts simulation clock rate from slow-motion (`0.05x`) up to accelerated (`5.0x`). |
 
 ---
 
-## 🛠️ Architecture & Tech Stack
+## Architecture & System Layout
 
 ```
 microbot-evolution-lab/
@@ -87,7 +87,7 @@ microbot-evolution-lab/
 
 ---
 
-## 💻 Local Development Setup
+## Local Development & Compilation
 
 ### Prerequisites
 - Node.js 18+ and `npm`
@@ -121,8 +121,6 @@ npm run build:exe
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
-
-Developed with ❤️ by **[@valliente](https://github.com/valliente)**.
